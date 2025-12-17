@@ -64,7 +64,7 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * BIDS special directories.
    */
-  private static readonly SPECIAL_DIRS: string[] = ['phenotype', 'stimuli']
+  static readonly SPECIAL_DIRS: string[] = ['phenotype', 'stimuli']
 
   /**
    * Constructs a BidsFileAccessor.
