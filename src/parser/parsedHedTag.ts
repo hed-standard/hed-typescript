@@ -1,13 +1,14 @@
 /** This module holds the class representing a parsed HED tag.
  * @module parser/parsedHedTag
  */
-import { IssueError } from '../issues/issues'
+
 import ParsedHedSubstring from './parsedHedSubstring'
-import { SchemaTag, SchemaUnit, SchemaUnitClass, SchemaValueTag } from '../schema/entries'
-import TagConverter from './tagConverter'
 import { ReservedChecker } from './reservedChecker'
-import { HedSchema, HedSchemas } from '../schema/containers'
-import { TagSpec } from './tokenizer'
+import TagConverter from './tagConverter'
+import { type TagSpec } from './tokenizer'
+import { IssueError } from '../issues/issues'
+import { type HedSchema, type HedSchemas } from '../schema/containers'
+import { type SchemaTag, type SchemaUnit, type SchemaUnitClass, SchemaValueTag } from '../schema/entries'
 
 const TWO_LEVEL_TAGS = new Set(['Definition', 'Def', 'Def-expand'])
 const allowedRegEx = /^[^{},]*$/
@@ -66,10 +67,9 @@ export default class ParsedHedTag extends ParsedHedSubstring {
    *
    * @param tagSpec The token for this tag.
    * @param hedSchemas The collection of HED schemas.
-   * @param hedString The original HED string.
    * @throws {IssueError} If tag conversion or parsing fails.
    */
-  public constructor(tagSpec: TagSpec, hedSchemas: HedSchemas, hedString: string) {
+  public constructor(tagSpec: TagSpec, hedSchemas: HedSchemas) {
     super(tagSpec.tag, tagSpec.bounds) // Sets originalTag and originalBounds
     this._convertTag(hedSchemas, tagSpec)
     this.#normalized = this.format(false) // Sets various forms of the tag.

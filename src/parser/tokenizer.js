@@ -1,6 +1,7 @@
 /** This module holds a class for tokenizing HED strings.
  * @module parser/tokenizer
  */
+
 import { unicodeName } from 'unicode-name'
 
 import { generateIssue } from '../issues/issues'
@@ -43,7 +44,7 @@ for (let i = 0x7f; i <= 0x9f; i++) {
 export class SubstringSpec {
   /**
    * The starting and ending bounds of the substring.
-   * @type {number[]}
+   * @type {[number, number]}
    */
   bounds
 

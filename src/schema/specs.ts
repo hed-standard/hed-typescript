@@ -1,6 +1,7 @@
 /** This module holds the specification classes for HED schemas.
  * @module schema/specs
  */
+
 import castArray from 'lodash/castArray'
 import semver from 'semver'
 
@@ -176,13 +177,20 @@ export class SchemasSpec {
    * @returns A schemas specification object containing parsed schema specifications.
    * @throws {IssueError} If any schema specification is invalid.
    */
-  public static parseVersionSpecs(versionSpecs: string | string[]): SchemasSpec {
+  public static parseVersionSpecs(versionSpecs: unknown): SchemasSpec {
     const schemasSpec = new SchemasSpec()
-    const processVersion = castArray(versionSpecs)
-    if (processVersion.length === 0) {
+    let processedVersionSpecs: string[]
+    if (typeof versionSpecs === 'string') {
+      processedVersionSpecs = castArray(versionSpecs)
+    } else if (!Array.isArray(versionSpecs) || !versionSpecs.every((spec) => typeof spec === 'string')) {
+      IssueError.generateAndThrow('invalidSchemaSpecification', { spec: versionSpecs })
+    } else {
+      processedVersionSpecs = versionSpecs
+    }
+    if (processedVersionSpecs.length === 0) {
       IssueError.generateAndThrow('missingSchemaSpecification')
     }
-    for (const schemaVersion of processVersion) {
+    for (const schemaVersion of processedVersionSpecs) {
       const schemaSpec = SchemaSpec.parseVersionSpec(schemaVersion)
       schemasSpec.addSchemaSpec(schemaSpec)
     }

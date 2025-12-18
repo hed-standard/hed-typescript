@@ -1,17 +1,18 @@
 /** This module holds the class representing a HED string.
  * @module parser/parsedHedString
  */
+
+import ParsedHedColumnSplice from './parsedHedColumnSplice'
+import ParsedHedGroup from './parsedHedGroup'
 import type ParsedHedSubstring from './parsedHedSubstring'
 import ParsedHedTag from './parsedHedTag'
-import ParsedHedGroup from './parsedHedGroup'
-import ParsedHedColumnSplice from './parsedHedColumnSplice'
 import { filterByClass, getDuplicates } from './parseUtils'
 import { IssueError } from '../issues/issues'
 
 /**
  * A parsed HED string.
  */
-export class ParsedHedString {
+export default class ParsedHedString {
   /**
    * The original HED string.
    */
@@ -118,5 +119,3 @@ export class ParsedHedString {
     return this.hedString
   }
 }
-
-export default ParsedHedString

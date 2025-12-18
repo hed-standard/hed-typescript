@@ -13,11 +13,11 @@
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 
-import { organizePaths } from '../utils/paths'
-import { IssueError } from '../issues/issues'
 import { buildBidsSchemas } from './schema'
 import { type BidsJsonFile } from './types/json'
+import { IssueError } from '../issues/issues'
 import { type HedSchemas } from '../schema/containers'
+import { organizePaths } from '../utils/paths'
 
 type SchemaBuilder = (datasetDescription: BidsJsonFile) => Promise<HedSchemas>
 
@@ -46,7 +46,7 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * The HED schema builder function.
    */
-  protected readonly schemaBuilder: SchemaBuilder
+  readonly schemaBuilder: SchemaBuilder
 
   /**
    * BIDS suffixes.

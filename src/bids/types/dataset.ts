@@ -6,15 +6,15 @@
 import path from 'node:path'
 
 import { BidsFileAccessor } from '../datasetParser'
-import { BidsSidecar } from './json'
+import { BidsHedIssue } from './issues'
+import { BidsJsonFile, BidsSidecar } from './json'
 import { BidsTsvFile } from './tsv'
 import { generateIssue, IssueError } from '../../issues/issues'
-import { getMergedSidecarData, organizedPathsGenerator } from '../../utils/paths'
-import { BidsHedIssue } from './issues'
 import { type HedSchemas } from '../../schema/containers'
+import { getMergedSidecarData, organizedPathsGenerator } from '../../utils/paths'
 
-type BidsFileAccessorConstructor = {
-  create(datasetRootDirectory: string | object): Promise<BidsFileAccessor>
+type BidsFileAccessorConstructor<FileType> = {
+  create(datasetRootDirectory: string | object): Promise<BidsFileAccessor<FileType>>
 }
 
 /**
@@ -52,7 +52,7 @@ type BidsFileAccessorConstructor = {
  * @property {HedSchemas} hedSchemas The HED schemas used to validate this dataset.
  * @property {BidsFileAccessor} fileAccessor The BIDS file accessor.
  */
-export class BidsDataset {
+export class BidsDataset<FileType> {
   /**
    * Map of BIDS sidecar files that contain HED annotations.
    * The keys are relative paths and the values are BidsSidecar objects.
@@ -72,7 +72,7 @@ export class BidsDataset {
   /**
    * The BIDS file accessor.
    */
-  public fileAccessor: BidsFileAccessor
+  public fileAccessor: BidsFileAccessor<FileType>
 
   /**
    * Constructor for a BIDS dataset.
@@ -81,7 +81,7 @@ export class BidsDataset {
    * @throws {IssueError} If accessor is not an instance of BidsFileAccessor.
    * @see BidsDataset.create
    */
-  private constructor(accessor: BidsFileAccessor) {
+  private constructor(accessor: BidsFileAccessor<FileType>) {
     if (!(accessor instanceof BidsFileAccessor)) {
       IssueError.generateAndThrowInternalError('BidsDataset constructor requires an instance of BidsFileAccessor')
     }
@@ -102,15 +102,15 @@ export class BidsDataset {
    * @param fileAccessorClass The BidsFileAccessor class to use for accessing files.
    * @returns A Promise that resolves to a two-element array containing the BidsDataset instance (or null if creation failed) and an array of issues.
    */
-  static async create(
+  static async create<FileType>(
     rootOrFiles: string | object,
-    fileAccessorClass: BidsFileAccessorConstructor,
-  ): Promise<[BidsDataset | null, BidsHedIssue[]]> {
+    fileAccessorClass: BidsFileAccessorConstructor<FileType>,
+  ): Promise<[BidsDataset<FileType> | null, BidsHedIssue[]]> {
     let dataset = null
     const issues: BidsHedIssue[] = []
     try {
       const accessor = await fileAccessorClass.create(rootOrFiles)
-      dataset = new BidsDataset(accessor)
+      dataset = new BidsDataset<FileType>(accessor)
       const schemaIssues = await dataset.setHedSchemas()
       issues.push(...schemaIssues)
       const sidecarIssues = await dataset.setSidecars()
@@ -134,21 +134,20 @@ export class BidsDataset {
    * @throws {IssueError} If `dataset_description.json` is missing or contains an invalid HED specification.
    */
   async setHedSchemas(): Promise<BidsHedIssue[]> {
+    const datasetDescriptionFileName = 'dataset_description.json'
     let description
 
     try {
-      const descriptionContentString = await this.fileAccessor.getFileContent('dataset_description.json')
+      const descriptionContentString = await this.fileAccessor.getFileContent(datasetDescriptionFileName)
       if (descriptionContentString === null || typeof descriptionContentString === 'undefined') {
-        IssueError.generateAndThrow('missingSchemaSpecification', { file: 'dataset_description.json' })
+        IssueError.generateAndThrow('missingSchemaSpecification', { file: datasetDescriptionFileName })
       }
-      description = {
-        jsonData: JSON.parse(descriptionContentString),
-      }
+      description = new BidsJsonFile(datasetDescriptionFileName, {}, JSON.parse(descriptionContentString))
     } catch (e) {
       if (e instanceof IssueError) {
         throw e
       }
-      IssueError.generateAndThrow('missingSchemaSpecification', { file: 'dataset_description.json' })
+      IssueError.generateAndThrow('missingSchemaSpecification', { file: datasetDescriptionFileName })
     }
 
     try {

@@ -2,7 +2,7 @@
  * A parsed HED substring.
  * @module parser/parsedHedSubstring
  */
-export abstract class ParsedHedSubstring {
+export default abstract class ParsedHedSubstring {
   /**
    * The original pre-parsed version of the HED tag.
    */
@@ -10,7 +10,7 @@ export abstract class ParsedHedSubstring {
   /**
    * The bounds of the HED tag in the original HED string.
    */
-  originalBounds: number[]
+  originalBounds: [number, number]
 
   /**
    * Constructor.
@@ -18,7 +18,7 @@ export abstract class ParsedHedSubstring {
    * @param originalTag The original HED tag.
    * @param originalBounds The bounds of the HED tag in the original HED string.
    */
-  protected constructor(originalTag: string, originalBounds: number[]) {
+  protected constructor(originalTag: string, originalBounds: [number, number]) {
     this.originalTag = originalTag
     this.originalBounds = originalBounds
   }
@@ -37,9 +37,7 @@ export abstract class ParsedHedSubstring {
    *
    * @returns The normalized version of this substring.
    */
-  public get normalized(): string {
-    return ''
-  }
+  public abstract get normalized(): string
 
   /**
    * Determine if this substring is equivalent to another.
@@ -58,5 +56,3 @@ export abstract class ParsedHedSubstring {
     return this.originalTag
   }
 }
-
-export default ParsedHedSubstring

@@ -1,13 +1,15 @@
 /** This module holds the class for representing a HED group.
  * @module parser/parsedHedGroup
  */
+
 import differenceWith from 'lodash/differenceWith'
-import { IssueError } from '../issues/issues'
+
+import ParsedHedColumnSplice from './parsedHedColumnSplice'
 import ParsedHedSubstring from './parsedHedSubstring'
 import ParsedHedTag from './parsedHedTag'
-import ParsedHedColumnSplice from './parsedHedColumnSplice'
 import { ReservedChecker } from './reservedChecker'
 import { categorizeTagsByName, filterByClass, filterByTagName, getDuplicates } from './parseUtils'
+import { IssueError } from '../issues/issues'
 
 /**
  * A parsed HED tag group.
@@ -90,7 +92,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
    * @param hedString The original HED string.
    * @param originalBounds The bounds of the HED tag in the original HED string.
    */
-  public constructor(parsedHedTags: ParsedHedSubstring[], hedString: string, originalBounds: number[]) {
+  public constructor(parsedHedTags: ParsedHedSubstring[], hedString: string, originalBounds: [number, number]) {
     const originalTag = hedString.substring(originalBounds[0], originalBounds[1])
     super(originalTag, originalBounds)
     this.tags = parsedHedTags
@@ -131,7 +133,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
    * @returns An array of top-level tags with the given name.
    */
   private _filterTopTagsByTagName(tagName: string): ParsedHedTag[] {
-    return this.topTags.filter((tag) => tag.schemaTag._name === tagName)
+    return this.topTags.filter((tag) => tag.schemaTag.name === tagName)
   }
 
   /**

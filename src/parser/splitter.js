@@ -1,12 +1,13 @@
 /** This module holds the classes for basic splitting of HED strings.
  * @module parser/splitter
  */
-import ParsedHedTag from './parsedHedTag'
+
 import ParsedHedColumnSplice from './parsedHedColumnSplice'
 import ParsedHedGroup from './parsedHedGroup'
-import { recursiveMap } from '../utils/array'
+import ParsedHedTag from './parsedHedTag'
 import { HedStringTokenizer, ColumnSpliceSpec, TagSpec } from './tokenizer'
 import { generateIssue, IssueError } from '../issues/issues'
+import { recursiveMap } from '../utils/array'
 
 export default class HedStringSplitter {
   /**
@@ -79,7 +80,7 @@ export default class HedStringSplitter {
   _createParsedTag(tagSpec) {
     if (tagSpec instanceof TagSpec) {
       try {
-        return new ParsedHedTag(tagSpec, this.hedSchemas, this.hedString)
+        return new ParsedHedTag(tagSpec, this.hedSchemas)
       } catch (issueError) {
         this.issues.push(this._handleIssueError(issueError))
         return null

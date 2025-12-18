@@ -10,7 +10,7 @@ import ParsedHedSubstring from './parsedHedSubstring'
  * @see {@link ParsedHedString}
  * @see {@link ParsedHedGroup}
  */
-export class ParsedHedColumnSplice extends ParsedHedSubstring {
+export default class ParsedHedColumnSplice extends ParsedHedSubstring {
   /**
    * The normalized string representation of this column splice.
    */
@@ -22,7 +22,7 @@ export class ParsedHedColumnSplice extends ParsedHedSubstring {
    * @param columnName The name of the referenced column.
    * @param bounds The bounds of the column splice.
    */
-  constructor(columnName: string, bounds: [number, number]) {
+  public constructor(columnName: string, bounds: [number, number]) {
     super(columnName, bounds) // Sets originalTag and originalBounds
     this._normalized = this.format(false) // Sets various forms of the tag.
   }
@@ -55,5 +55,3 @@ export class ParsedHedColumnSplice extends ParsedHedSubstring {
     return other instanceof ParsedHedColumnSplice && this.originalTag === other.originalTag
   }
 }
-
-export default ParsedHedColumnSplice

@@ -12,7 +12,7 @@ import BidsHedSidecarValidator from '../validator/sidecarValidator'
 import { IssueError, addIssueParameters, type Issue } from '../../issues/issues'
 import { DefinitionManager, Definition } from '../../parser/definitionManager'
 import { type HedSchemas } from '../../schema/containers'
-import { type ParsedHedColumnSplice } from '../../parser/parsedHedColumnSplice'
+import type ParsedHedColumnSplice from '../../parser/parsedHedColumnSplice'
 
 const ILLEGAL_SIDECAR_KEYS = new Set(['hed', 'n/a'])
 
