@@ -3,9 +3,11 @@
  */
 import { IssueError } from '../issues/issues'
 import ParsedHedSubstring from './parsedHedSubstring'
-import { SchemaValueTag } from '../schema/entries'
+import { SchemaTag, SchemaUnit, SchemaUnitClass, SchemaValueTag } from '../schema/entries'
 import TagConverter from './tagConverter'
 import { ReservedChecker } from './reservedChecker'
+import { HedSchema, HedSchemas } from '../schema/containers'
+import { TagSpec } from './tokenizer'
 
 const TWO_LEVEL_TAGS = new Set(['Definition', 'Def', 'Def-expand'])
 const allowedRegEx = /^[^{},]*$/
@@ -16,82 +18,71 @@ const allowedRegEx = /^[^{},]*$/
 export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * The formatted canonical version of the HED tag.
-   * @type {string}
    */
-  formattedTag
+  formattedTag: string
 
   /**
    * The canonical form of the HED tag.
-   * @type {string}
    */
-  canonicalTag
+  canonicalTag: string
 
   /**
    * The HED schema this tag belongs to.
-   * @type {HedSchema}
    */
+  schema: HedSchema
 
-  schema
   /**
    * The schema's representation of this tag.
-   *
-   * @type {SchemaTag}
-   * @private
    */
-
-  _schemaTag
+  private _schemaTag: SchemaTag
 
   /**
    * The remaining part of the tag after the portion actually in the schema.
-   * @type {string}
-   * @private
    */
-  _remainder
+  private _remainder: string
 
   /**
    * The value of the tag, if any.
-   * @type {string}
-   * @private
    */
-  _value
+  private _value: string
 
   /**
    * If definition, this is the second value, otherwise empty string.
-   * @type {string}
-   * @private
    */
-  _splitValue
+  private _splitValue: string
 
   /**
    * The units if any.
-   * @type {string}
-   * @private
    */
-  _units
+  private _units: string
+
+  /**
+   * The normalized string representation of this column splice.
+   */
+  readonly #normalized: string
 
   /**
    * Constructor.
    *
-   * @param {TagSpec} tagSpec The token for this tag.
-   * @param {HedSchemas} hedSchemas The collection of HED schemas.
-   * @param {string} hedString The original HED string.
+   * @param tagSpec The token for this tag.
+   * @param hedSchemas The collection of HED schemas.
+   * @param hedString The original HED string.
    * @throws {IssueError} If tag conversion or parsing fails.
    */
-  constructor(tagSpec, hedSchemas, hedString) {
+  public constructor(tagSpec: TagSpec, hedSchemas: HedSchemas, hedString: string) {
     super(tagSpec.tag, tagSpec.bounds) // Sets originalTag and originalBounds
-    this._convertTag(hedSchemas, hedString, tagSpec)
-    this._normalized = this.format(false) // Sets various forms of the tag.
+    this._convertTag(hedSchemas, tagSpec)
+    this.#normalized = this.format(false) // Sets various forms of the tag.
   }
 
   /**
    * Convert this tag to its various forms
    *
-   * @param {HedSchemas} hedSchemas The collection of HED schemas.
-   * @param {string} hedString The original HED string.
-   * @param {TagSpec} tagSpec The token for this tag.
+   * @param hedSchemas The collection of HED schemas.
+   * @param tagSpec The token for this tag.
    * @throws {IssueError} If tag conversion or parsing fails.
    */
-  _convertTag(hedSchemas, hedString, tagSpec) {
+  private _convertTag(hedSchemas: HedSchemas, tagSpec: TagSpec): void {
     const schemaName = tagSpec.library
     this.schema = hedSchemas.getSchema(schemaName)
     if (this.schema === undefined) {
@@ -118,12 +109,11 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Handle the remainder portion for value tag (converter handles others).
    *
-   * @param {SchemaTag} schemaTag - The part of the tag that is in the schema.
-   * @param {string} remainder - the leftover part.
+   * @param schemaTag The part of the tag that is in the schema.
+   * @param remainder the leftover part.
    * @throws {IssueError} If parsing the remainder section fails.
-   * @private
    */
-  _handleRemainder(schemaTag, remainder) {
+  private _handleRemainder(schemaTag: SchemaTag, remainder: string): void {
     if (!(schemaTag instanceof SchemaValueTag)) {
       return
     }
@@ -153,12 +143,12 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Separate the remainder of the tag into three parts.
    *
-   * @param {SchemaTag} schemaTag - The part of the tag that is in the schema.
-   * @param {string} remainder - The leftover part.
-   * @returns {Array} - [SchemaUnit, string, string] representing the actual Unit, the unit string and the value string.
-   * @throws {IssueError} - If parsing the remainder section fails.
+   * @param schemaTag The part of the tag that is in the schema.
+   * @param remainder The leftover part.
+   * @returns A tuple representing the actual Unit, the unit string and the value string.
+   * @throws {IssueError} If parsing the remainder section fails.
    */
-  _separateUnits(schemaTag, remainder) {
+  private _separateUnits(schemaTag: SchemaTag, remainder: string): [SchemaUnit, string, string] {
     const unitClasses = schemaTag.unitClasses
     let actualUnit = null
     let actualUnitString = null
@@ -174,9 +164,10 @@ export default class ParsedHedTag extends ParsedHedSubstring {
 
   /**
    * Handle reserved three-level tags.
-   * @param {string} remainder - The remainder of the tag string after schema tag.
+   *
+   * @param remainder The remainder of the tag string after schema tag.
    */
-  _getSplitValue(remainder) {
+  private _getSplitValue(remainder: string): [string, string | null] {
     if (!TWO_LEVEL_TAGS.has(this.schemaTag.name)) {
       return [remainder, null]
     }
@@ -187,10 +178,10 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Nicely format this tag.
    *
-   * @param {boolean} long - Whether the tags should be in long form.
-   * @returns {string} - The nicely formatted version of this tag.
+   * @param long Whether the tags should be in long form.
+   * @returns The nicely formatted version of this tag.
    */
-  format(long = true) {
+  public format(long: boolean = true): string {
     let tagName
     if (long) {
       tagName = this._schemaTag?.longExtend(this._remainder)
@@ -209,18 +200,19 @@ export default class ParsedHedTag extends ParsedHedSubstring {
 
   /**
    * Return the normalized version of this tag.
-   * @returns {string} - The normalized version of this tag.
+   *
+   * @returns The normalized version of this tag.
    */
-  get normalized() {
-    return this._normalized
+  public get normalized(): string {
+    return this.#normalized
   }
 
   /**
    * Override of {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString | Object.prototype.toString}.
    *
-   * @returns {string} The original form of this HED tag.
+   * @returns The original form of this HED tag.
    */
-  toString() {
+  public toString(): string {
     if (this.schema?.prefix) {
       return this.schema.prefix + ':' + this.originalTag
     } else {
@@ -231,10 +223,10 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Determine whether this tag has a given attribute.
    *
-   * @param {string} attribute An attribute name.
-   * @returns {boolean} Whether this tag has the named attribute.
+   * @param attribute An attribute name.
+   * @returns Whether this tag has the named attribute.
    */
-  hasAttribute(attribute) {
+  public hasAttribute(attribute: string): boolean {
     return this.schemaTag.hasAttribute(attribute)
   }
 
@@ -243,19 +235,19 @@ export default class ParsedHedTag extends ParsedHedSubstring {
    *
    * Note: HED tags are deemed equivalent if they have the same schema and normalized tag string.
    *
-   * @param {ParsedHedTag} other A HED tag to compare with this one.
-   * @returns {boolean} Whether the other tag is equivalent to this HED tag.
+   * @param other A HED tag to compare with this one.
+   * @returns Whether the other tag is equivalent to this HED tag.
    */
-  equivalent(other) {
+  public equivalent(other: unknown): boolean {
     return other instanceof ParsedHedTag && this.formattedTag === other.formattedTag && this.schema === other.schema
   }
 
   /**
    * Get the schema tag object for this tag.
    *
-   * @returns {SchemaTag} The schema tag object for this tag.
+   * @returns The schema tag object for this tag.
    */
-  get schemaTag() {
+  public get schemaTag(): SchemaTag {
     if (this._schemaTag instanceof SchemaValueTag) {
       return this._schemaTag.parent
     } else {
@@ -264,27 +256,25 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   }
 
   /**
-   * Indicates whether the tag is deprecated
-   * @returns {boolean}
+   * Indicates whether the tag is deprecated.
    */
-  get isDeprecated() {
+  public get isDeprecated(): boolean {
     return this.schemaTag.hasAttribute('deprecatedFrom')
   }
 
   /**
-   * Indicates whether the tag is deprecated
-   * @returns {boolean}
+   * Indicates whether the tag is extended.
    */
-  get isExtended() {
+  public get isExtended(): boolean {
     return !this.takesValueTag && this._remainder !== ''
   }
 
   /**
    * Get the schema tag object for this tag's value-taking form.
    *
-   * @returns {SchemaValueTag} The schema tag object for this tag's value-taking form.
+   * @returns The schema tag object for this tag's value-taking form.
    */
-  get takesValueTag() {
+  public get takesValueTag(): SchemaValueTag | undefined {
     if (this._schemaTag instanceof SchemaValueTag) {
       return this._schemaTag
     }
@@ -294,27 +284,27 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Checks if this HED tag has the `takesValue` attribute.
    *
-   * @returns {boolean} Whether this HED tag has the `takesValue` attribute.
+   * @returns Whether this HED tag has the `takesValue` attribute.
    */
-  takesValue() {
+  public takesValue(): boolean {
     return this.takesValueTag !== undefined
   }
 
   /**
    * Checks if this HED tag has the `unitClass` attribute.
    *
-   * @returns {boolean} Whether this HED tag has the `unitClass` attribute.
+   * @returns Whether this HED tag has the `unitClass` attribute.
    */
-  isUnitClass() {
+  public hasUnitClass(): boolean {
     return this.hasAttribute('unitClass')
   }
 
   /**
    * Get the unit classes for this HED tag.
    *
-   * @returns {SchemaUnitClass[]} The unit classes for this HED tag.
+   * @returns The unit classes for this HED tag.
    */
-  get unitClasses() {
+  public get unitClasses(): SchemaUnitClass[] {
     if (this.hasUnitClass) {
       return this.takesValueTag.unitClasses
     }
@@ -324,10 +314,10 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Check if value is a valid value for this tag.
    *
-   * @param {string} value - The value to be checked.
-   * @returns {string} An empty string if value is value, otherwise an indication of failure.
+   * @param value The value to be checked.
+   * @returns An empty string if value is value, otherwise an indication of failure.
    */
-  checkValue(value) {
+  public checkValue(value: string): string {
     if (!this.takesValue) {
       return `Tag "${this.schemaTag.name}" does not take a value but has value "${value}"`
     }
