@@ -1,5 +1,4 @@
-import chai from 'chai'
-const assert = chai.assert
+import { assert } from 'chai'
 import { describe, it } from '@jest/globals'
 import { cleanupEmpties } from '../../src/parser/parseUtils'
 

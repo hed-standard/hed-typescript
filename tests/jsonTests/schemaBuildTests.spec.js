@@ -1,5 +1,4 @@
-import chai from 'chai'
-const assert = chai.assert
+import { assert } from 'chai'
 import { beforeAll, describe, afterAll } from '@jest/globals'
 
 import { buildBidsSchemas } from '../../src/bids/schema'

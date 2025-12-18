@@ -1,8 +1,7 @@
 import * as fs from 'node:fs'
 import path from 'node:path'
 
-import chai from 'chai'
-const assert = chai.assert
+import { assert } from 'chai'
 
 import { beforeAll, describe, afterAll } from '@jest/globals'
 import { BidsHedIssue } from '../src/bids/types/issues'

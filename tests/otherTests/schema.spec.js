@@ -1,5 +1,4 @@
-import chai from 'chai'
-const assert = chai.assert
+import { assert } from 'chai'
 import { beforeAll, describe, it } from '@jest/globals'
 
 import { generateIssue, IssueError } from '../../src/issues/issues'
