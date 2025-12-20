@@ -2,7 +2,6 @@
  * @module parser/parseUtils
  */
 
-import ParsedHedSubstring from './parsedHedSubstring'
 import ParsedHedTag from './parsedHedTag'
 import { type Constructor } from '../utils/types'
 
@@ -14,7 +13,7 @@ import { type Constructor } from '../utils/types'
  * @returns A list of objects of the specified subclass of ParsedHedSubstring.
  */
 export function filterByClass<C>(items: any[], classType: Constructor<C>): C[] {
-  return items && items.length ? items.filter((item) => item instanceof classType) : []
+  return items?.filter((item) => item instanceof classType) ?? []
 }
 
 /**
@@ -25,10 +24,7 @@ export function filterByClass<C>(items: any[], classType: Constructor<C>): C[] {
  * @returns A list of tags with the name {}
  */
 export function filterByTagName(tags: ParsedHedTag[], tagName: string): ParsedHedTag[] {
-  if (!tags) {
-    return []
-  }
-  return tags.filter((tag) => tag instanceof ParsedHedTag && tag.schemaTag?.name === tagName)
+  return tags?.filter((tag) => tag instanceof ParsedHedTag && tag.schemaTag?.name === tagName) ?? []
 }
 
 /**
@@ -88,14 +84,14 @@ export function categorizeTagsByName(
 }
 
 /**
- * Return a list of duplicate strings.
+ * Return a list of duplicates.
  *
- * @param itemList - A list of strings to look for duplicates in.
- * @returns A list of unique duplicate strings (multiple copies not repeated).
+ * @param itemList - A list of items in which to look for duplicates.
+ * @returns A list of unique duplicates (multiple copies not repeated).
  */
-export function getDuplicates(itemList: string[]): string[] {
-  const checkSet = new Set<string>()
-  const dupSet = new Set<string>()
+export function getDuplicates<T>(itemList: T[]): T[] {
+  const checkSet = new Set<T>()
+  const dupSet = new Set<T>()
 
   for (const item of itemList) {
     if (!checkSet.has(item)) {

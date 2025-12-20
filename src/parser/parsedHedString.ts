@@ -101,7 +101,7 @@ export default class ParsedHedString {
     const normalizedItems = this.parseTree.map((item) => item.normalized)
 
     // Sort normalized items to ensure order independence
-    const sortedNormalizedItems = normalizedItems.sort()
+    const sortedNormalizedItems = normalizedItems.toSorted((a, b) => a.localeCompare(b))
     const duplicates = getDuplicates(sortedNormalizedItems)
     if (duplicates.length > 0) {
       IssueError.generateAndThrow('duplicateTag', { tags: '[' + duplicates.join('],[') + ']', string: this.hedString })
