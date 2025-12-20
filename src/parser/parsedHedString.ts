@@ -44,9 +44,9 @@ export default class ParsedHedString {
   readonly columnSplices: ParsedHedColumnSplice[]
 
   /**
-   * The tags in the top-level tag groups in the string, split into arrays.
+   * The tags in the top-level tag groups in the string.
    */
-  readonly topLevelGroupTags: ParsedHedTag[][]
+  readonly topLevelGroupTags: ParsedHedTag[]
 
   /**
    * The top-level definition tag groups in the string.
@@ -76,7 +76,7 @@ export default class ParsedHedString {
     const subgroupColumnSplices = this.tagGroups.flatMap((tagGroup) => Array.from(tagGroup.columnSpliceIterator()))
     this.columnSplices = topLevelColumnSplices.concat(subgroupColumnSplices)
 
-    this.topLevelGroupTags = this.tagGroups.flatMap((tagGroup) => filterByClass(tagGroup.tags, ParsedHedTag))
+    this.topLevelGroupTags = this.tagGroups.flatMap((tagGroup) => tagGroup.topTags)
     this.definitions = this.tagGroups.filter((group) => group.isDefinitionGroup)
     this.normalized = this._getNormalized()
   }

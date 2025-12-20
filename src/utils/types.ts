@@ -6,6 +6,6 @@
 /**
  * A generic constructor type.
  */
-export type Constructor = {
-  new (...args: any[]): any
+export type Constructor<Type> = {
+  new (...args: any[]): Type
 }

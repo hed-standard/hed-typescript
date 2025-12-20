@@ -94,7 +94,7 @@ export class ReservedChecker {
    */
   checkTagGroupLevels(hedString, fullValidation) {
     const issues = []
-    const topGroupTags = hedString.topLevelGroupTags.flat()
+    const topGroupTags = hedString.topLevelGroupTags
 
     // Check for top-level violations because tag is deep
     hedString.tags.forEach((tag) => {

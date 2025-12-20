@@ -4,7 +4,7 @@
 
 import ParsedHedSubstring from './parsedHedSubstring'
 import ParsedHedTag from './parsedHedTag'
-import { Constructor } from '../utils/types'
+import { type Constructor } from '../utils/types'
 
 /**
  * Extract the items of a specified subtype from a list of ParsedHedSubstring.
@@ -13,7 +13,7 @@ import { Constructor } from '../utils/types'
  * @param classType - The class type to filter by.
  * @returns A list of objects of the specified subclass of ParsedHedSubstring.
  */
-export function filterByClass(items: ParsedHedSubstring[], classType: Constructor): ParsedHedSubstring[] {
+export function filterByClass<C>(items: any[], classType: Constructor<C>): C[] {
   return items && items.length ? items.filter((item) => item instanceof classType) : []
 }
 
