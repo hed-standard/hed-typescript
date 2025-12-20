@@ -1,5 +1,6 @@
 import { assert } from 'chai'
 import { describe, it } from '@jest/globals'
+
 import { cleanupEmpties } from '../../src/parser/parseUtils'
 
 describe('Tokenizer validation using JSON tests', () => {

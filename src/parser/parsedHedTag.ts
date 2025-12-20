@@ -110,7 +110,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
    * Handle the remainder portion for value tag (converter handles others).
    *
    * @param schemaTag The part of the tag that is in the schema.
-   * @param remainder the leftover part.
+   * @param remainder The leftover part.
    * @throws {IssueError} If parsing the remainder section fails.
    */
   private _handleRemainder(schemaTag: SchemaTag, remainder: string): void {
@@ -233,7 +233,9 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Determine if this HED tag is equivalent to another HED tag.
    *
-   * Note: HED tags are deemed equivalent if they have the same schema and normalized tag string.
+   * @remarks
+   *
+   * HED tags are deemed equivalent if they have the same schema and normalized tag string.
    *
    * @param other A HED tag to compare with this one.
    * @returns Whether the other tag is equivalent to this HED tag.

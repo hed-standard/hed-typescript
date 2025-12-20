@@ -1,25 +1,30 @@
 /** This module holds utilities for parsing HED strings.
  * @module parser/parseUtils
  */
+
+import ParsedHedSubstring from './parsedHedSubstring'
 import ParsedHedTag from './parsedHedTag'
+import { Constructor } from '../utils/types'
 
 /**
- * Extract the items of a specified subtype from a list of ParsedHedSubstring
- * @param {ParsedHedSubstring[]} items - Objects to be filtered by class type.
- * @param {Class} classType - The class type to filter by.
- * @returns {ParsedHedSubstring[]} - A list of objects of the specified subclass of ParsedHedSubstring
+ * Extract the items of a specified subtype from a list of ParsedHedSubstring.
+ *
+ * @param items - Objects to be filtered by class type.
+ * @param classType - The class type to filter by.
+ * @returns A list of objects of the specified subclass of ParsedHedSubstring.
  */
-export function filterByClass(items, classType) {
+export function filterByClass(items: ParsedHedSubstring[], classType: Constructor): ParsedHedSubstring[] {
   return items && items.length ? items.filter((item) => item instanceof classType) : []
 }
 
 /**
  * Extract the ParsedHedTag tags with a specified tag name
- * @param {ParsedHedTag[]} tags - to be filtered by name
- * @param {string} tagName - name of the tag to filter by
- * @returns {ParsedHedTag[]}
+ *
+ * @param tags - to be filtered by name
+ * @param tagName - name of the tag to filter by
+ * @returns A list of tags with the name {}
  */
-export function filterByTagName(tags, tagName) {
+export function filterByTagName(tags: ParsedHedTag[], tagName: string): ParsedHedTag[] {
   if (!tags) {
     return []
   }
@@ -28,16 +33,17 @@ export function filterByTagName(tags, tagName) {
 
 /**
  * Extract the ParsedHedTag tags with a specified tag name.
- * @param {Map<string, ParsedHedTag[]>} tagMap - The Map of parsed HED tags for extraction (must be defined).
- * @param {string[]} tagNames - The names to use as keys for the filter.
- * @returns {ParsedHedTag[]} - A list of temporal tags.
+ *
+ * @param tagMap - The Map of parsed HED tags for extraction (must be defined).
+ * @param tagNames - The names to use as keys for the filter.
+ * @returns A list of temporal tags.
  */
-export function filterTagMapByNames(tagMap, tagNames) {
+export function filterTagMapByNames(tagMap: Map<string, ParsedHedTag[]>, tagNames: string[]): ParsedHedTag[] {
   if (!tagNames || tagMap.size === 0) {
     return []
   }
 
-  const keys = [...tagNames].filter((name) => tagMap.has(name))
+  const keys = tagNames.filter((name) => tagMap.has(name))
   if (keys.length === 0) {
     return []
   }
@@ -47,42 +53,50 @@ export function filterTagMapByNames(tagMap, tagNames) {
 
 /**
  * Convert a list of ParsedHedTag objects into a comma-separated string of their string representations.
- * @param {ParsedHedTag[]} tagList - The HED tags whose string representations should be put in a comma-separated list.
- * @returns {string} A comma separated list of original tag names for tags in tagList.
+ *
+ * @param tagList - The HED tags whose string representations should be put in a comma-separated list.
+ * @returns A comma separated list of original tag names for tags in tagList.
  */
-export function getTagListString(tagList) {
+export function getTagListString(tagList: ParsedHedTag[]): string {
   return tagList.map((tag) => tag.toString()).join(', ')
 }
 
 /**
  * Create a map of the ParsedHedTags by type.
- * @param {ParsedHedTag[]} tagList - The HED tags to be categorized.
- * @param {Set} tagNames - The tag names to use as categories.
- * @returns {Map} - A map (string --> ParsedHedTag) of tag name to a list of tags with that name.
+ *
+ * @param tagList - The HED tags to be categorized.
+ * @param tagNames - The tag names to use as categories.
+ * @returns A map of tag name to a list of tags with that name.
  */
-export function categorizeTagsByName(tagList, tagNames = null) {
+export function categorizeTagsByName(
+  tagList: ParsedHedTag[],
+  tagNames: Set<string> | null = null,
+): Map<string, ParsedHedTag[]> {
   // Initialize the map with keys from tagNames and an "other" key
-  const resultMap = new Map()
+  const resultMap = new Map<string, ParsedHedTag[]>()
 
   // Iterate through A and categorize
-  tagList.forEach((tag) => {
+  for (const tag of tagList) {
     if (!tagNames || tagNames.has(tag.schemaTag.name)) {
-      const tagList = resultMap.get(tag.schemaTag.name) || []
+      const tagList = resultMap.get(tag.schemaTag.name) ?? []
       tagList.push(tag)
       resultMap.set(tag.schemaTag.name, tagList) // Add to matching key list
     }
-  })
+  }
+
   return resultMap
 }
 
 /**
  * Return a list of duplicate strings.
- * @param { string[] } itemList - A list of strings to look for duplicates in.
- * @returns {string[]} - A list of unique duplicate strings (multiple copies not repeated).
+ *
+ * @param itemList - A list of strings to look for duplicates in.
+ * @returns A list of unique duplicate strings (multiple copies not repeated).
  */
-export function getDuplicates(itemList) {
-  const checkSet = new Set()
-  const dupSet = new Set()
+export function getDuplicates(itemList: string[]): string[] {
+  const checkSet = new Set<string>()
+  const dupSet = new Set<string>()
+
   for (const item of itemList) {
     if (!checkSet.has(item)) {
       checkSet.add(item)
@@ -90,16 +104,17 @@ export function getDuplicates(itemList) {
       dupSet.add(item)
     }
   }
+
   return [...dupSet]
 }
 
 /**
- * lean up a string and remove redundant commas and parentheses.
- * @param {string} stringIn - The input string to be cleaned up.
- * @return {string} - The cleaned-up string with redundant commas and parentheses removed.
+ * Clean up a string and remove redundant commas and parentheses.
  *
+ * @param stringIn - The input string to be cleaned up.
+ * @return The cleaned-up string with redundant commas and parentheses removed.
  */
-export function cleanupEmpties(stringIn) {
+export function cleanupEmpties(stringIn: string): string {
   const leadingCommaRegEx = /^\s*,+/g // Remove leading commas
   const trailingCommaRegEx = /,\s*$/g // Remove trailing commas
   const innerCommaRegEx = /,\s*,+/g // Collapse multiple commas inside
@@ -108,7 +123,7 @@ export function cleanupEmpties(stringIn) {
   const trailingInnerCommaRegEx = /[\s,]+\)/g // Remove trailing commas and spaces inside parentheses
 
   let result = stringIn
-  let previousResult
+  let previousResult: string
 
   do {
     previousResult = result
@@ -131,6 +146,7 @@ export function cleanupEmpties(stringIn) {
     // Step 5: Remove trailing commas inside parentheses
     result = result.replace(trailingInnerCommaRegEx, ')')
   } while (result !== previousResult) // Keep looping until no more changes
+
   result = result.replace(/\(\s*,+/g, '(')
   return result.trim()
 }
