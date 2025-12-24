@@ -1,5 +1,5 @@
 /**
- * General utility types
+ * General utility types.
  * @module utils/types
  */
 
@@ -9,3 +9,8 @@
 export type Constructor<Type> = {
   new (...args: any[]): Type
 }
+
+/**
+ * A generic recursive array type.
+ */
+export interface RecursiveArray<Type> extends Array<Type | RecursiveArray<Type>> {}
