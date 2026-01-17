@@ -1,15 +1,12 @@
 /** This module holds the classes for converting a tag specification into a schema-based tag object.
  * @module parser/tagConverter
  */
-import { IssueError } from '../issues/issues'
-import { getTagSlashIndices } from '../utils/hedStrings'
 import { ReservedChecker } from './reservedChecker'
-
-/**
- * @typedef {import('../schema/entries.ts').SchemaTag} SchemaTag
- * @typedef {import('../schema/containers.ts').HedSchemas} Schemas
- * @typedef {import('./tokenizer.js').TagSpec} TagSpec
- */
+import { type TagSpec } from './tokenizer'
+import { IssueError } from '../issues/issues'
+import { type HedSchemas } from '../schema/containers'
+import { type SchemaEntryManager, type SchemaTag } from '../schema/entries'
+import { getTagSlashIndices } from '../utils/hedStrings'
 
 /**
  * Converter from a tag specification to a schema-based tag object.
@@ -17,59 +14,56 @@ import { ReservedChecker } from './reservedChecker'
 export default class TagConverter {
   /**
    * A parsed tag token.
-   * @type {TagSpec}
    */
-  tagSpec
+  private readonly tagSpec: TagSpec
 
   /**
    * The tag string to convert.
-   * @type {string}
    */
-  tagString
+  private readonly tagString: string
 
   /**
    * The tag string split by slashes.
-   * @type {string[]}
    */
-  tagLevels
+  private readonly tagLevels: string[]
 
   /**
    * The indices of the tag string's slashes.
-   * @type {number[]}
    */
-  tagSlashes
+  readonly tagSlashes: number[]
 
   /**
    * A HED schema collection.
-   * @type {HedSchemas}
    */
-  hedSchemas
+  private readonly hedSchemas: HedSchemas
 
   /**
    * The entry manager for the tags in the active schema.
-   * @type {SchemaEntryManager<SchemaTag>}
    */
-  tagMapping
+  private readonly tagMapping: SchemaEntryManager<SchemaTag>
 
   /**
    * The converted tag in the schema.
-   * @type {SchemaTag}
    */
-  schemaTag
+  private schemaTag: SchemaTag
 
   /**
    * The remainder (e.g. value, extension) of the tag string.
-   * @type {string}
    */
-  remainder
+  private remainder: string
+
+  /**
+   * The special tag checker.
+   */
+  private readonly special: ReservedChecker
 
   /**
    * Constructor.
    *
-   * @param {TagSpec} tagSpec The tag specification to convert.
-   * @param {HedSchemas} hedSchemas The HED schema collection.
+   * @param tagSpec - The tag specification to convert.
+   * @param hedSchemas - The HED schema collection.
    */
-  constructor(tagSpec, hedSchemas) {
+  public constructor(tagSpec: TagSpec, hedSchemas: HedSchemas) {
     this.hedSchemas = hedSchemas
     this.tagMapping = hedSchemas.getSchema(tagSpec.library).entries.tags
     this.tagSpec = tagSpec
@@ -83,10 +77,10 @@ export default class TagConverter {
   /**
    * Retrieve the {@link SchemaTag} object for a tag specification.
    *
-   * @returns {[SchemaTag, string]} The schema's corresponding tag object and the remainder of the tag string.
+   * @returns The schema's corresponding tag object and the remainder of the tag string.
    * @throws {IssueError} If tag conversion fails.
    */
-  convert() {
+  public convert(): [SchemaTag, string] {
     let parentTag = undefined
     for (let tagLevelIndex = 0; tagLevelIndex < this.tagLevels.length; tagLevelIndex++) {
       if (parentTag?.valueTag) {
@@ -105,7 +99,7 @@ export default class TagConverter {
     return [this.schemaTag, this.remainder]
   }
 
-  _validateChildTag(parentTag, tagLevelIndex) {
+  private _validateChildTag(parentTag: SchemaTag | undefined, tagLevelIndex: number): SchemaTag {
     const childTag = this._getSchemaTag(tagLevelIndex)
     if (childTag === undefined) {
       // This is an extended tag
@@ -141,7 +135,7 @@ export default class TagConverter {
     return childTag
   }
 
-  _checkExtensions(tagLevelIndex) {
+  private _checkExtensions(tagLevelIndex: number): void {
     // A non-tag has been detected --- from here on must be non-tags.
     this._checkNameClass(tagLevelIndex) // This is an extension
     for (let index = tagLevelIndex + 1; index < this.tagLevels.length; index++) {
@@ -158,12 +152,12 @@ export default class TagConverter {
     }
   }
 
-  _getSchemaTag(tagLevelIndex) {
+  private _getSchemaTag(tagLevelIndex: number): SchemaTag {
     const tagLevel = this.tagLevels[tagLevelIndex].toLowerCase()
     return this.tagMapping.getEntry(tagLevel)
   }
 
-  _setSchemaTag(schemaTag, remainderStartLevelIndex) {
+  private _setSchemaTag(schemaTag: SchemaTag, remainderStartLevelIndex: number): void {
     if (this.schemaTag !== undefined) {
       return
     }
@@ -177,10 +171,10 @@ export default class TagConverter {
     }
   }
 
-  _checkNameClass(index) {
+  private _checkNameClass(index: number): void {
     // Check whether the tagLevel is a valid name class
     const valueClasses = this.hedSchemas.getSchema(this.tagSpec.library).entries.valueClasses
-    if (!valueClasses._definitions.get('nameClass').validateValue(this.tagLevels[index])) {
+    if (!valueClasses.definitions.get('nameClass').validateValue(this.tagLevels[index])) {
       IssueError.generateAndThrow('invalidExtension', {
         tag: this.tagLevels[index],
         parentTag: this.tagLevels.slice(0, index).join('/'),

@@ -207,6 +207,14 @@ export default class ParsedHedTag extends ParsedHedSubstring {
     return this.#normalized
   }
 
+  public get remainder(): string {
+    return this._remainder
+  }
+
+  public get value(): string {
+    return this._value
+  }
+
   /**
    * Override of {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString | Object.prototype.toString}.
    *

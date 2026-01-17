@@ -1,8 +1,12 @@
 /** This module holds the definition checker class.
  * @module parser/definitionChecker
  */
-import { generateIssue } from '../issues/issues'
+
+import type ParsedHedGroup from './parsedHedGroup'
+import type ParsedHedString from './parsedHedString'
+import type ParsedHedTag from './parsedHedTag'
 import { getTagListString } from './parseUtils'
+import { generateIssue, type Issue } from '../issues/issues'
 
 const DEFINITION_TAGS = new Set(['Definition', 'Def', 'Def-expand'])
 
@@ -10,10 +14,26 @@ const DEF_GROUP_TAGS = new Set(['Definition', 'Def-expand'])
 
 export class DefinitionChecker {
   /**
-   * Check Def-expand or Definition syntax for compatible tags and number of groups
-   * @param {ParsedHedString} hedString - A group to check for Def-expand syntax.
+   * The HED string being checked for definitions.
    */
-  constructor(hedString) {
+  private readonly hedString: ParsedHedString
+
+  /**
+   * The list of Definition tags.
+   */
+  private readonly definitionTags: ParsedHedTag[]
+
+  /**
+   * The list of definition group tags.
+   */
+  private readonly defs: ParsedHedTag[]
+
+  /**
+   * Check Def-expand or Definition syntax for compatible tags and number of groups.
+   *
+   * @param hedString - A group to check for Def-expand syntax.
+   */
+  public constructor(hedString: ParsedHedString) {
     this.hedString = hedString
     this.definitionTags = this.hedString.tags.filter((tag) => tag.schemaTag.name === 'Definition')
     this.defs = this.hedString.tags.filter((tag) => DEF_GROUP_TAGS.has(tag.schemaTag.name))
@@ -21,26 +41,31 @@ export class DefinitionChecker {
 
   /**
    * Do syntactical checks on Definition and Def-expand (without relying on presence of the definitions).
-   * @param {boolean} allowDefinitions - If False, definitions aren't allowed here at all.
-   * @returns {Issue[]} - list of issues when
+   *
+   * @param allowDefinitions - If False, definitions aren't allowed here at all.
+   * @returns List of issues when
    */
-  check(allowDefinitions) {
+  public check(allowDefinitions: boolean): Issue[] {
     // Definition checks are not relevant
     if (this.defs.length === 0) {
       return []
     }
 
-    // Check that the definitions appear where they are allowed and without anything else.
     const definitionIssues = this._checkDefinitionContext(allowDefinitions)
     if (definitionIssues.length > 0) {
       return definitionIssues
     }
 
-    // Check that the structure of the Definition and Def-expand groups are correct.
     return this._checkDefinitionStructure()
   }
 
-  _checkDefinitionContext(allowDefinitions) {
+  /**
+   * Check that the definitions appear where they are allowed and without anything else.
+   *
+   * @param allowDefinitions - Whether definitions are allowed in this context.
+   * @returns Any issues found.
+   */
+  private _checkDefinitionContext(allowDefinitions: boolean): Issue[] {
     // Definitions in a place where no definitions are allowed
     if (!allowDefinitions && this.definitionTags.length > 0) {
       return [
@@ -96,7 +121,12 @@ export class DefinitionChecker {
     return []
   }
 
-  _checkDefinitionStructure() {
+  /**
+   * Check that the structure of the Definition and Def-expand groups are correct.
+   *
+   * @returns Any issues found.
+   */
+  private _checkDefinitionStructure(): Issue[] {
     for (const topGroup of this.hedString.tagGroups) {
       // This group has no definition group tags so go on.
       if (!topGroup.allTags.some((tag) => !DEF_GROUP_TAGS.has(tag.schemaTag.name))) {
@@ -115,13 +145,13 @@ export class DefinitionChecker {
   }
 
   /**
-   * Check the group syntax for definition and def-expand requirements
-   * @param {ParsedHedGroup} group - The group to be checked.
-   * @param {boolean} isTopGroup - True if this is a top group.
-   * @returns {Issue[]} - Returns an issue list of there is an error in the definition structure.
-   * @private
+   * Check the group syntax for definition and def-expand requirements.
+   *
+   * @param group - The group to be checked.
+   * @param isTopGroup - True if this is a top group.
+   * @returns Any issues found in the group structure.
    */
-  _checkGroupSyntax(group, isTopGroup) {
+  private _checkGroupSyntax(group: ParsedHedGroup, isTopGroup: boolean): Issue[] {
     // If there are no definition or def-expand tags, no checks are needed.
     if (group.defExpandTags.length + group.definitionTags.length === 0) {
       return []
