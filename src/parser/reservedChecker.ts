@@ -1,57 +1,68 @@
 /** This module holds the class for encapsulating the rules for "Reserved" tags.
  * @module parser/reservedChecker
  */
-import reservedTags from '../data/json/reservedTags.json'
-import { generateIssue, IssueError } from '../issues/issues'
+
+import type ParsedHedGroup from './parsedHedGroup'
+import type ParsedHedString from './parsedHedString'
+import type ParsedHedTag from './parsedHedTag'
 import { getTagListString } from './parseUtils'
+import reservedTags from '../data/json/reservedTags.json'
+import { generateIssue, type Issue, IssueError } from '../issues/issues'
+
+type ReservedTagsType = typeof reservedTags
+type ReservedTagRequirement = ReservedTagsType[keyof ReservedTagsType]
 
 export class ReservedChecker {
   /**
    * Singleton instance of ReservedChecker.
-   * @type {ReservedChecker}
-   * @private
    */
-  static _instance = undefined
-  static reservedMap = new Map(Object.entries(reservedTags))
+  static #instance: ReservedChecker
 
-  constructor() {
-    if (ReservedChecker._instance) {
+  static reservedMap: Map<string, ReservedTagRequirement> = new Map(Object.entries(reservedTags))
+  reservedNames: Set<string>
+  requireValueTags: Set<string>
+  noExtensionTags: Set<string>
+  requiresDefTags: Set<string>
+  timelineTags: Set<string>
+
+  private constructor() {
+    if (ReservedChecker.#instance) {
       IssueError.generateAndThrowInternalError('Use ReservedChecker.getInstance() to get an instance of this class.')
     }
 
-    this._initializeReservedTags()
-  }
-
-  // Static method to control access to the singleton instance
-  static getInstance() {
-    if (!ReservedChecker._instance) {
-      ReservedChecker._instance = new ReservedChecker()
-    }
-    return ReservedChecker._instance
-  }
-
-  _initializeReservedTags() {
     this.reservedNames = new Set(ReservedChecker.reservedMap.keys())
-    this.requireValueTags = ReservedChecker._getReservedTagsByProperty('requireValue')
-    this.noExtensionTags = ReservedChecker._getReservedTagsByProperty('noExtension')
-    this.requiresDefTags = ReservedChecker._getReservedTagsByProperty('requiresDef')
-    this.timelineTags = ReservedChecker._getReservedTagsByProperty('requiresTimeline')
+    this.requireValueTags = this._getReservedTagsByProperty('requireValue')
+    this.noExtensionTags = this._getReservedTagsByProperty('noExtension')
+    this.requiresDefTags = this._getReservedTagsByProperty('requiresDef')
+    this.timelineTags = this._getReservedTagsByProperty('requiresTimeline')
   }
 
-  static _getReservedTagsByProperty(property) {
+  private _getReservedTagsByProperty(property: keyof ReservedTagsType['Definition']): Set<string> {
     return new Set(
       [...ReservedChecker.reservedMap.values()].filter((value) => value[property] === true).map((value) => value.name),
     )
   }
 
   /**
+   * Static method to control access to the singleton instance.
+   *
+   * @returns The singleton instance of this class.
+   */
+  public static getInstance(): ReservedChecker {
+    if (!ReservedChecker.#instance) {
+      ReservedChecker.#instance = new ReservedChecker()
+    }
+    return ReservedChecker.#instance
+  }
+
+  /**
    * Perform syntactical checks on the provided HED string to detect violations.
    *
-   * @param {ParsedHedString} hedString - The HED string to be checked.
-   * @param {boolean} fullValidation - If true, perform full validation; otherwise, perform a quick check.
-   * @returns {Issue[]} - An array of issues if violations are found otherwise, an empty array.
+   * @param hedString - The HED string to be checked.
+   * @param fullValidation - If true, perform full validation; otherwise, perform a quick check.
+   * @returns An array of issues if violations are found otherwise, an empty array.
    */
-  checkHedString(hedString, fullValidation) {
+  public checkHedString(hedString: ParsedHedString, fullValidation: boolean): Issue[] {
     const checks = [
       () => this.checkUnique(hedString),
       () => this.checkTagGroupLevels(hedString, fullValidation),
@@ -70,17 +81,17 @@ export class ReservedChecker {
   /**
    * Check for tags with the unique attribute.
    *
-   * @param {ParsedHedString} hedString - The HED string to be checked for tags with the unique attribute.
-   * @returns {Issue[]} An array of `Issue` objects if there are violations; otherwise, an empty array.
+   * @param hedString - The HED string to be checked for tags with the unique attribute.
+   * @returns An array of `Issue` objects if there are violations; otherwise, an empty array.
    */
-  checkUnique(hedString) {
+  checkUnique(hedString: ParsedHedString): Issue[] {
     const uniqueTags = hedString.tags.filter((tag) => tag.hasAttribute('unique'))
     const uniqueNames = new Set()
     for (const tag of uniqueTags) {
-      if (uniqueNames.has(tag.schemaTag._name)) {
+      if (uniqueNames.has(tag.schemaTag.name)) {
         return [generateIssue('multipleUniqueTags', { tag: tag.originalTag, string: hedString.hedString })]
       }
-      uniqueNames.add(tag.schemaTag._name)
+      uniqueNames.add(tag.schemaTag.name)
     }
     return []
   }
@@ -88,12 +99,12 @@ export class ReservedChecker {
   /**
    * Check whether tags are not in groups -- or top-level groups as required
    *
-   * @param {ParsedHedString} hedString - The HED string to be checked for reserved tag syntax.
-   * @param {boolean} fullValidation - If true, perform full validation; otherwise, perform a quick check.
-   * @returns {Issue[]} An array of `Issue` objects if there are violations; otherwise, an empty array.
+   * @param hedString - The HED string to be checked for reserved tag syntax.
+   * @param fullValidation - If true, perform full validation; otherwise, perform a quick check.
+   * @returns An array of `Issue` objects if there are violations; otherwise, an empty array.
    */
-  checkTagGroupLevels(hedString, fullValidation) {
-    const issues = []
+  checkTagGroupLevels(hedString: ParsedHedString, fullValidation: boolean): Issue[] {
+    const issues: Issue[] = []
     const topGroupTags = hedString.topLevelGroupTags
 
     // Check for top-level violations because tag is deep
@@ -128,12 +139,12 @@ export class ReservedChecker {
   /**
    * Check the group conditions of the reserved tags. The top-level has already been verified.
    *
-   * @param {ParsedHedString} hedString - The HED string to check for group conflicts.
-   * @returns {Issue[]} An array of `Issue` objects if there are violations; otherwise, an empty array.
+   * @param hedString - The HED string to check for group conflicts.
+   * @returns An array of `Issue` objects if there are violations; otherwise, an empty array.
    *
    * Notes: These include the number of groups and top tag compatibility in the group
    */
-  checkTopGroupRequirements(hedString) {
+  checkTopGroupRequirements(hedString: ParsedHedString): Issue[] {
     const issues = []
     for (const group of hedString.tagGroups) {
       const reservedTags = [...group.reservedTags.values()].flat()
@@ -151,11 +162,12 @@ export class ReservedChecker {
 
   /**
    * Check the group tag requirements of a reserved Tag.
-   * @param {ParsedHedGroup} group - The group to check for tag requirements.
-   * @param {ParsedHedTag} reservedTag - A top-level reserved tag in group.
-   * @returns {Issue[]} - Returns an issue if the group requirements for this tag are not met.
+   *
+   * @param group - The group to check for tag requirements.
+   * @param reservedTag - A top-level reserved tag in group.
+   * @returns Returns an issue if the group requirements for this tag are not met.
    */
-  _checkGroupRequirements(group, reservedTag) {
+  private _checkGroupRequirements(group: ParsedHedGroup, reservedTag: ParsedHedTag): Issue[] {
     // Check that groups with tags that require a definition, have one.
     if (group.requiresDefTag.length > 0 && group.defCount !== 1) {
       return [
@@ -177,13 +189,16 @@ export class ReservedChecker {
   /**
    * Verify that the tags in the group are allowed with the reserved tag.
    *
-   * @param {ParsedHedGroup} group - The enclosing tag group.
-   * @param {ParsedHedTag} reservedTag - The reserved tag whose tag requirements are to be checked.
-   * @param {Object} requirements - The requirements for this reserved tag.
-   * @returns {Issue[]} - Issues because
-   * @private
+   * @param group - The enclosing tag group.
+   * @param reservedTag - The reserved tag whose tag requirements are to be checked.
+   * @param requirements - The requirements for this reserved tag.
+   * @returns Any issues found.
    */
-  _checkAllowedTags(group, reservedTag, requirements) {
+  private _checkAllowedTags(
+    group: ParsedHedGroup,
+    reservedTag: ParsedHedTag,
+    requirements: ReservedTagRequirement,
+  ): Issue[] {
     // The allowed tag requirement isn't applicable
     if (requirements.otherAllowedNonDefTags === null || requirements.otherAllowedNonDefTags === undefined) {
       return []
@@ -221,13 +236,16 @@ export class ReservedChecker {
   /**
    * Verify the group conditions are satisfied for a reserved tag.
    *
-   * @param {ParsedHedGroup} group - The enclosing tag group.
-   * @param {ParsedHedTag} reservedTag - The reserved tag whose tag requirements are to be checked.
-   * @param {Object} requirements - The requirements for this reserved tag.
-   * @returns {Issue[]}
-   * @private
+   * @param group - The enclosing tag group.
+   * @param reservedTag - The reserved tag whose tag requirements are to be checked.
+   * @param requirements - The requirements for this reserved tag.
+   * @returns Any issues found.
    */
-  _checkAllowedGroups(group, reservedTag, requirements) {
+  private _checkAllowedGroups(
+    group: ParsedHedGroup,
+    reservedTag: ParsedHedTag,
+    requirements: ReservedTagRequirement,
+  ): Issue[] {
     // Proper Def and Def-expand count for a tag that requires a def is checked when group is created.
     let defAdjustment = 0
     if (group.defExpandChildren.length !== 0 && group.requiresDefTag.length > 0) {
@@ -246,14 +264,19 @@ export class ReservedChecker {
 
   /**
    * Verify that a group has the minimum required subgroups for its reserved tag.
-   * @param {ParsedHedGroup} group - The group to be checked.
-   * @param {ParsedHedTag} reservedTag - The reserved tags whose requirements are used.
-   * @param {Number | null} minLimit - The minimum number of non-def groups required or null if no requirement.
-   * @param {Number} defAdjustment - Either 0 or 1 depending on whether a def-expand is included.
-   * @returns {Issue[]} - Returns an issue list if the count requirement is violated.
-   * @private
+   *
+   * @param group - The group to be checked.
+   * @param reservedTag - The reserved tags whose requirements are used.
+   * @param minLimit - The minimum number of non-def groups required or null if no requirement.
+   * @param defAdjustment - Either 0 or 1 depending on whether a def-expand is included.
+   * @returns Returns an issue list if the count requirement is violated.
    */
-  _checkMinGroupCount(group, reservedTag, minLimit, defAdjustment) {
+  private _checkMinGroupCount(
+    group: ParsedHedGroup,
+    reservedTag: ParsedHedTag,
+    minLimit: number | null,
+    defAdjustment: number,
+  ): Issue[] {
     if (minLimit === null) {
       return []
     }
@@ -270,14 +293,15 @@ export class ReservedChecker {
     return []
   }
 
-  /** Verify that there are no group tags at the top level of the string.
+  /**
+   * Verify that there are no group tags at the top level of the string.
    *
-   * @param {ParsedHedString} hedString - The HED string to be checked.
-   * @returns {Issue[]} - Returns issue list if there are top level tags that are group tags.
+   * @param hedString - The HED string to be checked.
+   * @returns Returns issue list if there are top level tags that are group tags.
    */
-  checkNonTopGroups(hedString) {
+  checkNonTopGroups(hedString: ParsedHedString): Issue[] {
     const group_tags = hedString.tags.filter(
-      (tag) => ReservedChecker.hasGroupAttribute(tag) && tag in hedString.topLevelTags,
+      (tag) => ReservedChecker.hasGroupAttribute(tag) && hedString.topLevelTags.includes(tag),
     )
     if (group_tags.length > 0) {
       return [generateIssue('missingTagGroup', { tag: getTagListString(group_tags) })]
@@ -288,13 +312,12 @@ export class ReservedChecker {
   /**
    * Indicate whether a tag should be a top-level tag.
    *
-   * @param {ParsedHedTag} tag - HED tag to check for top-level requirements.
-   * @returns {boolean} If true, the tag is required to be at the top level.
+   * @param tag - HED tag to check for top-level requirements.
+   * @returns If true, the tag is required to be at the top level.
    *
    * Note: This check both the reserved requirements and the 'topLevelTagGroup' attribute in the schema.
-   *
    */
-  static hasTopLevelTagGroupAttribute(tag) {
+  static hasTopLevelTagGroupAttribute(tag: ParsedHedTag): boolean {
     return (
       tag.schemaTag.hasAttribute('topLevelTagGroup') ||
       (ReservedChecker.reservedMap.has(tag.schemaTag.name) &&
@@ -305,12 +328,12 @@ export class ReservedChecker {
   /**
    * Return a boolean indicating whether a tag is required to be in a tag group.
    *
-   * @param {ParsedHedTag} tag - The HED tag to be checked.
-   * @returns {boolean} If true, this indicates that tag must be in a tag group.
+   * @param tag - The HED tag to be checked.
+   * @returns If true, this indicates that tag must be in a tag group.
    *
    * Note:  This checks both reserved and schema tag requirements.
    */
-  static hasGroupAttribute(tag) {
+  static hasGroupAttribute(tag: ParsedHedTag): boolean {
     return tag.schemaTag.hasAttribute('tagGroup')
   }
 }

@@ -211,6 +211,10 @@ export default class ParsedHedTag extends ParsedHedSubstring {
     return this._remainder
   }
 
+  public get splitValue(): string {
+    return this._splitValue
+  }
+
   public get value(): string {
     return this._value
   }

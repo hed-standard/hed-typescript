@@ -3,7 +3,7 @@
  * @module
  */
 
-import { type RecursiveArray } from './types'
+import { type Bounds, type RecursiveArray } from './types'
 
 /**
  * Apply a function recursively to an array.
@@ -41,6 +41,6 @@ export function* iteratePairwiseCombinations<T>(array: T[]): Generator<[T, T]> {
  * @param value - A possible ordered pair of numbers.
  * @returns Whether the value is an ordered pair of number.
  */
-export function isNumberPair(value: unknown): value is [number, number] {
+export function isNumberPair(value: unknown): value is Bounds {
   return Array.isArray(value) && value.length === 2 && value.every((bound) => typeof bound === 'number')
 }

@@ -6,7 +6,7 @@ import ParsedHedColumnSplice from './parsedHedColumnSplice'
 import ParsedHedGroup from './parsedHedGroup'
 import type ParsedHedSubstring from './parsedHedSubstring'
 import ParsedHedTag from './parsedHedTag'
-import { ColumnSpliceSpec, type GroupSpec, HedStringTokenizer, TagSpec } from './tokenizer'
+import { ColumnSpliceSpec, type GroupSpec, HedStringTokenizer, SubstringSpec, TagSpec } from './tokenizer'
 import { generateIssue, type Issue, IssueError } from '../issues/issues'
 import { type HedSchemas } from '../schema/containers'
 import { recursiveMap } from '../utils/array'
@@ -91,7 +91,7 @@ export default class HedStringSplitter {
    * @param groupSpecs - The group specifications.
    * @returns A tuple representing the parsed HED tags and any issues found.
    */
-  private _createParsedTags(tagSpecs: TagSpec[], groupSpecs: GroupSpec): ParsedHedSubstring[] {
+  private _createParsedTags(tagSpecs: RecursiveArray<SubstringSpec>, groupSpecs: GroupSpec): ParsedHedSubstring[] {
     // Create tags from specifications
     const parsedTags = recursiveMap(tagSpecs, (tagSpec) => this._createParsedTag(tagSpec))
 
@@ -105,7 +105,7 @@ export default class HedStringSplitter {
    * @param tagSpec - The tag or column splice specification.
    * @returns The parsed tag or column splice spec, or null if the tag parsing generated an error.
    */
-  private _createParsedTag(tagSpec: TagSpec | ColumnSpliceSpec): ParsedHedTag | ParsedHedColumnSplice | null {
+  private _createParsedTag(tagSpec: SubstringSpec): ParsedHedTag | ParsedHedColumnSplice | null {
     if (tagSpec instanceof TagSpec) {
       try {
         return new ParsedHedTag(tagSpec, this.hedSchemas)
