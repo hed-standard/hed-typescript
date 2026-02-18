@@ -114,8 +114,7 @@ export class Event {
 }
 
 export class EventManager {
-  static TOLERANCE = 1e-7
-  constructor() {}
+  static readonly TOLERANCE = 1e-7
 
   /**
    * Create a list of temporal events from BIDS elements.

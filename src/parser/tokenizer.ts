@@ -535,17 +535,17 @@ export class HedStringTokenizer {
    */
   private _checkForBadPlaceholderIssues(): string {
     const tokenSplit = this.state.currentToken.split(CHARACTERS.PLACEHOLDER)
-    let msg = ''
     if (tokenSplit.length === 1) {
-      msg = ''
+      return ''
     } else if (tokenSplit.length > 2) {
-      msg = `${tokenSplit.length - 1} placeholders found, but only one is allowed.`
+      return `${tokenSplit.length - 1} placeholders found, but only one is allowed.`
     } else if (!tokenSplit[0].endsWith(CHARACTERS.SLASH)) {
-      msg = 'A placeholder must be preceded by a slash in the tag.'
-    } else if (tokenSplit[1].trim().length > 0 && tokenSplit[1][0] !== CHARACTERS.BLANK) {
-      msg = 'Units following a placeholder must be preceded by a blank space.'
+      return 'A placeholder must be preceded by a slash in the tag.'
+    } else if (tokenSplit[1].trim().length > 0 && !tokenSplit[1].startsWith(CHARACTERS.BLANK)) {
+      return 'Units following a placeholder must be preceded by a blank space.'
+    } else {
+      return ''
     }
-    return msg
   }
 
   /**

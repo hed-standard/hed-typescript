@@ -18,12 +18,12 @@ export class ReservedChecker {
    */
   static #instance: ReservedChecker
 
-  static reservedMap: Map<string, ReservedTagRequirement> = new Map(Object.entries(reservedTags))
-  reservedNames: Set<string>
-  requireValueTags: Set<string>
-  noExtensionTags: Set<string>
-  requiresDefTags: Set<string>
-  timelineTags: Set<string>
+  static readonly reservedMap: Map<string, ReservedTagRequirement> = new Map(Object.entries(reservedTags))
+  readonly reservedNames: Set<string>
+  readonly requireValueTags: Set<string>
+  readonly noExtensionTags: Set<string>
+  readonly requiresDefTags: Set<string>
+  readonly timelineTags: Set<string>
 
   private constructor() {
     if (ReservedChecker.#instance) {
@@ -253,7 +253,7 @@ export class ReservedChecker {
     }
 
     // Check the group does not have more than the maximum allowed subgroups.
-    const maxLimit = requirements.maxNonDefSubgroups != null ? requirements.maxNonDefSubgroups : Infinity
+    const maxLimit = requirements.maxNonDefSubgroups ?? Infinity
     if (group.topGroups.length - defAdjustment > maxLimit) {
       return [generateIssue('invalidNumberOfSubgroups', { tag: reservedTag.originalTag, string: group.originalTag })]
     }
