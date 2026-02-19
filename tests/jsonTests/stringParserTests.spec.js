@@ -1,5 +1,4 @@
-import chai from 'chai'
-const assert = chai.assert
+import { assert } from 'chai'
 import { beforeAll, describe, afterAll, it } from '@jest/globals'
 import path from 'node:path'
 

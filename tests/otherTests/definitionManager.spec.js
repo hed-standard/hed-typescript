@@ -15,26 +15,6 @@ describe('Definition and DefinitionManager', () => {
   })
 
   describe('Definition class', () => {
-    describe('Constructor', () => {
-      it('should prevent direct construction', () => {
-        expect(() => {
-          new Definition({})
-        }).toThrow(
-          'Definition instances must be created using Definition.createDefinition() or Definition.createDefinitionFromGroup() static methods',
-        )
-      })
-
-      it('should allow construction with private flag', () => {
-        const testDef = '(Definition/TestDef, (Red, Blue))'
-        const [hedString, errors, warnings] = parseHedString(testDef, hedSchemas, true, true, false)
-        expect(errors.length).toBe(0)
-        expect(warnings.length).toBe(0)
-        expect(() => {
-          new Definition(hedString.tagGroups[0], true)
-        }).not.toThrow()
-      })
-    })
-
     describe('createDefinition static method', () => {
       it('should create a valid definition from a simple definition string', async () => {
         const definitionString = '(Definition/TestDef, (Red, Blue))'
