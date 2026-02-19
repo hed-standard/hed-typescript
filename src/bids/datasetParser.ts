@@ -107,7 +107,7 @@ export abstract class BidsFileAccessor<FileType> {
     )
     this.organizedPaths = organizedPaths
 
-    const newFileMap = new Map()
+    const newFileMap = new Map<string, FileType>()
     for (const candidate of candidates) {
       newFileMap.set(candidate, fileMap.get(candidate))
     }
@@ -180,7 +180,7 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
       IssueError.generateAndThrowInternalError('Must have a non-empty dataset root directory path.')
     }
     const resolvedDatasetRoot = path.resolve(datasetRootDirectory)
-    const fileMap = new Map()
+    const fileMap = new Map<string, string>()
     await BidsDirectoryAccessor._readDirRecursive(resolvedDatasetRoot, resolvedDatasetRoot, fileMap)
     return new BidsDirectoryAccessor(resolvedDatasetRoot, fileMap)
   }

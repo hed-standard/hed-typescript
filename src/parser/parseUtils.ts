@@ -4,7 +4,7 @@
  */
 
 import ParsedHedTag from './parsedHedTag'
-import { type Constructor } from '../utils/types'
+import { type Constructor, instanceOfConstructor } from '../utils/types'
 
 /**
  * Extract the items of a specified subtype from a list of ParsedHedSubstring.
@@ -13,8 +13,8 @@ import { type Constructor } from '../utils/types'
  * @param classType - The class type to filter by.
  * @returns A list of objects of the specified subclass of ParsedHedSubstring.
  */
-export function filterByClass<C>(items: any[], classType: Constructor<C>): C[] {
-  return items?.filter((item) => item instanceof classType) ?? []
+export function filterByClass<C>(items: unknown[], classType: Constructor<C>): C[] {
+  return items?.filter((item) => instanceOfConstructor(item, classType)) ?? []
 }
 
 /**
@@ -129,7 +129,7 @@ export function cleanupEmpties(stringIn: string): string {
     result = result.replace(emptyParensRegEx, '')
 
     // Step 2: Remove redundant parentheses containing only commas/spaces
-    result = result.replace(redundantParensRegEx, (match, group1) => {
+    result = result.replace(redundantParensRegEx, (match, group1: string) => {
       return /^[,\s()]*$/.test(group1) ? '' : `(${group1.replace(/^\s*,|,\s*$/g, '').trim()})`
     })
 

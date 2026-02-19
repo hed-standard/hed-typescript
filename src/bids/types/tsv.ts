@@ -5,7 +5,7 @@
 
 import isPlainObject from 'lodash/isPlainObject'
 
-import { BidsFile } from './file'
+import { BidsFile, type FilePath } from './file'
 import { convertParsedTSVData, parseTSV, type OldParsedTSV, type ParsedTSV } from '../tsvParser'
 import { BidsSidecar } from './json'
 import BidsHedTsvValidator from '../validator/tsvValidator'
@@ -43,9 +43,9 @@ export class BidsTsvFile extends BidsFile {
    */
   constructor(
     name: string,
-    file: any,
+    file: FilePath,
     tsvData: string | ParsedTSV | OldParsedTSV,
-    mergedDictionary: Record<string, any> = {},
+    mergedDictionary: Record<string, unknown> = {},
     defManager: DefinitionManager = null,
   ) {
     super(name, file, BidsHedTsvValidator)
@@ -62,7 +62,7 @@ export class BidsTsvFile extends BidsFile {
    * @param file - The Object representing this file data.
    * @returns The parsed TSV data.
    */
-  private _parseTsv(tsvData: string | ParsedTSV | OldParsedTSV, file: any): ParsedTSV {
+  private _parseTsv(tsvData: string | ParsedTSV | OldParsedTSV, file: FilePath): ParsedTSV {
     if (typeof tsvData === 'string') {
       return parseTSV(tsvData)
     } else if (tsvData instanceof Map) {
@@ -125,7 +125,7 @@ export class BidsTsvElement {
   /**
    * The file this element belongs to (usually just the path).
    */
-  public readonly file: any
+  public readonly file: FilePath
 
   /**
    * The name of the file this element belongs to (usually just the path).

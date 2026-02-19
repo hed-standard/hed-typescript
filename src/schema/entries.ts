@@ -657,7 +657,7 @@ export class SchemaTag extends SchemaEntryWithAttributes {
    * @returns Whether the field is set (never returns true).
    * @throws {IssueError} If the field is already set.
    */
-  private _isPrivateFieldSet(field: any, fieldName: string): boolean {
+  private _isPrivateFieldSet(field: unknown, fieldName: string): boolean {
     if (field !== undefined) {
       IssueError.generateAndThrowInternalError(
         `Attempted to set ${fieldName} for schema tag ${this.longName} when it already has one.`,

@@ -485,7 +485,7 @@ export function getMergedSidecarData(
     }
     acc.get(dir).push(xpath)
     return acc
-  }, new Map())
+  }, new Map<string, string[]>())
 
   for (const [dir, sidecarsInDir] of groupedByDir.entries()) {
     if (sidecarsInDir.length > 1) {

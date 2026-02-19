@@ -254,7 +254,7 @@ export class ReservedChecker {
     }
 
     // Check the group does not have more than the maximum allowed subgroups.
-    const maxLimit = requirements.maxNonDefSubgroups ?? Infinity
+    const maxLimit: number = requirements.maxNonDefSubgroups ?? Infinity
     if (group.topGroups.length - defAdjustment > maxLimit) {
       return [generateIssue('invalidNumberOfSubgroups', { tag: reservedTag.originalTag, string: group.originalTag })]
     }

@@ -13,9 +13,20 @@ export type Constructor<Type> = {
 }
 
 /**
+ * Determine whether an object is an instance of a given constructor.
+ *
+ * @param object - An object.
+ * @param constructor - A constructor.
+ * @returns Whether the object is an instance of the constructor.
+ */
+export function instanceOfConstructor<Type>(object: unknown, constructor: Constructor<Type>): object is Type {
+  return object instanceof constructor
+}
+
+/**
  * A generic recursive array type.
  */
-export interface RecursiveArray<Type> extends Array<Type | RecursiveArray<Type>> {}
+export type RecursiveArray<Type> = Array<Type | RecursiveArray<Type>>
 
 /**
  * A value returned alongside an Issue array.

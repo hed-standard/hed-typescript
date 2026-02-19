@@ -124,7 +124,7 @@ export default class PartneredSchemaMerger {
    */
   private _copyTagToSchema(tag: SchemaTag): void {
     const booleanAttributes = new Set<SchemaAttribute>()
-    const valueAttributes = new Map<SchemaAttribute, any>()
+    const valueAttributes = new Map<SchemaAttribute, string[]>()
 
     for (const attribute of tag.booleanAttributes) {
       booleanAttributes.add(this.destination.entries.attributes.getEntry(attribute.name) ?? attribute)

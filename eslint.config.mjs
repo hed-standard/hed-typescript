@@ -147,6 +147,7 @@ export default defineConfig([
       'no-unmodified-loop-condition': 'warn',
       'no-unreachable-loop': 'error',
       'no-unused-private-class-members': 'error',
+      '@typescript-eslint/require-await': 'off',
 
       'prefer-arrow-callback': [
         'error',

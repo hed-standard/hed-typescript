@@ -212,7 +212,7 @@ export class BidsHedTsvValidator extends BidsValidator {
    * @returns Map of onset value to a list of elements with that onset.
    */
   private _getOnsetMap(elements: BidsTsvElement[]): Map<string, BidsTsvElement[]> {
-    const onsetMap = new Map()
+    const onsetMap = new Map<string, BidsTsvElement[]>()
     for (const element of elements) {
       if (!element.hedString) {
         continue
@@ -473,7 +473,7 @@ export class BidsHedTsvParser {
    * @returns The fully resolved HED string with no splices.
    */
   private _replaceSplices(unspliced: string, columnMap: Map<string, string>): string {
-    const result = unspliced.replace(BidsHedTsvParser.braceRegEx, (match, content) => {
+    const result = unspliced.replace(BidsHedTsvParser.braceRegEx, (match, content: string) => {
       // Resolve the replacement value
       const resolved = columnMap.has(content) ? columnMap.get(content) : ''
       // Replace with resolved value or empty string if in nullSet

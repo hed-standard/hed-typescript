@@ -12,6 +12,11 @@ type BidsValidatorConstructor = {
   new (file: BidsFile, schemas: HedSchemas): BidsValidator
 }
 
+export interface FilePath {
+  name?: string
+  path?: string
+}
+
 /**
  * A BIDS file.
  */
@@ -25,7 +30,7 @@ export abstract class BidsFile {
    * The Object representing this file data.
    * This is used to generate {@link BidsHedIssue} objects.
    */
-  public readonly file: any
+  public readonly file: FilePath
 
   /**
    * The validator class used to validate this file.
@@ -39,7 +44,7 @@ export abstract class BidsFile {
    * @param file - The Object representing this file data.
    * @param validatorClass - The validator class used to validate this file.
    */
-  protected constructor(name: string, file: any, validatorClass: BidsValidatorConstructor) {
+  protected constructor(name: string, file: FilePath, validatorClass: BidsValidatorConstructor) {
     this.name = name
     this.file = file
     this.#validatorClass = validatorClass

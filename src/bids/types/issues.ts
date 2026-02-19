@@ -3,8 +3,11 @@
  * @module bids/types/issues
  */
 
+import { cloneDeep } from 'lodash'
+
 import { generateIssue, type Issue, IssueError, type IssueParameters } from '../../issues/issues'
 import { type IssueLevel } from '../../issues/data'
+import { type FilePath } from './file'
 
 type BidsIssueCode = 'HED_ERROR' | 'HED_WARNING' | 'INTERNAL_ERROR'
 
@@ -18,7 +21,7 @@ export class BidsHedIssue {
   /**
    * The file associated with this issue.
    */
-  public readonly file: any
+  public readonly file: FilePath
 
   /**
    * The underlying HED issue object.
@@ -63,7 +66,7 @@ export class BidsHedIssue {
    * @param hedIssue - The HED issue object to be wrapped.
    * @param file - The file object associated with this issue.
    */
-  public constructor(hedIssue: Issue, file: any) {
+  public constructor(hedIssue: Issue, file: FilePath) {
     this.hedIssue = hedIssue
     this.file = file
 
@@ -140,7 +143,7 @@ export class BidsHedIssue {
       }
       const firstIssue = issueList[0]
       // Deep copy the HED issue object to avoid modifying the original.
-      const hedIssueCopy = JSON.parse(JSON.stringify(firstIssue.hedIssue))
+      const hedIssueCopy = cloneDeep(firstIssue.hedIssue)
       const newIssue = new BidsHedIssue(hedIssueCopy, firstIssue.file)
 
       const numErrors = issueList.length
@@ -196,7 +199,7 @@ export class BidsHedIssue {
    */
   public static fromHedIssues(
     hedIssues: Error | Issue[],
-    file: object,
+    file: FilePath,
     extraParameters: IssueParameters = {},
   ): BidsHedIssue[] {
     if (hedIssues instanceof IssueError) {
@@ -218,7 +221,7 @@ export class BidsHedIssue {
    * @param extraParameters - Any extra parameters to inject into the {@link Issue} object.
    * @returns The BIDS-compatible issue.
    */
-  public static fromHedIssue(hedIssue: Issue, file: object, extraParameters: IssueParameters = {}): BidsHedIssue {
+  public static fromHedIssue(hedIssue: Issue, file: FilePath, extraParameters: IssueParameters = {}): BidsHedIssue {
     hedIssue.addParameters(extraParameters)
     return new BidsHedIssue(hedIssue, file)
   }
@@ -230,7 +233,7 @@ export class BidsHedIssue {
    * @param file - A BIDS-format file object used to generate {@link BidsHedIssue} objects.
    * @returns An array of BIDS-compatible issues.
    */
-  public static transformToBids(issues: Array<BidsHedIssue | Error>, file: object = null): BidsHedIssue[] {
+  public static transformToBids(issues: Array<BidsHedIssue | Error>, file: FilePath = null): BidsHedIssue[] {
     return issues.map((issue) => {
       if (issue instanceof BidsHedIssue) {
         return issue

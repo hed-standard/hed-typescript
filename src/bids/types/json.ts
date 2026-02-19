@@ -7,7 +7,7 @@ import isPlainObject from 'lodash/isPlainObject'
 
 import { parseHedString } from '../../parser/parser'
 import ParsedHedString from '../../parser/parsedHedString'
-import { BidsFile } from './file'
+import { BidsFile, type FilePath } from './file'
 import BidsHedSidecarValidator from '../validator/sidecarValidator'
 import { IssueError, addIssueParameters, type Issue } from '../../issues/issues'
 import { DefinitionManager, Definition } from '../../parser/definitionManager'
@@ -36,7 +36,7 @@ export class BidsJsonFile extends BidsFile {
    * @param file - The file object representing this file.
    * @param jsonData - The JSON data for this file.
    */
-  public constructor(name: string, file: object, jsonData: Record<string, unknown>) {
+  public constructor(name: string, file: FilePath, jsonData: Record<string, unknown>) {
     super(name, file, BidsHedSidecarValidator)
     this.jsonData = jsonData
   }
@@ -103,7 +103,7 @@ export class BidsSidecar extends BidsJsonFile {
    */
   public constructor(
     name: string,
-    file: object,
+    file: FilePath,
     sidecarData: Record<string, unknown> = {},
     defManager: DefinitionManager | null = null,
   ) {
@@ -377,7 +377,7 @@ export class BidsSidecarKey {
     } else if (!isPlainObject(data)) {
       IssueError.generateAndThrow('illegalSidecarHedType', { sidecarKey: key, filePath: sidecar?.file?.path })
     } else {
-      this.categoryMap = new Map(Object.entries(data))
+      this.categoryMap = new Map<string, string>(Object.entries(data))
     }
   }
 
@@ -427,7 +427,7 @@ export class BidsSidecarKey {
    * @returns A list of error issues and warning issues.
    */
   private _parseCategory(hedSchemas: HedSchemas, fullValidation: boolean): [Issue[], Issue[]] {
-    this.parsedCategoryMap = new Map()
+    this.parsedCategoryMap = new Map<string, ParsedHedString>()
     const errors = []
     const warnings = []
 

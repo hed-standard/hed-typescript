@@ -7,6 +7,7 @@ import type ParsedHedGroup from './parsedHedGroup'
 import { BidsHedIssue } from '../bids/types/issues'
 import { type BidsTsvElement } from '../bids/types/tsv'
 import { generateIssue } from '../issues/issues'
+import { FilePath } from '../bids/types/file'
 
 export class Event {
   /**
@@ -32,7 +33,7 @@ export class Event {
   /**
    * The file this element belongs to (usually just the path).
    */
-  readonly file: any
+  readonly file: FilePath
 
   /**
    * The line number(s) (including the header) represented by this element.
@@ -124,7 +125,7 @@ export class EventManager {
    * @returns A tuple with the parsed event and any issues.
    */
   public parseEvents(elements: BidsTsvElement[]): [Event[], BidsHedIssue[]] {
-    const eventList = []
+    const eventList: Event[] = []
     for (const element of elements) {
       if (!element.parsedHedString) {
         continue
@@ -145,7 +146,7 @@ export class EventManager {
   }
 
   public validate(eventList: Event[]): BidsHedIssue[] {
-    const currentMap = new Map()
+    const currentMap = new Map<string, Event>()
     for (const event of eventList) {
       if (!currentMap.has(event.defName)) {
         if (event.type === 'Offset' || event.type === 'Inset') {

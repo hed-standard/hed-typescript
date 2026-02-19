@@ -201,7 +201,7 @@ export class BidsDataset<FileType> {
               sidecarIssues.push(
                 BidsHedIssue.fromHedIssue(
                   generateIssue('fileReadError', { filename: `${jsonPath}`, message: `${errorMessage}` }),
-                  { file: jsonPath, name: fileName },
+                  { path: jsonPath, name: fileName },
                 ),
               )
               return sidecarIssues
