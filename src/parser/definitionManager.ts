@@ -1,4 +1,5 @@
-/** This module holds classes to encapsulate and manage HED definitions.
+/**
+ * This module holds classes to encapsulate and manage HED definitions.
  * @module parser/definitionManager
  */
 

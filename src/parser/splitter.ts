@@ -1,4 +1,5 @@
-/** This module holds the classes for basic splitting of HED strings.
+/**
+ * This module holds the classes for basic splitting of HED strings.
  * @module parser/splitter
  */
 

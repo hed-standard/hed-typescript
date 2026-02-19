@@ -1,13 +1,15 @@
-/** This module holds the classes for initializing and building schemas.
+/**
+ * This module holds the classes for initializing and building schemas.
  * @module schema/init
  */
+
 import zip from 'lodash/zip'
 
 import loadSchema from './loader'
 import SchemaParser from './parser'
 import PartneredSchemaMerger from './schemaMerger'
 import { HedSchema, PrimarySchema, HedSchemas } from './containers'
-import { IssueError } from '../issues/issues'
+import { type IssueError } from '../issues/issues'
 import { splitStringTrimAndRemoveBlanks } from '../utils/string'
 import { SchemasSpec } from './specs'
 import { type HedSchemaXMLObject } from './xmlType'
@@ -15,7 +17,7 @@ import { type HedSchemaXMLObject } from './xmlType'
 /**
  * Build a schema collection object from a schema specification.
  *
- * @param schemaSpecs The description of which schemas to use.
+ * @param schemaSpecs - The description of which schemas to use.
  * @returns The schema container object and any issues found.
  */
 export async function buildSchemas(schemaSpecs: SchemasSpec): Promise<HedSchemas> {
@@ -36,7 +38,7 @@ export async function buildSchemas(schemaSpecs: SchemasSpec): Promise<HedSchemas
 /**
  * Build HED schemas from a version specification string.
  *
- * @param hedVersionString The HED version specification string (can contain comma-separated versions).
+ * @param hedVersionString - The HED version specification string (can contain comma-separated versions).
  * @returns A Promise that resolves to the built schemas.
  * @throws {IssueError} If the schema specification is invalid or schemas cannot be built.
  */
@@ -50,7 +52,7 @@ export async function buildSchemasFromVersion(hedVersionString?: string): Promis
 /**
  * Build a single merged schema container object from one or more XML files.
  *
- * @param xmlData The schemas' XML data.
+ * @param xmlData - The schemas' XML data.
  * @returns The HED schema object.
  */
 function buildSchemaObjects(xmlData: HedSchemaXMLObject[]): HedSchema {
@@ -65,7 +67,7 @@ function buildSchemaObjects(xmlData: HedSchemaXMLObject[]): HedSchema {
 /**
  * Build a single schema container object from an XML file.
  *
- * @param xmlData The schema's XML data
+ * @param xmlData - The schema's XML data.
  * @returns The HED schema object.
  */
 function buildSchemaObject(xmlData: HedSchemaXMLObject): PrimarySchema {

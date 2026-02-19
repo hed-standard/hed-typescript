@@ -34,7 +34,7 @@ class ParsedBidsFilename {
   /**
    * Whether this file name is equivalent to another one.
    *
-   * @param other Another parsed BIDS file name.
+   * @param other - Another parsed BIDS file name.
    * @returns Whether or not the two names are equivalent.
    */
   public equals(other: ParsedBidsFilename): boolean {
@@ -44,7 +44,7 @@ class ParsedBidsFilename {
   /**
    * Whether this file name is a subset of another one.
    *
-   * @param other Another parsed BIDS file name.
+   * @param other - Another parsed BIDS file name.
    * @returns Whether or not this file name is a subset of the other one.
    */
   private _isSubset(other: ParsedBidsFilename): boolean {
@@ -78,7 +78,7 @@ class OrganizedBidsCandidates {
   /**
    * Initialize the organized paths map.
    *
-   * @param keys The keys to initialize the map with.
+   * @param keys - The keys to initialize the map with.
    * @returns The initialized map.
    */
   constructor(keys: string[]) {
@@ -98,9 +98,9 @@ class OrganizedBidsCandidates {
   /**
    * Add a candidate.
    *
-   * @param relativePath The candidate's relative path.
-   * @param suffix The candidate's suffix.
-   * @param ext The candidate's extension.
+   * @param relativePath - The candidate's relative path.
+   * @param suffix - The candidate's suffix.
+   * @param ext - The candidate's extension.
    */
   public addCandidate(relativePath: string, suffix: string, ext: string): void {
     this.candidates.push(relativePath)
@@ -113,18 +113,22 @@ class BidsPathOrganizer {
    * A list of relative file paths to organize.
    */
   private readonly relativeFilePaths: string[]
+
   /**
    * A list of filename suffixes to categorize by (e.g., 'events').
    */
   private readonly suffixes: string[]
+
   /**
    * A list of special directory names (e.g., 'phenotype').
    */
   private readonly specialDirs: string[]
+
   /**
    * The relative file paths organized according to BIDS naming conventions.
    */
   private readonly candidates: OrganizedBidsCandidates
+
   /**
    * Whether the candidates have already been organized.
    * @private
@@ -134,9 +138,9 @@ class BidsPathOrganizer {
   /**
    * Build the organizer.
    *
-   * @param relativeFilePaths A list of relative file paths to organize.
-   * @param suffixes A list of filename suffixes to categorize by (e.g., 'events').
-   * @param specialDirs A list of special directory names (e.g., 'phenotype').
+   * @param relativeFilePaths - A list of relative file paths to organize.
+   * @param suffixes - A list of filename suffixes to categorize by (e.g., 'events').
+   * @param specialDirs - A list of special directory names (e.g., 'phenotype').
    */
   constructor(relativeFilePaths: string[], suffixes: string[], specialDirs: string[]) {
     this.relativeFilePaths = relativeFilePaths
@@ -147,8 +151,9 @@ class BidsPathOrganizer {
   }
 
   /**
-   * Organizes a list of relative file paths based on BIDS naming conventions.
+   * Organize a list of relative file paths based on BIDS naming conventions.
    *
+   * @remarks
    * This function filters and categorizes file paths into a structured object. It identifies files
    * based on whether they are in special directories (like 'phenotype'), are top-level files, or
    * are located within subject-specific directories ('sub-xxx').
@@ -180,7 +185,7 @@ class BidsPathOrganizer {
   /**
    * Helper function for organizing an individual path.
    *
-   * @param relativePath A relative file path to organize.
+   * @param relativePath - A relative file path to organize.
    */
   private _organizePath(relativePath: string): void {
     const pathParts = relativePath.split('/')
@@ -213,8 +218,9 @@ class BidsPathOrganizer {
 }
 
 /**
- * Organizes a list of relative file paths based on BIDS naming conventions.
+ * Organize a list of relative file paths based on BIDS naming conventions.
  *
+ * @remarks
  * This function filters and categorizes file paths into a structured object. It identifies files
  * based on whether they are in special directories (like 'phenotype'), are top-level files, or
  * are located within subject-specific directories ('sub-xxx').
@@ -223,9 +229,9 @@ class BidsPathOrganizer {
  * 'participants') or by their presence in a special directory. Only files with '.tsv' or '.json'
  * extensions are considered.
  *
- * @param relativeFilePaths A list of relative file paths to organize.
- * @param suffixes A list of filename suffixes to categorize by (e.g., 'events').
- * @param specialDirs A list of special directory names (e.g., 'phenotype').
+ * @param relativeFilePaths - A list of relative file paths to organize.
+ * @param suffixes - A list of filename suffixes to categorize by (e.g., 'events').
+ * @param specialDirs - A list of special directory names (e.g., 'phenotype').
  * @returns The relative file paths organized according to BIDS naming conventions.
  */
 export function organizePaths(
@@ -238,8 +244,9 @@ export function organizePaths(
 }
 
 /**
- * Checks if one path is a subpath of another.
+ * Check if one path is a subpath of another.
  *
+ * @remarks
  * This function normalizes the input paths before comparison. Normalization includes:
  * - Converting null or undefined to an empty string.
  * - Replacing a single dot ('.') with an empty string.
@@ -250,8 +257,8 @@ export function organizePaths(
  * If the normalized parent path is an empty string (e.g., from '.', './', or '/'),
  * any non-empty child path is considered a subpath.
  *
- * @param potentialChild The path to check if it's a subpath.
- * @param potentialParent The path to check if it's a parent.
+ * @param potentialChild - The path to check if it's a subpath.
+ * @param potentialParent - The path to check if it's a parent.
  * @returns True if potentialChild is a subpath of potentialParent, false otherwise.
  */
 export function isSubpath(
@@ -296,10 +303,10 @@ export function isSubpath(
 }
 
 /**
- * Updates the entity dictionary with a new entity.
+ * Update the entity dictionary with a new entity.
  *
- * @param nameDict The dictionary of BIDS filename parts.
- * @param entity The entity string to parse and add.
+ * @param nameDict - The dictionary of BIDS filename parts.
+ * @param entity - The entity string to parse and add.
  */
 function _updateEntity(nameDict: ParsedBidsFilename, entity: string): void {
   const parts = entity.split('-')
@@ -313,7 +320,7 @@ function _updateEntity(nameDict: ParsedBidsFilename, entity: string): void {
 /**
  * Split a filename into BIDS-relevant components.
  *
- * @param filePath Path to be parsed.
+ * @param filePath - Path to be parsed.
  * @returns An object containing the parts of the BIDS filename.
  */
 export function parseBidsFilename(filePath: string): ParsedBidsFilename {
@@ -376,7 +383,7 @@ export function parseBidsFilename(filePath: string): ParsedBidsFilename {
 /**
  * Get the directory part of a path.
  *
- * @param path The path.
+ * @param path - The path.
  * @returns The directory part of the path.
  */
 export function getDir(path: string): string {
@@ -387,9 +394,9 @@ export function getDir(path: string): string {
 /**
  * Filter a list of JSON sidecar paths to find candidates for a given TSV file.
  *
- * @param jsonList A list of relative paths of JSON sidecars.
- * @param tsvDir The directory of the TSV file.
- * @param tsvParsed The parsed BIDS filename of the TSV file.
+ * @param jsonList - A list of relative paths of JSON sidecars.
+ * @param tsvDir - The directory of the TSV file.
+ * @param tsvParsed - The parsed BIDS filename of the TSV file.
  * @returns A list of candidate JSON sidecar paths.
  */
 export function _getCandidates(jsonList: string[], tsvDir: string, tsvParsed: ParsedBidsFilename): string[] {
@@ -424,7 +431,7 @@ export function _getCandidates(jsonList: string[], tsvDir: string, tsvParsed: Pa
  *
  * The sorting is done based on path depth and number of entities.
  *
- * @param candidates A list of candidate JSON sidecar paths.
+ * @param candidates - A list of candidate JSON sidecar paths.
  */
 export function _sortCandidates(candidates: string[]): void {
   candidates.sort((a, b) => {
@@ -442,6 +449,7 @@ export function _sortCandidates(candidates: string[]): void {
 /**
  * Get the merged sidecar for a given TSV file.
  *
+ * @remarks
  * This function implements the BIDS inheritance principle for sidecar files.
  * It finds all applicable sidecars for a given TSV file, sorts them by specificity,
  * checks for conflicts, and then merges them.
@@ -450,9 +458,9 @@ export function _sortCandidates(candidates: string[]): void {
  *
  * Note: This function should not be called for files in directories with special association rules such as 'phenotype'.
  *
- * @param tsvPath The path to the TSV file.
- * @param jsonList A list of relative paths of JSON sidecars.
- * @param sidecarMap A map of sidecars.
+ * @param tsvPath - The path to the TSV file.
+ * @param jsonList - A list of relative paths of JSON sidecars.
+ * @param sidecarMap - A map of sidecars.
  * @returns The merged sidecar data.
  * @throws {IssueError} If a BIDS inheritance conflict is detected.
  */
@@ -500,13 +508,14 @@ export function getMergedSidecarData(
 /**
  * Tests that sidecar files in the same directory do not have conflicting inheritance relationships.
  *
+ * @remarks
  * In BIDS inheritance, sidecar files must be hierarchically related - one must be a
  * subset of another in terms of entities. This function validates that no two sidecars
  * in the same directory have conflicting inheritance relationships (i.e., neither is
  * a subset of the other, or both are subsets of each other).
  *
- * @param dir The directory path being tested
- * @param sidecarsInDir Array of sidecar filenames in the directory
+ * @param dir - The directory path being tested
+ * @param sidecarsInDir - Array of sidecar filenames in the directory
  * @throws {IssueError} Throws an error if any two sidecars are hierarchically related
  */
 function _testSameDir(dir: string, sidecarsInDir: string[]): void {
@@ -524,8 +533,8 @@ function _testSameDir(dir: string, sidecarsInDir: string[]): void {
 /**
  * A generator function that yields the paths of a given file extension from a BIDS-style organized path mapping.
  *
- * @param organizedPaths A BIDS-style organized path mapping.
- * @param targetExtension The file extension to search for (e.g., '.json').
+ * @param organizedPaths - A BIDS-style organized path mapping.
+ * @param targetExtension - The file extension to search for (e.g., '.json').
  * @returns A generator for the paths of the given file extension.
  */
 export function* organizedPathsGenerator(

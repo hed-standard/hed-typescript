@@ -1,4 +1,5 @@
-/** This module holds a class for tokenizing HED strings.
+/**
+ * This module holds a class for tokenizing HED strings.
  * @module parser/tokenizer
  */
 

@@ -1,6 +1,8 @@
-/** This module holds the classes for converting a tag specification into a schema-based tag object.
+/**
+ * This module holds the classes for converting a tag specification into a schema-based tag object.
  * @module parser/tagConverter
  */
+
 import { ReservedChecker } from './reservedChecker'
 import { type TagSpec } from './tokenizer'
 import { IssueError } from '../issues/issues'

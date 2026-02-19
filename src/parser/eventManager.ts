@@ -1,4 +1,5 @@
-/** This module holds the classes for managing events in BIDS datasets.
+/**
+ * This module holds the classes for managing events in BIDS datasets.
  * @module parser/eventManager
  */
 

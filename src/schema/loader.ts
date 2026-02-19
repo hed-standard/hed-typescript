@@ -1,6 +1,7 @@
-/** HED schema loading functions.
+/**
+ * HED schema loading functions.
  * @module schema/loader
- * */
+ */
 
 // Imports
 import { localSchemaMap, localSchemaNames } from './config' // Changed from localSchemaList
@@ -13,7 +14,7 @@ import parseSchemaXML from '../utils/xml'
 /**
  * Load schema XML data from a schema version or path description.
  *
- * @param schemaDef The description of which schema to use.
+ * @param schemaDef - The description of which schema to use.
  * @returns The schema XML data.
  * @throws {IssueError} If the schema could not be loaded.
  */
@@ -28,7 +29,7 @@ export default async function loadSchema(schemaDef: SchemaSpec): Promise<HedSche
 /**
  * Choose the schema Promise from a schema version or path description.
  *
- * @param schemaDef The description of which schema to use.
+ * @param schemaDef - The description of which schema to use.
  * @returns The schema XML data.
  * @throws {IssueError} If the schema could not be loaded.
  */
@@ -46,7 +47,7 @@ async function loadPromise(schemaDef: SchemaSpec): Promise<HedSchemaXMLObject> {
 /**
  * Load schema XML data from the HED GitHub repository.
  *
- * @param schemaDef The standard schema version to load.
+ * @param schemaDef - The standard schema version to load.
  * @returns The schema XML data.
  * @throws {IssueError} If the schema could not be loaded.
  */
@@ -63,7 +64,7 @@ async function loadRemoteSchema(schemaDef: SchemaSpec): Promise<HedSchemaXMLObje
 /**
  * Load schema XML data from a local file.
  *
- * @param path The path to the schema XML data.
+ * @param path - The path to the schema XML data.
  * @returns The schema XML data.
  * @throws {IssueError} If the schema could not be loaded.
  */
@@ -74,7 +75,7 @@ async function loadLocalSchema(path: string): Promise<HedSchemaXMLObject> {
 /**
  * Load schema XML data from a bundled file.
  *
- * @param schemaDef The description of which schema to use.
+ * @param schemaDef - The description of which schema to use.
  * @returns The schema XML data.
  * @throws {IssueError} If the schema could not be loaded.
  */
@@ -90,9 +91,9 @@ async function loadBundledSchema(schemaDef: SchemaSpec): Promise<HedSchemaXMLObj
 /**
  * Actually load the schema XML file.
  *
- * @param xmlDataPromise The Promise containing the unparsed XML data.
- * @param issueCode The issue code.
- * @param issueArgs The issue arguments passed from the calling function.
+ * @param xmlDataPromise - The Promise containing the unparsed XML data.
+ * @param issueCode - The issue code.
+ * @param issueArgs - The issue arguments passed from the calling function.
  * @returns The parsed schema XML data.
  * @throws {IssueError} If the schema could not be loaded.
  */

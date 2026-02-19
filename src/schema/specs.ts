@@ -1,4 +1,5 @@
-/** This module holds the specification classes for HED schemas.
+/**
+ * This module holds the specification classes for HED schemas.
  * @module schema/specs
  */
 
@@ -34,10 +35,10 @@ export class SchemaSpec {
   /**
    * Constructor.
    *
-   * @param prefix The prefix of this schema.
-   * @param version The version of this schema.
-   * @param library The library name of this schema.
-   * @param localPath The local path for this schema.
+   * @param prefix - The prefix of this schema.
+   * @param version - The version of this schema.
+   * @param library - The library name of this schema.
+   * @param localPath - The local path for this schema.
    */
   constructor(prefix: string, version: string, library = '', localPath = '') {
     this.prefix = prefix
@@ -60,7 +61,7 @@ export class SchemaSpec {
   /**
    * Parse a single schema specification string into a SchemaSpec object.
    *
-   * @param versionSpec A schema version specification string (e.g., "nickname:library_version").
+   * @param versionSpec - A schema version specification string (e.g., "nickname:library_version").
    * @returns A schema specification object with parsed nickname, library, and version.
    * @throws {IssueError} If the schema specification format is invalid.
    */
@@ -73,7 +74,7 @@ export class SchemaSpec {
   /**
    * Split a schema version string into prefix (nickname) and schema parts using colon delimiter.
    *
-   * @param prefixSchemaSpec The schema version string to split.
+   * @param prefixSchemaSpec - The schema version string to split.
    * @returns An array with [nickname, schema] where nickname may be empty string.
    * @throws {IssueError} If the schema specification format is invalid.
    */
@@ -84,8 +85,8 @@ export class SchemaSpec {
   /**
    * Split a schema string into library and version parts using underscore delimiter.
    *
-   * @param libraryVersionSpec The schema string to split (library_version format).
-   * @param originalVersion The original version string for error reporting.
+   * @param libraryVersionSpec - The schema string to split (library_version format).
+   * @param originalVersion - The original version string for error reporting.
    * @returns An array with [library, version] where library may be empty string.
    * @throws {IssueError} If the schema specification format is invalid or version is not valid semver.
    */
@@ -100,9 +101,9 @@ export class SchemaSpec {
   /**
    * Split a version string into two segments using the specified delimiter.
    *
-   * @param versionSpec The version string to split.
-   * @param originalVersion The original version string for error reporting.
-   * @param splitCharacter The character to use as delimiter (':' or '_').
+   * @param versionSpec - The version string to split.
+   * @param originalVersion - The original version string for error reporting.
+   * @param splitCharacter - The character to use as delimiter (':' or '_').
    * @returns An array with [firstSegment, secondSegment] where firstSegment may be empty string.
    * @throws {IssueError} If the schema specification format is invalid or contains non-alphabetic characters in first segment.
    */
@@ -158,7 +159,7 @@ export class SchemasSpec {
   /**
    * Add a schema to this specification.
    *
-   * @param schemaSpec A schema specification.
+   * @param schemaSpec - A schema specification.
    * @returns This object.
    */
   public addSchemaSpec(schemaSpec: SchemaSpec): this {
@@ -173,7 +174,7 @@ export class SchemasSpec {
   /**
    * Parse a HED version specification into a schemas specification object.
    *
-   * @param versionSpecs The HED version specification, can be a single version string or array of version strings.
+   * @param versionSpecs - The HED version specification, can be a single version string or array of version strings.
    * @returns A schemas specification object containing parsed schema specifications.
    * @throws {IssueError} If any schema specification is invalid.
    */

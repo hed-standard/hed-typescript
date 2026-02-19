@@ -1,6 +1,5 @@
 /**
  * This module contains the {@link BidsFile} class, which is the base class for BIDS files.
- *
  * @module bids/types/file
  */
 
@@ -36,9 +35,9 @@ export abstract class BidsFile {
   /**
    * Constructor.
    *
-   * @param name The name of this file.
-   * @param file The Object representing this file data.
-   * @param validatorClass The validator class used to validate this file.
+   * @param name - The name of this file.
+   * @param file - The Object representing this file data.
+   * @param validatorClass - The validator class used to validate this file.
    */
   protected constructor(name: string, file: any, validatorClass: BidsValidatorConstructor) {
     this.name = name
@@ -58,7 +57,7 @@ export abstract class BidsFile {
   /**
    * Validate this validator's file.
    *
-   * @param schemas The HED schemas used to validate this file.
+   * @param schemas - The HED schemas used to validate this file.
    * @returns Any issues found during validation of this TSV file.
    */
   public validate(schemas: HedSchemas): BidsHedIssue[] {

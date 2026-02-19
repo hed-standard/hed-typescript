@@ -2,6 +2,9 @@
  * A parsed HED substring.
  * @module parser/parsedHedSubstring
  */
+
+import { type Bounds } from '../utils/types'
+
 export default abstract class ParsedHedSubstring {
   /**
    * The original pre-parsed version of the HED tag.
@@ -10,7 +13,7 @@ export default abstract class ParsedHedSubstring {
   /**
    * The bounds of the HED tag in the original HED string.
    */
-  originalBounds: [number, number]
+  originalBounds: Bounds
 
   /**
    * Constructor.
@@ -18,7 +21,7 @@ export default abstract class ParsedHedSubstring {
    * @param originalTag The original HED tag.
    * @param originalBounds The bounds of the HED tag in the original HED string.
    */
-  protected constructor(originalTag: string, originalBounds: [number, number]) {
+  protected constructor(originalTag: string, originalBounds: Bounds) {
     this.originalTag = originalTag
     this.originalBounds = originalBounds
   }
@@ -26,9 +29,8 @@ export default abstract class ParsedHedSubstring {
   /**
    * Nicely format this substring.
    *
-   * @param long Whether the tags should be in long form.
+   * @param long - Whether the tags should be in long form.
    * @returns A nicely formatted version of this substring.
-   * @abstract
    */
   public abstract format(long: boolean): string
 
@@ -42,7 +44,7 @@ export default abstract class ParsedHedSubstring {
   /**
    * Determine if this substring is equivalent to another.
    *
-   * @param other The other substring.
+   * @param other - The other substring.
    * @returns Whether the two substrings are equivalent.
    */
   public abstract equivalent(other: unknown): boolean

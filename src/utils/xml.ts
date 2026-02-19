@@ -2,6 +2,7 @@
  * XML parsing utilities.
  * @module
  */
+
 import { XMLParser } from 'fast-xml-parser'
 
 import { type HedSchemaXMLObject, type HedSchemaRootElement, type NodeElement } from '../schema/xmlType'
@@ -9,7 +10,7 @@ import { type HedSchemaXMLObject, type HedSchemaRootElement, type NodeElement } 
 /**
  * Parse the schema XML data.
  *
- * @param data The XML data.
+ * @param data - The XML data.
  * @returns The schema XML data.
  */
 export default function parseSchemaXML(data: string): HedSchemaXMLObject {
@@ -35,7 +36,7 @@ export default function parseSchemaXML(data: string): HedSchemaXMLObject {
 /**
  * Handle top level of parent-setting recursion before passing to setNodeParent.
  *
- * @param rootElement The root element of the XML tree.
+ * @param rootElement - The root element of the XML tree.
  */
 function setParent(rootElement: HedSchemaRootElement): void {
   const childNodes = rootElement.schema.node ?? []
@@ -47,8 +48,8 @@ function setParent(rootElement: HedSchemaRootElement): void {
 /**
  * Recursively set a field on each node of the tree pointing to the node's parent.
  *
- * @param node The child node.
- * @param parent The parent node.
+ * @param node - The child node.
+ * @param parent - The parent node.
  */
 function setNodeParent(node: NodeElement, parent: NodeElement | null): void {
   // Assume that we've already run this function if so.

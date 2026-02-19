@@ -1,4 +1,5 @@
-/** This module holds utilities for parsing HED strings.
+/**
+ * This module holds utilities for parsing HED strings.
  * @module parser/parseUtils
  */
 

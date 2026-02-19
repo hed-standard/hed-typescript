@@ -1,4 +1,5 @@
-/** This module holds the class representing a parsed HED tag.
+/**
+ * This module holds the class representing a parsed HED tag.
  * @module parser/parsedHedTag
  */
 
@@ -65,8 +66,8 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Constructor.
    *
-   * @param tagSpec The token for this tag.
-   * @param hedSchemas The collection of HED schemas.
+   * @param tagSpec - The token for this tag.
+   * @param hedSchemas - The collection of HED schemas.
    * @throws {IssueError} If tag conversion or parsing fails.
    */
   public constructor(tagSpec: TagSpec, hedSchemas: HedSchemas) {
@@ -78,8 +79,8 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Convert this tag to its various forms
    *
-   * @param hedSchemas The collection of HED schemas.
-   * @param tagSpec The token for this tag.
+   * @param hedSchemas - The collection of HED schemas.
+   * @param tagSpec - The token for this tag.
    * @throws {IssueError} If tag conversion or parsing fails.
    */
   private _convertTag(hedSchemas: HedSchemas, tagSpec: TagSpec): void {
@@ -109,8 +110,8 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Handle the remainder portion for value tag (converter handles others).
    *
-   * @param schemaTag The part of the tag that is in the schema.
-   * @param remainder The leftover part.
+   * @param schemaTag - The part of the tag that is in the schema.
+   * @param remainder - The leftover part.
    * @throws {IssueError} If parsing the remainder section fails.
    */
   private _handleRemainder(schemaTag: SchemaTag, remainder: string): void {
@@ -143,8 +144,8 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Separate the remainder of the tag into three parts.
    *
-   * @param schemaTag The part of the tag that is in the schema.
-   * @param remainder The leftover part.
+   * @param schemaTag - The part of the tag that is in the schema.
+   * @param remainder - The leftover part.
    * @returns A tuple representing the actual Unit, the unit string and the value string.
    * @throws {IssueError} If parsing the remainder section fails.
    */
@@ -165,7 +166,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Handle reserved three-level tags.
    *
-   * @param remainder The remainder of the tag string after schema tag.
+   * @param remainder - The remainder of the tag string after schema tag.
    */
   private _getSplitValue(remainder: string): [string, string | null] {
     if (!TWO_LEVEL_TAGS.has(this.schemaTag.name)) {
@@ -178,7 +179,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Nicely format this tag.
    *
-   * @param long Whether the tags should be in long form.
+   * @param long - Whether the tags should be in long form.
    * @returns The nicely formatted version of this tag.
    */
   public format(long: boolean = true): string {
@@ -235,7 +236,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Determine whether this tag has a given attribute.
    *
-   * @param attribute An attribute name.
+   * @param attribute - An attribute name.
    * @returns Whether this tag has the named attribute.
    */
   public hasAttribute(attribute: string): boolean {
@@ -249,7 +250,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
    *
    * HED tags are deemed equivalent if they have the same schema and normalized tag string.
    *
-   * @param other A HED tag to compare with this one.
+   * @param other - A HED tag to compare with this one.
    * @returns Whether the other tag is equivalent to this HED tag.
    */
   public equivalent(other: unknown): boolean {
@@ -328,7 +329,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   /**
    * Check if value is a valid value for this tag.
    *
-   * @param value The value to be checked.
+   * @param value - The value to be checked.
    * @returns An empty string if value is value, otherwise an indication of failure.
    */
   public checkValue(value: string): string {

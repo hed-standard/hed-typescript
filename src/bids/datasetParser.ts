@@ -1,6 +1,7 @@
 /**
  * Provides file access for BIDS datasets.
  *
+ * @remarks
  * This module contains the {@link BidsFileAccessor} class and its subclasses, which are responsible for reading files
  * from a BIDS dataset in different environments (e.g., a local directory or a web browser).
  *
@@ -24,6 +25,7 @@ type SchemaBuilder = (datasetDescription: BidsJsonFile) => Promise<HedSchemas>
 /**
  * Base class for BIDS file accessors.
  *
+ * @remarks
  * This class provides a common interface for accessing files in a BIDS dataset, regardless of the underlying storage
  * mechanism. Subclasses must implement the `create` and `getFileContent` methods.
  */
@@ -69,9 +71,9 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * Constructs a BidsFileAccessor.
    *
-   * @param datasetRootDirectory The root directory of the dataset.
-   * @param fileMap A map of relative file paths to file representations (e.g., `File` objects for web, full paths for Node.js).
-   * @param schemaBuilder The HED schema builder function.
+   * @param datasetRootDirectory - The root directory of the dataset.
+   * @param fileMap - A map of relative file paths to file representations (e.g., `File` objects for web, full paths for Node.js).
+   * @param schemaBuilder - The HED schema builder function.
    */
   protected constructor(datasetRootDirectory: string, fileMap: Map<string, FileType>, schemaBuilder: SchemaBuilder) {
     if (typeof datasetRootDirectory !== 'string') {
@@ -91,9 +93,10 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * Initializes the file map and organized paths.
    *
+   * @remarks
    * This method filters the file map to include only BIDS-related files and organizes them by type and category.
    *
-   * @param fileMap A map of relative file paths to file representations.
+   * @param fileMap - A map of relative file paths to file representations.
    */
   private _initialize(fileMap: Map<string, FileType>) {
     const relativeFilePaths = Array.from(fileMap.keys())
@@ -114,9 +117,10 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * Asynchronously reads the content of a file.
    *
+   * @remarks
    * This method must be implemented by subclasses to handle environment-specific file reading.
    *
-   * @param relativePath The relative path to the file.
+   * @param relativePath - The relative path to the file.
    * @returns A promise that resolves with the file content as a string, or null if the file cannot be read.
    * @throws {IssueError} If the method is not implemented by a subclass.
    */
@@ -150,8 +154,8 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
   /**
    * Constructs a BidsDirectoryAccessor.
    *
-   * @param datasetRootDirectory The absolute path to the dataset's root directory.
-   * @param fileMap A map of relative file paths to their absolute paths.
+   * @param datasetRootDirectory - The absolute path to the dataset's root directory.
+   * @param fileMap - A map of relative file paths to their absolute paths.
    * @throws {IssueError} If the dataset root directory path is invalid.
    */
   private constructor(datasetRootDirectory: string, fileMap: Map<string, string>) {
@@ -167,7 +171,7 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
    *
    * This method recursively reads the specified directory and creates a file map.
    *
-   * @param datasetRootDirectory The absolute path to the dataset's root directory.
+   * @param datasetRootDirectory - The absolute path to the dataset's root directory.
    * @returns A Promise that resolves to a new BidsDirectoryAccessor instance.
    * @throws {IssueError} If the dataset root directory path is empty.
    */
@@ -184,7 +188,7 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
   /**
    * Asynchronously reads the content of a file from the file system.
    *
-   * @param relativePath The relative path to the file within the dataset.
+   * @param relativePath - The relative path to the file within the dataset.
    * @returns A promise that resolves with the file content as a string, or null if the file is not found or an error occurs.
    */
   public async getFileContent(relativePath: string): Promise<string | null> {
@@ -203,9 +207,9 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
   /**
    * Recursively reads directory contents and populates the file map.
    *
-   * @param dir The directory to read.
-   * @param baseDir The base directory to calculate relative paths from.
-   * @param fileMapRef The Map to populate with relativePath: absolutePath.
+   * @param dir - The directory to read.
+   * @param baseDir - The base directory to calculate relative paths from.
+   * @param fileMapRef - The Map to populate with relativePath: absolutePath.
    */
   private static async _readDirRecursive(dir: string, baseDir: string, fileMapRef: Map<string, string>): Promise<void> {
     try {

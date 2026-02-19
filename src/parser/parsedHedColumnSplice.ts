@@ -1,8 +1,10 @@
-/** This module holds the column splice class.
+/**
+ * This module holds the column splice class.
  * @module parser/parsedHedColumnSplice
  */
 
 import ParsedHedSubstring from './parsedHedSubstring'
+import { type Bounds } from '../utils/types'
 
 /**
  * A template for an inline column splice in a HED string.
@@ -19,10 +21,10 @@ export default class ParsedHedColumnSplice extends ParsedHedSubstring {
   /**
    * Constructor.
    *
-   * @param columnName The name of the referenced column.
-   * @param bounds The bounds of the column splice.
+   * @param columnName - The name of the referenced column.
+   * @param bounds - The bounds of the column splice.
    */
-  public constructor(columnName: string, bounds: [number, number]) {
+  public constructor(columnName: string, bounds: Bounds) {
     super(columnName, bounds) // Sets originalTag and originalBounds
     this._normalized = this.format(false) // Sets various forms of the tag.
   }
@@ -37,7 +39,7 @@ export default class ParsedHedColumnSplice extends ParsedHedSubstring {
   /**
    * Nicely format this column splice template.
    *
-   * @param long Whether the tags should be in long form.
+   * @param long - Whether the tags should be in long form.
    * @returns The formatted column splice template.
    */
   // eslint-disable-next-line no-unused-vars
@@ -48,7 +50,7 @@ export default class ParsedHedColumnSplice extends ParsedHedSubstring {
   /**
    * Determine if this column splice is equivalent to another.
    *
-   * @param other The other column splice.
+   * @param other - The other column splice.
    * @returns Whether the two column splices are equivalent.
    */
   public equivalent(other: unknown): boolean {

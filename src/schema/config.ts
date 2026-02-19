@@ -1,4 +1,5 @@
-/** Bundled HED schema configuration.
+/**
+ * Bundled HED schema configuration.
  * @module schema/config
  * */
 
@@ -20,6 +21,7 @@ const _localSchemaNames = [
   'HED_score_2.1.0',
   // Add other bundled schema base names here if needed
 ]
+
 /**
  * This list defines the base names of HED XML schema files that are considered "bundled" with the library.
  * The actual loading mechanism is handled by the schema loader, which may use an application-provided loader

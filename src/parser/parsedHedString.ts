@@ -1,4 +1,5 @@
-/** This module holds the class representing a HED string.
+/**
+ * This module holds the class representing a HED string.
  * @module parser/parsedHedString
  */
 
@@ -60,8 +61,8 @@ export default class ParsedHedString {
 
   /**
    * Constructor.
-   * @param hedString The original HED string.
-   * @param parsedTags The nested list of parsed HED tags, groups, and column splices.
+   * @param hedString - The original HED string.
+   * @param parsedTags - The nested list of parsed HED tags, groups, and column splices.
    */
   public constructor(hedString: string, parsedTags: ParsedHedSubstring[]) {
     this.hedString = hedString
@@ -84,7 +85,7 @@ export default class ParsedHedString {
   /**
    * Nicely format this HED string. (Doesn't allow column splices).
    *
-   * @param long Whether the tags should be in long form.
+   * @param long - Whether the tags should be in long form.
    * @returns The formatted HED string.
    */
   public format(long: boolean = true): string {

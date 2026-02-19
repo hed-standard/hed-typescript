@@ -1,4 +1,5 @@
-/** This module holds the class for encapsulating the rules for "Reserved" tags.
+/**
+ * This module holds the class for encapsulating the rules for "Reserved" tags.
  * @module parser/reservedChecker
  */
 

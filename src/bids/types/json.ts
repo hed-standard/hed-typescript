@@ -1,8 +1,8 @@
 /**
  * This module contains classes for representing BIDS JSON files, including {@link BidsJsonFile} and {@link BidsSidecar}.
- *
  * @module bids/types/json
  */
+
 import isPlainObject from 'lodash/isPlainObject'
 
 import { parseHedString } from '../../parser/parser'
@@ -32,9 +32,9 @@ export class BidsJsonFile extends BidsFile {
    *
    * Note: This class is used for non-sidecars such as dataset_description.json and does not have a validation method.
    *
-   * @param name The name of the JSON file.
-   * @param file The file object representing this file.
-   * @param jsonData The JSON data for this file.
+   * @param name - The name of the JSON file.
+   * @param file - The file object representing this file.
+   * @param jsonData - The JSON data for this file.
    */
   public constructor(name: string, file: object, jsonData: Record<string, unknown>) {
     super(name, file, BidsHedSidecarValidator)
@@ -96,10 +96,10 @@ export class BidsSidecar extends BidsJsonFile {
   /**
    * Constructor for a BIDS sidecar. Used for files like events.json, participants.json, etc.
    *
-   * @param name The name of the sidecar file.
-   * @param file The file object representing this file.
-   * @param sidecarData The raw JSON data.
-   * @param defManager The external definitions to use.
+   * @param name - The name of the sidecar file.
+   * @param file - The file object representing this file.
+   * @param sidecarData - The raw JSON data.
+   * @param defManager - The external definitions to use.
    */
   public constructor(
     name: string,
@@ -131,8 +131,8 @@ export class BidsSidecar extends BidsJsonFile {
    *
    * The parsed strings are placed into {@link parsedHedData}.
    *
-   * @param hedSchemas The HED schema collection.
-   * @param fullValidation True if full validation should be performed.
+   * @param hedSchemas - The HED schema collection.
+   * @param fullValidation - True if full validation should be performed.
    * @returns Any errors and warnings found.
    */
   parseSidecarKeys(hedSchemas: HedSchemas, fullValidation: boolean = false): [Issue[], Issue[]] {
@@ -161,7 +161,8 @@ export class BidsSidecar extends BidsJsonFile {
 
   /**
    * Set the definition manager for this sidecar.
-   * @param defManager The definition manager.
+   *
+   * @param defManager - The definition manager.
    */
   private _setDefinitions(defManager: DefinitionManager | null): void {
     if (defManager instanceof DefinitionManager) {
@@ -206,9 +207,9 @@ export class BidsSidecar extends BidsJsonFile {
   /**
    * Verify that a column has no deeply nested "HED" keys.
    *
-   * @param key An object key.
-   * @param value An object value.
-   * @param topKey The top-level key, if any.
+   * @param key - An object key.
+   * @param value - An object value.
+   * @param topKey - The top-level key, if any.
    * @throws {IssueError} If an invalid "HED" key is found.
    */
   private _verifyKeyHasNoDeepHed(key: string, value: unknown, topKey: string | null = null): void {
@@ -230,7 +231,7 @@ export class BidsSidecar extends BidsJsonFile {
   /**
    * Determine whether a sidecar value has HED data.
    *
-   * @param sidecarValue A BIDS sidecar value.
+   * @param sidecarValue - A BIDS sidecar value.
    * @returns Whether the sidecar value has HED data.
    */
   private static _sidecarValueHasHed(sidecarValue: unknown): sidecarValue is BidsSidecarHedEntry {
@@ -274,8 +275,9 @@ export class BidsSidecar extends BidsJsonFile {
   }
 
   /**
+   * Parse a column splice for a value column.
    *
-   * @param sidecarKey The column to be checked for column splices.
+   * @param sidecarKey - The column to be checked for column splices.
    * @param hedData The parsed HED string to check for column splices.
    */
   private _parseValueSplice(sidecarKey: string, hedData: ParsedHedString): void {
@@ -286,9 +288,10 @@ export class BidsSidecar extends BidsJsonFile {
   }
 
   /**
+   * Parse a column splice for a categorical column.
    *
-   * @param sidecarKey The column to be checked for column splices.
-   * @param hedData A Map with columnValue --> parsed HED string for a sidecar key to check for column splices.
+   * @param sidecarKey - The column to be checked for column splices.
+   * @param hedData - A Map with columnValue --> parsed HED string for a sidecar key to check for column splices.
    */
   private _parseCategorySplice(sidecarKey: string, hedData: Map<string, ParsedHedString>): void {
     let keyReferences = null
@@ -361,9 +364,9 @@ export class BidsSidecarKey {
   /**
    * Constructor for BidsSidecarKey.
    *
-   * @param key The name of this key.
-   * @param data The data for this key.
-   * @param sidecar The parent sidecar.
+   * @param key - The name of this key.
+   * @param data - The data for this key.
+   * @param sidecar - The parent sidecar.
    */
   public constructor(key: string, data: unknown, sidecar: BidsSidecar) {
     this.name = key
@@ -383,8 +386,8 @@ export class BidsSidecarKey {
    *
    * ###Note: This sets the parsedHedData as a side effect.
    *
-   * @param hedSchemas The HED schema collection.
-   * @param fullValidation True if full validation should be performed.
+   * @param hedSchemas - The HED schema collection.
+   * @param fullValidation - True if full validation should be performed.
    * @returns Errors and warnings that result from parsing.
    */
   public parseHed(hedSchemas: HedSchemas, fullValidation: boolean = false): [Issue[], Issue[]] {
@@ -400,8 +403,8 @@ export class BidsSidecarKey {
    * ### Note:
    *  The value strings cannot contain definitions.
    *
-   * @param hedSchemas The HED schemas to use.
-   * @param fullValidation True if full validation should be performed.
+   * @param hedSchemas - The HED schemas to use.
+   * @param fullValidation - True if full validation should be performed.
    * @returns Errors due for the value.
    */
   private _parseValueString(hedSchemas: HedSchemas, fullValidation: boolean): [Issue[], Issue[]] {
@@ -418,8 +421,9 @@ export class BidsSidecarKey {
 
   /**
    * Parse the categorical values associated with this key.
-   * @param hedSchemas The HED schemas used to check against.
-   * @param fullValidation True if full validation should be performed.
+   *
+   * @param hedSchemas - The HED schemas used to check against.
+   * @param fullValidation - True if full validation should be performed.
    * @returns A list of error issues and warning issues.
    */
   private _parseCategory(hedSchemas: HedSchemas, fullValidation: boolean): [Issue[], Issue[]] {
@@ -454,7 +458,8 @@ export class BidsSidecarKey {
 
   /**
    * Check for definitions in the HED string.
-   * @param parsedString The string to check for definitions.
+   *
+   * @param parsedString - The string to check for definitions.
    * @returns Errors that occur.
    */
   private _checkDefinitions(parsedString: ParsedHedString): Issue[] {

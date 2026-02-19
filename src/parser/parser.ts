@@ -1,6 +1,8 @@
-/** This module holds contains the classes for basic HED parsing.
+/**
+ * This module holds contains the classes for basic HED parsing.
  * @module parser/parser
  */
+
 import { DefinitionChecker } from './definitionChecker'
 import { type DefinitionManager } from './definitionManager'
 import ParsedHedString from './parsedHedString'
@@ -217,7 +219,8 @@ class HedStringParser {
 /**
  * Parse a HED string.
  *
- * ###Note: now separates errors and warnings for easier handling.
+ * @remarks
+ * Note: now separates errors and warnings for easier handling.
  *
  * @param hedString - A (possibly already parsed) HED string.
  * @param hedSchemas - The collection of HED schemas.

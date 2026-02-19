@@ -1,4 +1,5 @@
-/** This module holds the definition checker class.
+/**
+ * This module holds the definition checker class.
  * @module parser/definitionChecker
  */
 

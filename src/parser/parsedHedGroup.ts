@@ -1,4 +1,5 @@
-/** This module holds the class for representing a HED group.
+/**
+ * This module holds the class for representing a HED group.
  * @module parser/parsedHedGroup
  */
 
@@ -88,9 +89,9 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
   /**
    * Constructor.
    *
-   * @param parsedHedTags The parsed HED tags, groups or column splices in the HED tag group.
-   * @param hedString The original HED string.
-   * @param originalBounds The bounds of the HED tag in the original HED string.
+   * @param parsedHedTags - The parsed HED tags, groups or column splices in the HED tag group.
+   * @param hedString - The original HED string.
+   * @param originalBounds - The bounds of the HED tag in the original HED string.
    */
   public constructor(parsedHedTags: ParsedHedSubstring[], hedString: string, originalBounds: [number, number]) {
     const originalTag = hedString.substring(originalBounds[0], originalBounds[1])
@@ -129,7 +130,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
   /**
    * Filter top tags by tag name.
    *
-   * @param tagName The schemaTag name to filter by.
+   * @param tagName - The schemaTag name to filter by.
    * @returns An array of top-level tags with the given name.
    */
   private _filterTopTagsByTagName(tagName: string): ParsedHedTag[] {
@@ -139,7 +140,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
   /**
    * Filter top subgroups that include a tag at the top-level of the group.
    *
-   * @param tagName The schemaTag name to filter by.
+   * @param tagName - The schemaTag name to filter by.
    * @returns Array of subgroups containing the specified tag.
    */
   private _filterSubgroupsByTagName(tagName: string): ParsedHedGroup[] {
@@ -151,7 +152,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
   /**
    * Nicely format this tag group.
    *
-   * @param long Whether the tags should be in long form.
+   * @param long - Whether the tags should be in long form.
    * @returns The formatted tag group.
    */
   public format(long: boolean = true): string {
@@ -161,7 +162,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
   /**
    * Determine if this group is equivalent to another.
    *
-   * @param other The other group.
+   * @param other - The other group.
    * @returns Whether the two groups are equivalent.
    */
   public equivalent(other: unknown): boolean {
@@ -213,7 +214,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
   /**
    * Iterator over the ParsedHedGroup objects in this HED tag group.
    *
-   * @param tagName The name of the tag whose groups are to be iterated over or null if all tags.
+   * @param tagName - The name of the tag whose groups are to be iterated over or null if all tags.
    * @yields This object and the ParsedHedGroup objects belonging to this tag group.
    */
   public *subParsedGroupIterator(tagName: string | null = null): Generator<ParsedHedGroup> {
