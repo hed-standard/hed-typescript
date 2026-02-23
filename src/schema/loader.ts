@@ -83,8 +83,11 @@ async function loadBundledSchema(schemaDef: SchemaSpec): Promise<HedSchemaXMLObj
   try {
     return parseSchemaXML(localSchemaMap.get(schemaDef.localName))
   } catch (error) {
-    const issueArgs = { spec: JSON.stringify(schemaDef), error: error.message }
-    IssueError.generateAndThrow('bundledSchemaLoadFailed', issueArgs)
+    IssueError.generateAndRethrow(
+      error,
+      (error) => ['bundledSchemaLoadFailed', { spec: JSON.stringify(schemaDef), error: error.message }],
+      'Illegal error type when loading bundled schema',
+    )
   }
 }
 
@@ -106,7 +109,10 @@ async function loadSchemaFile(
     const data = await xmlDataPromise
     return parseSchemaXML(data)
   } catch (error) {
-    issueArgs.error = error.message
-    IssueError.generateAndThrow(issueCode, issueArgs)
+    IssueError.generateAndRethrow(
+      error,
+      (error) => [issueCode, { ...issueArgs, error: error.message }],
+      'Illegal error type when loading schema file',
+    )
   }
 }

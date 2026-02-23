@@ -124,7 +124,7 @@ export default class HedStringSplitter {
    *
    * @param issueError - The error encountered.
    */
-  private _handleIssueError(issueError: Error): Issue {
+  private _handleIssueError(issueError: unknown): Issue {
     if (issueError instanceof IssueError) {
       return issueError.issue
     } else if (issueError instanceof Error) {

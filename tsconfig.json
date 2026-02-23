@@ -12,7 +12,8 @@
     "downlevelIteration": true,
     "typeRoots": ["./node_modules/@types"],
     "noImplicitAny": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "useUnknownInCatchVariables": true
   },
   "include": ["index.ts", "src/**/*"],
   "exclude": ["node_modules", "dist"]

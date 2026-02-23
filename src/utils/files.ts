@@ -19,7 +19,11 @@ export async function readFile(fileName: string): Promise<string> {
     const stringBuffer = await readFilePromise(fileName, 'utf8')
     return stringBuffer.toString()
   } catch (error) {
-    IssueError.generateAndThrow('fileReadError', { fileName: fileName, message: error.message })
+    IssueError.generateAndRethrow(
+      error,
+      (error) => ['fileReadError', { fileName: fileName, message: error.message }],
+      'Illegal error type when reading local file',
+    )
   }
 }
 

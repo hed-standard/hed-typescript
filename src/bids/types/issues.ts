@@ -5,7 +5,7 @@
 
 import { cloneDeep } from 'lodash'
 
-import { generateIssue, type Issue, IssueError, type IssueParameters } from '../../issues/issues'
+import { generateIssue, Issue, IssueError, type IssueParameters } from '../../issues/issues'
 import { type IssueLevel } from '../../issues/data'
 import { type FilePath } from './file'
 
@@ -198,7 +198,7 @@ export class BidsHedIssue {
    * @returns An array of BIDS-compatible issues.
    */
   public static fromHedIssues(
-    hedIssues: Error | Issue[],
+    hedIssues: unknown,
     file: FilePath,
     extraParameters: IssueParameters = {},
   ): BidsHedIssue[] {
@@ -206,8 +206,8 @@ export class BidsHedIssue {
       return [BidsHedIssue.fromHedIssue(hedIssues.issue, file, extraParameters)]
     } else if (hedIssues instanceof Error) {
       return [new BidsHedIssue(generateIssue('internalError', { message: hedIssues.message }), file ?? null)]
-    } else if (hedIssues.length === 0) {
-      return []
+    } else if (!Array.isArray(hedIssues) || !hedIssues.every((issue) => issue instanceof Issue)) {
+      return [new BidsHedIssue(generateIssue('internalError', { message: 'Unknown issue type' }), file ?? null)]
     } else {
       return hedIssues.map((hedIssue) => BidsHedIssue.fromHedIssue(hedIssue, file, extraParameters))
     }

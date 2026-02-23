@@ -19,6 +19,7 @@ import { type BidsJsonFile } from './types/json'
 import { IssueError } from '../issues/issues'
 import { type HedSchemas } from '../schema/containers'
 import { organizePaths } from '../utils/paths'
+import { type ErrnoException } from '../utils/types'
 
 type SchemaBuilder = (datasetDescription: BidsJsonFile) => Promise<HedSchemas>
 
@@ -240,10 +241,10 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
       // The ENOTDIR error for 'dir' itself should be prevented by the isDirectory() check.
       // We only log a warning if the error is not ENOENT for the base directory,
       // or if it's any other error for subdirectories.
-      if (err.code === 'ENOENT' && dir === baseDir) {
+      if ((err as ErrnoException).code === 'ENOENT' && dir === baseDir) {
         // This means the initial datasetRootDirectory does not exist.
         // This is an expected case for one of the tests, so no warning needed here.
-      } else if (err.code === 'ENOTDIR' && dir === baseDir) {
+      } else if ((err as ErrnoException).code === 'ENOTDIR' && dir === baseDir) {
         // This means the initial datasetRootDirectory was a file.
         // This is also an expected case for one of the tests, so no warning needed here.
       } else {

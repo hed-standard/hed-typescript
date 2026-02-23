@@ -42,3 +42,15 @@ export type ReturnTupleWithErrorsAndWarnings<Type> = [Type, Issue[], Issue[]]
  * A pair of numbers used as substring bounds.
  */
 export type Bounds = [number, number]
+
+/**
+ * Exception with an errno field.
+ *
+ * Borrowed from {@link https://www.npmjs.com/package/@types/node \@types/node} for compatibility reasons.
+ */
+export interface ErrnoException extends Error {
+  errno?: number | undefined
+  code?: string | undefined
+  path?: string | undefined
+  syscall?: string | undefined
+}

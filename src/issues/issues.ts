@@ -44,7 +44,7 @@ export class IssueError extends Error {
    * @param parameters - The error string parameters.
    * @throws {IssueError} Corresponding to the generated {@link Issue}.
    */
-  public static generateAndThrow(internalCode: string, parameters: IssueParameters = {}) {
+  public static generateAndThrow(internalCode: string, parameters: IssueParameters = {}): never {
     throw new IssueError(generateIssue(internalCode, parameters))
   }
 
@@ -54,8 +54,37 @@ export class IssueError extends Error {
    * @param message - A message describing the internal error. The message should not end with any punctuation.
    * @throws {IssueError} Corresponding to the generated internal error {@link Issue}.
    */
-  public static generateAndThrowInternalError(message: string = 'Unknown internal error') {
+  public static generateAndThrowInternalError(message: string = 'Unknown internal error'): never {
     IssueError.generateAndThrow('internalError', { message: message })
+  }
+
+  /**
+   * Generate and re-throw an error according to {@code generateFn}.
+   *
+   * @remarks
+   * This method will pass {@code error} to {@code generateFn}, unless it is not an {@link Error} object (in which case,
+   * it will generate an internal error via {@link IssueError.generateAndThrowInternalError}). {@code generateFn} is
+   * expected to return an internal issue code and parameter object, which will be passed to
+   * {@link IssueError.generateAndThrow}. Failure to provide an internal issue code will also result in an internal error.
+   *
+   * @param error This is expected to be an object of {@code Error} or a subclass.
+   * @param generateFn A function which is passed the screened error object and returns an internal error code and parameter object.
+   * @param illegalErrorTypeMessage A message to be used for an illegal error type.
+   */
+  public static generateAndRethrow(
+    error: unknown,
+    generateFn: (error: Error) => [string, IssueParameters],
+    illegalErrorTypeMessage: string = 'Unknown internal error',
+  ): never {
+    if (error instanceof Error) {
+      const [internalCode, parameters] = generateFn(error)
+      if (!internalCode) {
+        IssueError.generateAndThrowInternalError('Failed to provide valid internal code to re-throw static method')
+      }
+      IssueError.generateAndThrow(internalCode, parameters)
+    } else {
+      IssueError.generateAndThrowInternalError(illegalErrorTypeMessage)
+    }
   }
 }
 
