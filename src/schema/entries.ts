@@ -185,7 +185,8 @@ export class SchemaEntry {
    * @param attributeName - The attribute to check for.
    * @returns Whether this schema entry has this attribute.
    */
-  // eslint-disable-next-line no-unused-vars
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public hasBooleanAttribute(attributeName: string): boolean {
     return false
   }

@@ -3,7 +3,7 @@
  * @module
  */
 
-import { type Bounds, type RecursiveArray } from './types'
+import { type RecursiveArray } from './types'
 
 /**
  * Apply a function recursively to an array.
@@ -33,14 +33,4 @@ export function recursiveMap<T, U>(array: RecursiveArray<T>, fn: (element: T) =>
 export function* iteratePairwiseCombinations<T>(array: T[]): Generator<[T, T]> {
   const pairs = array.flatMap((first, index) => array.slice(index + 1).map((second): [T, T] => [first, second]))
   yield* pairs
-}
-
-/**
- * Type guard for an ordered pair of numbers (e.g. bounds).
- *
- * @param value - A possible ordered pair of numbers.
- * @returns Whether the value is an ordered pair of number.
- */
-export function isNumberPair(value: unknown): value is Bounds {
-  return Array.isArray(value) && value.length === 2 && value.every((bound) => typeof bound === 'number')
 }

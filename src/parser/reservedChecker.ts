@@ -10,8 +10,21 @@ import { getTagListString } from './parseUtils'
 import reservedTags from '../data/json/reservedTags.json'
 import { generateIssue, type Issue, IssueError } from '../issues/issues'
 
-type ReservedTagsType = typeof reservedTags
-type ReservedTagRequirement = ReservedTagsType[keyof ReservedTagsType]
+interface ReservedTagRequirement {
+  name: string
+  noExtension: boolean
+  allowValue: boolean
+  requireValue: boolean
+  tagGroup: boolean
+  topLevelTagGroup: boolean
+  maxNonDefSubgroups: number
+  minNonDefSubgroups: number
+  ERROR_CODE: string
+  noSpliceInGroup: boolean
+  requiresTimeline: boolean
+  requiresDef: boolean
+  otherAllowedNonDefTags: string[]
+}
 
 export class ReservedChecker {
   /**
@@ -38,7 +51,7 @@ export class ReservedChecker {
     this.timelineTags = this._getReservedTagsByProperty('requiresTimeline')
   }
 
-  private _getReservedTagsByProperty(property: keyof ReservedTagsType['Definition']): Set<string> {
+  private _getReservedTagsByProperty(property: keyof ReservedTagRequirement): Set<string> {
     return new Set(
       [...ReservedChecker.reservedMap.values()].filter((value) => value[property] === true).map((value) => value.name),
     )
@@ -254,7 +267,7 @@ export class ReservedChecker {
     }
 
     // Check the group does not have more than the maximum allowed subgroups.
-    const maxLimit: number = requirements.maxNonDefSubgroups ?? Infinity
+    const maxLimit = requirements.maxNonDefSubgroups ?? Infinity
     if (group.topGroups.length - defAdjustment > maxLimit) {
       return [generateIssue('invalidNumberOfSubgroups', { tag: reservedTag.originalTag, string: group.originalTag })]
     }

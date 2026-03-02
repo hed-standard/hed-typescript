@@ -4,8 +4,7 @@
  */
 
 import issueData, { type IssueLevel } from './data'
-import { isNumberPair } from '../utils/array'
-import { Bounds } from '../utils/types'
+import { type Bounds, isNumberPair } from '../utils/types'
 
 export type IssueParameters = Record<string, unknown>
 type IssueSavedParameters = Record<string, string>
@@ -22,7 +21,7 @@ export class IssueError extends Error {
    * @param issue - The associated HED issue.
    * @param params - Extra parameters (to be forwarded to the {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error | Error} constructor).
    */
-  constructor(issue: Issue, ...params: any[]) {
+  constructor(issue: Issue, ...params: unknown[]) {
     // Pass remaining arguments (including vendor specific ones) to parent constructor
     super(issue.message, ...params)
 

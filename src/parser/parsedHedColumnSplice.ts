@@ -42,8 +42,9 @@ export default class ParsedHedColumnSplice extends ParsedHedSubstring {
    * @param long - Whether the tags should be in long form.
    * @returns The formatted column splice template.
    */
-  // eslint-disable-next-line no-unused-vars
-  public format(long: boolean = true): string {
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public format(long: boolean): string {
     return '{' + this.originalTag + '}'
   }
 

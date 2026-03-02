@@ -141,7 +141,7 @@ export default class SchemaParser {
    * @param element - An XML element.
    * @returns The name of the element.
    */
-  private static getElementTagName(element: NamedElement): string {
+  private static getElementTagName(this: void, element: NamedElement): string {
     return element.name._
   }
 

@@ -3,6 +3,9 @@
  * @module utils/string
  */
 
+import { isJsonObject, type JsonObject } from './types'
+import { IssueError } from '../issues/issues'
+
 /**
  * Get number of instances of a character in a string.
  *
@@ -26,6 +29,21 @@ export function splitStringTrimAndRemoveBlanks(string: string, delimiter: string
     .split(delimiter)
     .map((item) => item.trim())
     .filter(Boolean)
+}
+
+/**
+ * Parse a JSON string.
+ *
+ * @param jsonText A JSON string.
+ * @returns The parsed JSON object.
+ */
+export function parseJson(jsonText: string): JsonObject {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const jsonData = JSON.parse(jsonText)
+  if (!isJsonObject(jsonData)) {
+    IssueError.generateAndThrowInternalError('JSON data has wrong type')
+  }
+  return jsonData
 }
 
 export type IssueMessageTemplateString = (

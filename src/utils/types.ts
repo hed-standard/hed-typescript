@@ -3,13 +3,15 @@
  * @module utils/types
  */
 
+import isPlainObject from 'lodash/isPlainObject'
+
 import type { Issue } from '../issues/issues'
 
 /**
  * A generic constructor type.
  */
 export type Constructor<Type> = {
-  new (...args: any[]): Type
+  new (...args: unknown[]): Type
 }
 
 /**
@@ -44,13 +46,38 @@ export type ReturnTupleWithErrorsAndWarnings<Type> = [Type, Issue[], Issue[]]
 export type Bounds = [number, number]
 
 /**
+ * Type guard for an ordered pair of numbers (e.g. bounds).
+ *
+ * @param value - A possible ordered pair of numbers.
+ * @returns Whether the value is an ordered pair of number.
+ */
+export function isNumberPair(value: unknown): value is Bounds {
+  return Array.isArray(value) && value.length === 2 && value.every((bound) => typeof bound === 'number')
+}
+
+/**
+ * An arbitrary object parsed from JSON.
+ */
+export type JsonObject = Record<string, unknown>
+
+/**
+ * Type guard for a plain object (presumably parsed from a JSON string).
+ *
+ * @param value - A possible plain object.
+ * @returns Whether the value is a plain JSON object.
+ */
+export function isJsonObject(value: unknown): value is JsonObject {
+  return isPlainObject(value) && Object.getOwnPropertySymbols(value).length === 0
+}
+
+/**
  * Exception with an errno field.
  *
  * Borrowed from {@link https://www.npmjs.com/package/@types/node \@types/node} for compatibility reasons.
  */
 export interface ErrnoException extends Error {
-  errno?: number | undefined
-  code?: string | undefined
-  path?: string | undefined
-  syscall?: string | undefined
+  errno?: number
+  code?: string
+  path?: string
+  syscall?: string
 }

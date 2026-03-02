@@ -61,7 +61,7 @@ export class BidsHedIssue {
   /**
    * Constructs a BidsHedIssue object.
    *
-   * @deprecated Direct use of this constructor is not recommended. Use {@link BidsHedIssue.fromHedIssues}.
+   * @internal Direct use of this constructor is not recommended. Use {@link BidsHedIssue.fromHedIssues}.
    *
    * @param hedIssue - The HED issue object to be wrapped.
    * @param file - The file object associated with this issue.

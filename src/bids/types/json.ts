@@ -13,6 +13,7 @@ import { IssueError, addIssueParameters, type Issue } from '../../issues/issues'
 import { DefinitionManager, Definition } from '../../parser/definitionManager'
 import { type HedSchemas } from '../../schema/containers'
 import type ParsedHedColumnSplice from '../../parser/parsedHedColumnSplice'
+import { type JsonObject } from '../../utils/types'
 
 const ILLEGAL_SIDECAR_KEYS = new Set(['hed', 'n/a'])
 
@@ -25,7 +26,7 @@ export class BidsJsonFile extends BidsFile {
   /**
    * This file's JSON data.
    */
-  public readonly jsonData: Record<string, unknown>
+  public readonly jsonData: JsonObject
 
   /**
    * Constructor for a BIDS JSON file.
@@ -36,7 +37,7 @@ export class BidsJsonFile extends BidsFile {
    * @param file - The file object representing this file.
    * @param jsonData - The JSON data for this file.
    */
-  public constructor(name: string, file: FilePath, jsonData: Record<string, unknown>) {
+  public constructor(name: string, file: FilePath, jsonData: JsonObject) {
     super(name, file, BidsHedSidecarValidator)
     this.jsonData = jsonData
   }
@@ -104,7 +105,7 @@ export class BidsSidecar extends BidsJsonFile {
   public constructor(
     name: string,
     file: FilePath,
-    sidecarData: Record<string, unknown> = {},
+    sidecarData: JsonObject = {},
     defManager: DefinitionManager | null = null,
   ) {
     super(name, file, sidecarData)

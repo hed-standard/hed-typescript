@@ -116,7 +116,7 @@ export function cleanupEmpties(stringIn: string): string {
   const trailingCommaRegEx = /,\s*$/g // Remove trailing commas
   const innerCommaRegEx = /,\s*,+/g // Collapse multiple commas inside
   const emptyParensRegEx = /\(\s*\)/g // Remove completely empty parentheses
-  const redundantParensRegEx = /\(\s*([,\s]*)\s*\)/g // Remove redundant empty-like parens
+  // const redundantParensRegEx = /\(\s*([,\s]*)\s*\)/g // Remove redundant empty-like parens
   const trailingInnerCommaRegEx = /[\s,]+\)/g // Remove trailing commas and spaces inside parentheses
 
   let result = stringIn
@@ -129,9 +129,10 @@ export function cleanupEmpties(stringIn: string): string {
     result = result.replace(emptyParensRegEx, '')
 
     // Step 2: Remove redundant parentheses containing only commas/spaces
-    result = result.replace(redundantParensRegEx, (match, group1: string) => {
+    // TODO: Does this step do anything?
+    /* result = result.replace(redundantParensRegEx, (match, group1: string) => {
       return /^[,\s()]*$/.test(group1) ? '' : `(${group1.replace(/^\s*,|,\s*$/g, '').trim()})`
-    })
+    }) */
 
     // Step 3: Remove leading and trailing commas
     result = result.replace(leadingCommaRegEx, '')

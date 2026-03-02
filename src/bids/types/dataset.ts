@@ -12,6 +12,7 @@ import { BidsTsvFile } from './tsv'
 import { generateIssue, IssueError } from '../../issues/issues'
 import { type HedSchemas } from '../../schema/containers'
 import { getMergedSidecarData, organizedPathsGenerator } from '../../utils/paths'
+import { parseJson } from '../../utils/string'
 
 type BidsFileAccessorConstructor<FileType> = {
   create(datasetRootDirectory: string | object): Promise<BidsFileAccessor<FileType>>
@@ -145,7 +146,7 @@ export class BidsDataset<FileType> {
       if (descriptionContentString === null || typeof descriptionContentString === 'undefined') {
         IssueError.generateAndThrow('missingSchemaSpecification', { file: datasetDescriptionFileName })
       }
-      description = new BidsJsonFile(datasetDescriptionFileName, {}, JSON.parse(descriptionContentString))
+      description = new BidsJsonFile(datasetDescriptionFileName, {}, parseJson(descriptionContentString))
     } catch (e) {
       if (e instanceof IssueError) {
         throw e
@@ -210,7 +211,7 @@ export class BidsDataset<FileType> {
               return sidecarIssues
             }
             try {
-              const jsonData = JSON.parse(jsonText)
+              const jsonData = parseJson(jsonText)
               const sidecar = new BidsSidecar(fileName, { path: jsonPath, name: fileName }, jsonData)
               this.sidecarMap.set(jsonPath, sidecar)
             } catch (e) {
@@ -231,10 +232,16 @@ export class BidsDataset<FileType> {
             return sidecarIssues
           })
           .catch((e) => {
-            const errorMessage = `Unexpected exception '${e.message}' occurred when setting sidecar: ${jsonPath}`
+            let errorMessage
+            if (e instanceof Error) {
+              errorMessage = e.message
+            } else {
+              errorMessage = String(e)
+            }
+            const issueMessage = `Unexpected exception '${errorMessage}' occurred when setting sidecar: ${jsonPath}`
             return [
               BidsHedIssue.fromHedIssue(
-                generateIssue('fileReadError', { filename: `${jsonPath}`, message: `${errorMessage}` }),
+                generateIssue('fileReadError', { filename: `${jsonPath}`, message: `${issueMessage}` }),
                 { path: jsonPath, name: fileName },
               ),
             ]
