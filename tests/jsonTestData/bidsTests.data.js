@@ -1303,7 +1303,11 @@ export const bidsTestData = [
         eventsString: 'onset\tduration\tvehicle\tspeed\n' + '19\t6\ttrain\t5\n',
         sidecarErrors: [
           BidsHedIssue.fromHedIssue(
-            generateIssue('missingPlaceholder', { string: 'Blue,Speed', sidecarKey: 'speed', filePath: 'invalid-no-placeholder-value-column.json' }),
+            generateIssue('missingPlaceholder', {
+              string: 'Blue,Speed',
+              sidecarKey: 'speed',
+              filePath: 'invalid-no-placeholder-value-column.json',
+            }),
             {
               path: 'invalid-no-placeholder-value-column.json',
             },
@@ -1312,7 +1316,11 @@ export const bidsTestData = [
         tsvErrors: [],
         comboErrors: [
           BidsHedIssue.fromHedIssue(
-            generateIssue('missingPlaceholder', { string: 'Blue,Speed', sidecarKey: 'speed', filePath: 'invalid-no-placeholder-value-column.tsv' }),
+            generateIssue('missingPlaceholder', {
+              string: 'Blue,Speed',
+              sidecarKey: 'speed',
+              filePath: 'invalid-no-placeholder-value-column.tsv',
+            }),
             {
               path: 'invalid-no-placeholder-value-column.tsv',
             },
@@ -1332,7 +1340,11 @@ export const bidsTestData = [
         eventsString: 'onset\tduration\tvehicle\tspeed\n' + '19\t6\ttrain\t5\n',
         sidecarErrors: [
           BidsHedIssue.fromHedIssue(
-            generateIssue('invalidSidecarPlaceholder', { sidecarKey: 'speed', string: 'Label/#, Speed/# mph', filePath: 'invalid-multiple-placeholders-in-value-column.json' }),
+            generateIssue('invalidSidecarPlaceholder', {
+              sidecarKey: 'speed',
+              string: 'Label/#, Speed/# mph',
+              filePath: 'invalid-multiple-placeholders-in-value-column.json',
+            }),
             {
               path: 'invalid-multiple-placeholders-in-value-column.json',
             },
@@ -1341,7 +1353,11 @@ export const bidsTestData = [
         tsvErrors: [],
         comboErrors: [
           BidsHedIssue.fromHedIssue(
-            generateIssue('invalidSidecarPlaceholder', { sidecarKey: 'speed', string: 'Label/#, Speed/# mph', filePath: 'invalid-multiple-placeholders-in-value-column.tsv' }),
+            generateIssue('invalidSidecarPlaceholder', {
+              sidecarKey: 'speed',
+              string: 'Label/#, Speed/# mph',
+              filePath: 'invalid-multiple-placeholders-in-value-column.tsv',
+            }),
             {
               path: 'invalid-multiple-placeholders-in-value-column.tsv',
             },
@@ -1559,7 +1575,11 @@ export const bidsTestData = [
         eventsString: 'onset\tduration\tspeed\n' + '19\t6\t5\n',
         sidecarErrors: [
           BidsHedIssue.fromHedIssue(
-            generateIssue('missingDefinitionForDef', { definition: 'missingdef', sidecarKey: 'speed', filePath: 'invalid-missing-definition-for-def.json' }),
+            generateIssue('missingDefinitionForDef', {
+              definition: 'missingdef',
+              sidecarKey: 'speed',
+              filePath: 'invalid-missing-definition-for-def.json',
+            }),
             {
               path: 'invalid-missing-definition-for-def.json',
             },
@@ -1568,7 +1588,11 @@ export const bidsTestData = [
         tsvErrors: [],
         comboErrors: [
           BidsHedIssue.fromHedIssue(
-            generateIssue('missingDefinitionForDef', { definition: 'missingdef', sidecarKey: 'speed', filePath: 'invalid-missing-definition-for-def.tsv' }),
+            generateIssue('missingDefinitionForDef', {
+              definition: 'missingdef',
+              sidecarKey: 'speed',
+              filePath: 'invalid-missing-definition-for-def.tsv',
+            }),
             {
               path: 'invalid-missing-definition-for-def.tsv',
             },
@@ -1588,7 +1612,11 @@ export const bidsTestData = [
         eventsString: 'onset\tduration\tspeed\n' + '19\t6\t5\n',
         sidecarErrors: [
           BidsHedIssue.fromHedIssue(
-            generateIssue('missingDefinitionForDefExpand', { definition: 'missingdefexpand', sidecarKey: 'speed', filePath: 'invalid-missing-definition-for-def-expand.json' }),
+            generateIssue('missingDefinitionForDefExpand', {
+              definition: 'missingdefexpand',
+              sidecarKey: 'speed',
+              filePath: 'invalid-missing-definition-for-def-expand.json',
+            }),
             {
               path: 'invalid-missing-definition-for-def-expand.json',
             },
@@ -1597,7 +1625,11 @@ export const bidsTestData = [
         tsvErrors: [],
         comboErrors: [
           BidsHedIssue.fromHedIssue(
-            generateIssue('missingDefinitionForDefExpand', { definition: 'missingdefexpand', sidecarKey: 'speed', filePath: 'invalid-missing-definition-for-def-expand.tsv' }),
+            generateIssue('missingDefinitionForDefExpand', {
+              definition: 'missingdefexpand',
+              sidecarKey: 'speed',
+              filePath: 'invalid-missing-definition-for-def-expand.tsv',
+            }),
             {
               path: 'invalid-missing-definition-for-def-expand.tsv',
             },

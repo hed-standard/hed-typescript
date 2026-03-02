@@ -1,6 +1,8 @@
-/** This module holds the schema entity classes.
+/**
+ * This module holds the schema entity classes.
  * @module schema/entries
  */
+
 import pluralize from 'pluralize'
 pluralize.addUncountableRule('hertz')
 
@@ -43,7 +45,8 @@ export class SchemaEntries {
 
   /**
    * Constructor.
-   * @param schemaParser A constructed schema parser.
+   *
+   * @param schemaParser - A constructed schema parser.
    */
   constructor(schemaParser: SchemaParser) {
     this.properties = new SchemaEntryManager(schemaParser.properties)
@@ -67,7 +70,7 @@ export class SchemaEntryManager<T extends SchemaEntry> {
   /**
    * Constructor.
    *
-   * @param definitions A map of schema entry definitions.
+   * @param definitions - A map of schema entry definitions.
    */
   constructor(definitions: Map<string, T>) {
     this._definitions = definitions
@@ -104,7 +107,7 @@ export class SchemaEntryManager<T extends SchemaEntry> {
   /**
    * Determine whether the entry with the given name exists.
    *
-   * @param name The name of the entry.
+   * @param name - The name of the entry.
    * @return Whether the entry exists.
    */
   public hasEntry(name: string): boolean {
@@ -114,7 +117,7 @@ export class SchemaEntryManager<T extends SchemaEntry> {
   /**
    * Get the entry with the given name.
    *
-   * @param name The name of the entry to retrieve.
+   * @param name - The name of the entry to retrieve.
    * @returns The entry with that name.
    */
   public getEntry(name: string): T {
@@ -124,7 +127,7 @@ export class SchemaEntryManager<T extends SchemaEntry> {
   /**
    * Get a collection of entries with the given boolean attribute.
    *
-   * @param booleanAttributeName The name of boolean attribute to filter on.
+   * @param booleanAttributeName - The name of boolean attribute to filter on.
    * @returns A subset of the managed collection with the given boolean attribute.
    */
   public getEntriesWithBooleanAttribute(booleanAttributeName: string): Map<string, T> {
@@ -136,7 +139,7 @@ export class SchemaEntryManager<T extends SchemaEntry> {
   /**
    * Filter the map underlying this manager.
    *
-   * @param fn The filtering function.
+   * @param fn - The filtering function.
    * @returns A subset of the managed collection satisfying the filter.
    */
   public filter(fn: (entry: [string, T]) => boolean): Map<string, T> {
@@ -179,10 +182,11 @@ export class SchemaEntry {
    *
    * This method is a stub to be overridden in {@link SchemaEntryWithAttributes}.
    *
-   * @param attributeName The attribute to check for.
+   * @param attributeName - The attribute to check for.
    * @returns Whether this schema entry has this attribute.
    */
-  // eslint-disable-next-line no-unused-vars
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public hasBooleanAttribute(attributeName: string): boolean {
     return false
   }
@@ -205,8 +209,8 @@ export class SchemaAttribute extends SchemaEntry {
   /**
    * Constructor.
    *
-   * @param name The name of the schema attribute.
-   * @param properties The properties assigned to this schema attribute.
+   * @param name - The name of the schema attribute.
+   * @param properties - The properties assigned to this schema attribute.
    */
   constructor(name: string, properties: Set<SchemaProperty>) {
     super(name)
@@ -261,7 +265,8 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
 
   /**
    * Whether this schema entry has this attribute (by name).
-   * @param attributeName The attribute to check for.
+   *
+   * @param attributeName - The attribute to check for.
    * @returns Whether this schema entry has this attribute.
    */
   public hasAttribute(attributeName: string): boolean {
@@ -270,7 +275,8 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
 
   /**
    * Whether this schema entry has this boolean attribute (by name).
-   * @param attributeName The attribute to check for.
+   *
+   * @param attributeName - The attribute to check for.
    * @returns Whether this schema entry has this attribute.
    */
   public hasBooleanAttribute(attributeName: string): boolean {
@@ -279,7 +285,8 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
 
   /**
    * Retrieve a single value of a value attribute (by name) on this schema entry, throwing an error if more than one value exists.
-   * @param attributeName The attribute whose value should be returned.
+   *
+   * @param attributeName - The attribute whose value should be returned.
    * @returns The value of the attribute.
    * @throws {IssueError} If the attribute has more than one value.
    */
@@ -297,7 +304,8 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
 
   /**
    * Retrieve all values of a value attribute (by name) on this schema entry.
-   * @param attributeName The attribute whose value should be returned.
+   *
+   * @param attributeName - The attribute whose value should be returned.
    * @returns The values of the attribute.
    */
   public getAttributeValues(attributeName: string): string[] | undefined {
@@ -317,10 +325,10 @@ export class SchemaUnit extends SchemaEntryWithAttributes {
   /**
    * Constructor.
    *
-   * @param name The name of the unit.
-   * @param booleanAttributes This unit's boolean attributes.
-   * @param valueAttributes This unit's key-value attributes.
-   * @param unitModifiers The collection of unit modifiers.
+   * @param name - The name of the unit.
+   * @param booleanAttributes - This unit's boolean attributes.
+   * @param valueAttributes - This unit's key-value attributes.
+   * @param unitModifiers - The collection of unit modifiers.
    */
   constructor(
     name: string,
@@ -379,7 +387,7 @@ export class SchemaUnit extends SchemaEntryWithAttributes {
   /**
    * Determine if a value has this unit.
    *
-   * @param value Either the whole value or the part after a blank (if not a prefix unit)
+   * @param value - Either the whole value or the part after a blank (if not a prefix unit)
    * @returns Whether the value has these units.
    */
   public validateUnit(value: string): boolean {
@@ -405,17 +413,16 @@ export class SchemaUnit extends SchemaEntryWithAttributes {
 export class SchemaUnitClass extends SchemaEntryWithAttributes {
   /**
    * The units for this unit class.
-   * @type {Map<string, SchemaUnit>}
    */
   private readonly _units: Map<string, SchemaUnit>
 
   /**
    * Constructor.
    *
-   * @param name The name of this unit class.
-   * @param booleanAttributes The boolean attributes for this unit class.
-   * @param valueAttributes The value attributes for this unit class.
-   * @param units The units for this unit class.
+   * @param name - The name of this unit class.
+   * @param booleanAttributes - The boolean attributes for this unit class.
+   * @param valueAttributes - The value attributes for this unit class.
+   * @param units - The units for this unit class.
    */
   constructor(
     name: string,
@@ -442,8 +449,10 @@ export class SchemaUnitClass extends SchemaEntryWithAttributes {
   }
 
   /**
-   * Extracts the Unit class and remainder
-   * @returns Unit class, unit string, and value string
+   * Extract the unit class and remainder.
+   *
+   * @param value - A value-containing string.
+   * @returns A tuple with the unit class, unit string, and value string
    */
   public extractUnit(value: string): [SchemaUnit | null, string | null, string] {
     let actualUnit = null // The Unit class of the value
@@ -504,11 +513,11 @@ export class SchemaValueClass extends SchemaEntryWithAttributes {
   /**
    * Constructor.
    *
-   * @param name The name of this value class.
-   * @param booleanAttributes The boolean attributes for this value class.
-   * @param valueAttributes The value attributes for this value class.
-   * @param charClassRegex The character class-based regular expression for this value class.
-   * @param wordRegex The "word form"-based regular expression for this value class.
+   * @param name - The name of this value class.
+   * @param booleanAttributes - The boolean attributes for this value class.
+   * @param valueAttributes - The value attributes for this value class.
+   * @param charClassRegex - The character class-based regular expression for this value class.
+   * @param wordRegex - The "word form"-based regular expression for this value class.
    */
 
   constructor(
@@ -526,7 +535,7 @@ export class SchemaValueClass extends SchemaEntryWithAttributes {
   /**
    * Determine if a value is valid according to this value class.
    *
-   * @param value A HED value.
+   * @param value - A HED value.
    * @returns Whether the value conforms to this value class.
    */
   public validateValue(value: string): boolean {
@@ -566,11 +575,11 @@ export class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * Constructor.
    *
-   * @param name The name of this tag.
-   * @param booleanAttributes The boolean attributes for this tag.
-   * @param valueAttributes The value attributes for this tag.
-   * @param unitClasses The unit classes for this tag.
-   * @param valueClasses The value classes for this tag.
+   * @param name - The name of this tag.
+   * @param booleanAttributes - The boolean attributes for this tag.
+   * @param valueAttributes - The value attributes for this tag.
+   * @param unitClasses - The unit classes for this tag.
+   * @param valueClasses - The value classes for this tag.
    */
   constructor(
     name: string,
@@ -614,7 +623,8 @@ export class SchemaTag extends SchemaEntryWithAttributes {
 
   /**
    * Set the tag's value-taking child tag.
-   * @param newValueTag The new value-taking child tag.
+   *
+   * @param newValueTag - The new value-taking child tag.
    */
   public set valueTag(newValueTag: SchemaValueTag) {
     if (!this._isPrivateFieldSet(this._valueTag, 'value tag')) {
@@ -631,7 +641,8 @@ export class SchemaTag extends SchemaEntryWithAttributes {
 
   /**
    * Set the tag's parent tag.
-   * @param newParent The new parent tag.
+   *
+   * @param newParent - The new parent tag.
    */
   public set parent(newParent: SchemaTag) {
     if (!this._isPrivateFieldSet(this._parent, 'parent')) {
@@ -642,13 +653,12 @@ export class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * Throw an error if a private field is already set.
    *
-   * @param field The field being set.
-   * @param fieldName The name of the field (for error reporting).
-   * @return Whether the field is set (never returns true).
+   * @param field - The field being set.
+   * @param fieldName - The name of the field (for error reporting).
+   * @returns Whether the field is set (never returns true).
    * @throws {IssueError} If the field is already set.
-   * @private
    */
-  private _isPrivateFieldSet(field: any, fieldName: string): boolean {
+  private _isPrivateFieldSet(field: unknown, fieldName: string): boolean {
     if (field !== undefined) {
       IssueError.generateAndThrowInternalError(
         `Attempted to set ${fieldName} for schema tag ${this.longName} when it already has one.`,
@@ -681,7 +691,7 @@ export class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * Extend this tag's short name.
    *
-   * @param extension The extension.
+   * @param extension - The extension.
    * @returns The extended short string.
    */
   public extend(extension: string): string {
@@ -695,7 +705,7 @@ export class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * Extend this tag's long name.
    *
-   * @param extension The extension.
+   * @param extension - The extension.
    * @returns The extended long string.
    */
   public longExtend(extension: string): string {
@@ -724,7 +734,7 @@ export class SchemaValueTag extends SchemaTag {
   /**
    * Extend this tag's short name.
    *
-   * @param extension The extension.
+   * @param extension - The extension.
    * @returns The extended short string.
    */
   public extend(extension: string): string {
@@ -734,7 +744,7 @@ export class SchemaValueTag extends SchemaTag {
   /**
    * Extend this tag's long name.
    *
-   * @param extension The extension.
+   * @param extension - The extension.
    * @returns The extended long string.
    */
   public longExtend(extension: string): string {

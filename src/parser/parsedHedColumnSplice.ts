@@ -1,10 +1,10 @@
-/** This module holds the column splice class.
+/**
+ * This module holds the column splice class.
  * @module parser/parsedHedColumnSplice
  */
 
 import ParsedHedSubstring from './parsedHedSubstring'
-import ParsedHedGroup from './parsedHedGroup'
-import ParsedHedString from './parsedHedString'
+import { type Bounds } from '../utils/types'
 
 /**
  * A template for an inline column splice in a HED string.
@@ -12,54 +12,49 @@ import ParsedHedString from './parsedHedString'
  * @see {@link ParsedHedString}
  * @see {@link ParsedHedGroup}
  */
-export class ParsedHedColumnSplice extends ParsedHedSubstring {
+export default class ParsedHedColumnSplice extends ParsedHedSubstring {
   /**
    * The normalized string representation of this column splice.
-   * @type {string}
-   * @private
    */
-  _normalized
+  private readonly _normalized: string
 
   /**
    * Constructor.
    *
-   * @param {string} columnName The token for this tag.
-   * @param {number[]} bounds The collection of HED schemas.
+   * @param columnName - The name of the referenced column.
+   * @param bounds - The bounds of the column splice.
    */
-  constructor(columnName, bounds) {
+  public constructor(columnName: string, bounds: Bounds) {
     super(columnName, bounds) // Sets originalTag and originalBounds
     this._normalized = this.format(false) // Sets various forms of the tag.
   }
 
   /**
    * Get the normalized version of the object.
-   *
-   * @returns {string}
    */
-  get normalized() {
+  public get normalized(): string {
     return this._normalized
   }
 
   /**
    * Nicely format this column splice template.
    *
-   * @param {boolean} long Whether the tags should be in long form.
-   * @returns {string} The formatted column splice template.
+   * @param long - Whether the tags should be in long form.
+   * @returns The formatted column splice template.
    */
-  // eslint-disable-next-line no-unused-vars
-  format(long = true) {
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public format(long: boolean): string {
     return '{' + this.originalTag + '}'
   }
 
   /**
    * Determine if this column splice is equivalent to another.
    *
-   * @param {ParsedHedColumnSplice} other The other column splice.
-   * @returns {boolean} Whether the two column splices are equivalent.
+   * @param other - The other column splice.
+   * @returns Whether the two column splices are equivalent.
    */
-  equivalent(other) {
+  public equivalent(other: unknown): boolean {
     return other instanceof ParsedHedColumnSplice && this.originalTag === other.originalTag
   }
 }
-
-export default ParsedHedColumnSplice

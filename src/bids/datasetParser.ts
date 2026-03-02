@@ -1,6 +1,7 @@
 /**
  * Provides file access for BIDS datasets.
  *
+ * @remarks
  * This module contains the {@link BidsFileAccessor} class and its subclasses, which are responsible for reading files
  * from a BIDS dataset in different environments (e.g., a local directory or a web browser).
  *
@@ -13,17 +14,19 @@
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 
-import { organizePaths } from '../utils/paths'
-import { IssueError } from '../issues/issues'
 import { buildBidsSchemas } from './schema'
 import { type BidsJsonFile } from './types/json'
+import { IssueError } from '../issues/issues'
 import { type HedSchemas } from '../schema/containers'
+import { organizePaths } from '../utils/paths'
+import { type ErrnoException } from '../utils/types'
 
 type SchemaBuilder = (datasetDescription: BidsJsonFile) => Promise<HedSchemas>
 
 /**
  * Base class for BIDS file accessors.
  *
+ * @remarks
  * This class provides a common interface for accessing files in a BIDS dataset, regardless of the underlying storage
  * mechanism. Subclasses must implement the `create` and `getFileContent` methods.
  */
@@ -46,7 +49,7 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * The HED schema builder function.
    */
-  protected readonly schemaBuilder: SchemaBuilder
+  readonly schemaBuilder: SchemaBuilder
 
   /**
    * BIDS suffixes.
@@ -64,14 +67,14 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * BIDS special directories.
    */
-  private static readonly SPECIAL_DIRS: string[] = ['phenotype', 'stimuli']
+  static readonly SPECIAL_DIRS: string[] = ['phenotype', 'stimuli']
 
   /**
    * Constructs a BidsFileAccessor.
    *
-   * @param datasetRootDirectory The root directory of the dataset.
-   * @param fileMap A map of relative file paths to file representations (e.g., `File` objects for web, full paths for Node.js).
-   * @param schemaBuilder The HED schema builder function.
+   * @param datasetRootDirectory - The root directory of the dataset.
+   * @param fileMap - A map of relative file paths to file representations (e.g., `File` objects for web, full paths for Node.js).
+   * @param schemaBuilder - The HED schema builder function.
    */
   protected constructor(datasetRootDirectory: string, fileMap: Map<string, FileType>, schemaBuilder: SchemaBuilder) {
     if (typeof datasetRootDirectory !== 'string') {
@@ -91,9 +94,10 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * Initializes the file map and organized paths.
    *
+   * @remarks
    * This method filters the file map to include only BIDS-related files and organizes them by type and category.
    *
-   * @param fileMap A map of relative file paths to file representations.
+   * @param fileMap - A map of relative file paths to file representations.
    */
   private _initialize(fileMap: Map<string, FileType>) {
     const relativeFilePaths = Array.from(fileMap.keys())
@@ -104,7 +108,7 @@ export abstract class BidsFileAccessor<FileType> {
     )
     this.organizedPaths = organizedPaths
 
-    const newFileMap = new Map()
+    const newFileMap = new Map<string, FileType>()
     for (const candidate of candidates) {
       newFileMap.set(candidate, fileMap.get(candidate))
     }
@@ -114,9 +118,10 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * Asynchronously reads the content of a file.
    *
+   * @remarks
    * This method must be implemented by subclasses to handle environment-specific file reading.
    *
-   * @param relativePath The relative path to the file.
+   * @param relativePath - The relative path to the file.
    * @returns A promise that resolves with the file content as a string, or null if the file cannot be read.
    * @throws {IssueError} If the method is not implemented by a subclass.
    */
@@ -150,8 +155,8 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
   /**
    * Constructs a BidsDirectoryAccessor.
    *
-   * @param datasetRootDirectory The absolute path to the dataset's root directory.
-   * @param fileMap A map of relative file paths to their absolute paths.
+   * @param datasetRootDirectory - The absolute path to the dataset's root directory.
+   * @param fileMap - A map of relative file paths to their absolute paths.
    * @throws {IssueError} If the dataset root directory path is invalid.
    */
   private constructor(datasetRootDirectory: string, fileMap: Map<string, string>) {
@@ -167,7 +172,7 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
    *
    * This method recursively reads the specified directory and creates a file map.
    *
-   * @param datasetRootDirectory The absolute path to the dataset's root directory.
+   * @param datasetRootDirectory - The absolute path to the dataset's root directory.
    * @returns A Promise that resolves to a new BidsDirectoryAccessor instance.
    * @throws {IssueError} If the dataset root directory path is empty.
    */
@@ -176,7 +181,7 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
       IssueError.generateAndThrowInternalError('Must have a non-empty dataset root directory path.')
     }
     const resolvedDatasetRoot = path.resolve(datasetRootDirectory)
-    const fileMap = new Map()
+    const fileMap = new Map<string, string>()
     await BidsDirectoryAccessor._readDirRecursive(resolvedDatasetRoot, resolvedDatasetRoot, fileMap)
     return new BidsDirectoryAccessor(resolvedDatasetRoot, fileMap)
   }
@@ -184,7 +189,7 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
   /**
    * Asynchronously reads the content of a file from the file system.
    *
-   * @param relativePath The relative path to the file within the dataset.
+   * @param relativePath - The relative path to the file within the dataset.
    * @returns A promise that resolves with the file content as a string, or null if the file is not found or an error occurs.
    */
   public async getFileContent(relativePath: string): Promise<string | null> {
@@ -203,9 +208,9 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
   /**
    * Recursively reads directory contents and populates the file map.
    *
-   * @param dir The directory to read.
-   * @param baseDir The base directory to calculate relative paths from.
-   * @param fileMapRef The Map to populate with relativePath: absolutePath.
+   * @param dir - The directory to read.
+   * @param baseDir - The base directory to calculate relative paths from.
+   * @param fileMapRef - The Map to populate with relativePath: absolutePath.
    */
   private static async _readDirRecursive(dir: string, baseDir: string, fileMapRef: Map<string, string>): Promise<void> {
     try {
@@ -236,10 +241,10 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
       // The ENOTDIR error for 'dir' itself should be prevented by the isDirectory() check.
       // We only log a warning if the error is not ENOENT for the base directory,
       // or if it's any other error for subdirectories.
-      if (err.code === 'ENOENT' && dir === baseDir) {
+      if ((err as ErrnoException).code === 'ENOENT' && dir === baseDir) {
         // This means the initial datasetRootDirectory does not exist.
         // This is an expected case for one of the tests, so no warning needed here.
-      } else if (err.code === 'ENOTDIR' && dir === baseDir) {
+      } else if ((err as ErrnoException).code === 'ENOTDIR' && dir === baseDir) {
         // This means the initial datasetRootDirectory was a file.
         // This is also an expected case for one of the tests, so no warning needed here.
       } else {

@@ -4,7 +4,7 @@
  */
 
 import issueData, { type IssueLevel } from './data'
-import { isNumberPair } from '../utils/array'
+import { type Bounds, isNumberPair } from '../utils/types'
 
 export type IssueParameters = Record<string, unknown>
 type IssueSavedParameters = Record<string, string>
@@ -18,10 +18,10 @@ export class IssueError extends Error {
   /**
    * Constructor.
    *
-   * @param issue The associated HED issue.
-   * @param params Extra parameters (to be forwarded to the {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error | Error} constructor).
+   * @param issue - The associated HED issue.
+   * @param params - Extra parameters (to be forwarded to the {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error | Error} constructor).
    */
-  constructor(issue: Issue, ...params: any[]) {
+  constructor(issue: Issue, ...params: unknown[]) {
     // Pass remaining arguments (including vendor specific ones) to parent constructor
     super(issue.message, ...params)
 
@@ -39,22 +39,51 @@ export class IssueError extends Error {
   /**
    * Generate a new {@link Issue} object and immediately throw it as an {@link IssueError}.
    *
-   * @param internalCode The internal error code.
-   * @param parameters The error string parameters.
+   * @param internalCode - The internal error code.
+   * @param parameters - The error string parameters.
    * @throws {IssueError} Corresponding to the generated {@link Issue}.
    */
-  public static generateAndThrow(internalCode: string, parameters: IssueParameters = {}) {
+  public static generateAndThrow(internalCode: string, parameters: IssueParameters = {}): never {
     throw new IssueError(generateIssue(internalCode, parameters))
   }
 
   /**
    * Generate a new {@link Issue} object for an internal error and immediately throw it as an {@link IssueError}.
    *
-   * @param message A message describing the internal error. The message should not end with any punctuation.
+   * @param message - A message describing the internal error. The message should not end with any punctuation.
    * @throws {IssueError} Corresponding to the generated internal error {@link Issue}.
    */
-  public static generateAndThrowInternalError(message: string = 'Unknown internal error') {
+  public static generateAndThrowInternalError(message: string = 'Unknown internal error'): never {
     IssueError.generateAndThrow('internalError', { message: message })
+  }
+
+  /**
+   * Generate and re-throw an error according to {@code generateFn}.
+   *
+   * @remarks
+   * This method will pass {@code error} to {@code generateFn}, unless it is not an {@link Error} object (in which case,
+   * it will generate an internal error via {@link IssueError.generateAndThrowInternalError}). {@code generateFn} is
+   * expected to return an internal issue code and parameter object, which will be passed to
+   * {@link IssueError.generateAndThrow}. Failure to provide an internal issue code will also result in an internal error.
+   *
+   * @param error This is expected to be an object of {@code Error} or a subclass.
+   * @param generateFn A function which is passed the screened error object and returns an internal error code and parameter object.
+   * @param illegalErrorTypeMessage A message to be used for an illegal error type.
+   */
+  public static generateAndRethrow(
+    error: unknown,
+    generateFn: (error: Error) => [string, IssueParameters],
+    illegalErrorTypeMessage: string = 'Unknown internal error',
+  ): never {
+    if (error instanceof Error) {
+      const [internalCode, parameters] = generateFn(error)
+      if (!internalCode) {
+        IssueError.generateAndThrowInternalError('Failed to provide valid internal code to re-throw static method')
+      }
+      IssueError.generateAndThrow(internalCode, parameters)
+    } else {
+      IssueError.generateAndThrowInternalError(illegalErrorTypeMessage)
+    }
   }
 }
 
@@ -87,7 +116,7 @@ export class Issue {
   /**
    * The bounds of this issue.
    */
-  _bounds: [number, number] | undefined
+  _bounds: Bounds | undefined
 
   /**
    * The parameters to the error message template.
@@ -97,10 +126,10 @@ export class Issue {
   /**
    * Constructor.
    *
-   * @param internalCode The internal error code.
-   * @param hedCode The HED 3 error code.
-   * @param level The issue level (error or warning).
-   * @param parameters The error string parameters.
+   * @param internalCode - The internal error code.
+   * @param hedCode - The HED 3 error code.
+   * @param level - The issue level (error or warning).
+   * @param parameters - The error string parameters.
    */
   constructor(internalCode: string, hedCode: string, level: IssueLevel, parameters: IssueParameters) {
     this.internalCode = internalCode
@@ -145,7 +174,7 @@ export class Issue {
    *
    * @returns The issue bounds within the parent string.
    */
-  public get bounds(): [number, number] | undefined {
+  public get bounds(): Bounds | undefined {
     return this._bounds
   }
 
@@ -168,7 +197,7 @@ export class Issue {
   /**
    * Set new parameters by converting all parameters except the substring bounds (an integer array) to their string forms.
    *
-   * @param parameters The new issue parameters.
+   * @param parameters - The new issue parameters.
    */
   public set parameters(parameters: IssueParameters) {
     this._parameters = {}
@@ -178,7 +207,7 @@ export class Issue {
   /**
    * Determine whether this issue has a given parameter.
    *
-   * @param name The parameter name to check.
+   * @param name - The parameter name to check.
    * @returns Whether this issue already has a parameter by that name.
    */
   public hasParameter(name: string): boolean {
@@ -191,8 +220,8 @@ export class Issue {
   /**
    * Add a new parameter value.
    *
-   * @param name The parameter name.
-   * @param value The new parameter value.
+   * @param name - The parameter name.
+   * @param value - The new parameter value.
    */
   public addParameter(name: string, value: unknown): void {
     if (this.hasParameter(name)) {
@@ -208,7 +237,7 @@ export class Issue {
   /**
    * Add multiple parameters for this Issue.
    *
-   * @param parameters The new values of the parameters.
+   * @param parameters - The new values of the parameters.
    */
   public addParameters(parameters: IssueParameters): void {
     for (const [key, value] of Object.entries(parameters)) {
@@ -265,8 +294,8 @@ export class Issue {
 /**
  * Generate a new issue object.
  *
- * @param internalCode The internal error code.
- * @param parameters The error string parameters.
+ * @param internalCode - The internal error code.
+ * @param parameters - The error string parameters.
  * @returns An object representing the issue.
  */
 export function generateIssue(internalCode: string, parameters: IssueParameters = {}): Issue {
@@ -284,8 +313,8 @@ export function generateIssue(internalCode: string, parameters: IssueParameters 
 /**
  * Update the parameters of a list of issues.
  *
- * @param issues The list of issues (different types can be intermixed).
- * @param parameters The parameters to add.
+ * @param issues - The list of issues (different types can be intermixed).
+ * @param parameters - The parameters to add.
  */
 export function addIssueParameters(issues: Array<Issue | IssueError>, parameters: IssueParameters) {
   for (const thisIssue of issues) {

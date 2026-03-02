@@ -1,6 +1,8 @@
-/** This module holds the classes for merging partnered schemas.
+/**
+ * This module holds the classes for merging partnered schemas.
  * @module schema/schemaMerger
  */
+
 import { IssueError } from '../issues/issues'
 import { type SchemaAttribute, SchemaEntryManager, SchemaTag, SchemaValueTag } from './entries'
 import { type HedSchema, PartneredSchema } from './containers'
@@ -92,7 +94,7 @@ export default class PartneredSchemaMerger {
   /**
    * Merge a tag from one schema to another.
    *
-   * @param tag The tag to copy.
+   * @param tag - The tag to copy.
    */
   private _mergeTag(tag: SchemaTag): void {
     if (!tag.getAttributeValues('inLibrary')) {
@@ -118,11 +120,11 @@ export default class PartneredSchemaMerger {
   /**
    * Copy a tag from one schema to another.
    *
-   * @param tag The tag to copy.
+   * @param tag - The tag to copy.
    */
   private _copyTagToSchema(tag: SchemaTag): void {
     const booleanAttributes = new Set<SchemaAttribute>()
-    const valueAttributes = new Map<SchemaAttribute, any>()
+    const valueAttributes = new Map<SchemaAttribute, string[]>()
 
     for (const attribute of tag.booleanAttributes) {
       booleanAttributes.add(this.destination.entries.attributes.getEntry(attribute.name) ?? attribute)

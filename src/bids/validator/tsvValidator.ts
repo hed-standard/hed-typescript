@@ -1,6 +1,8 @@
-/** This module holds the tsv validator class.
+/**
+ * This module holds the tsv validator class.
  * @module bids/validator/tsvValidator
  */
+
 import { BidsHedIssue } from '../types/issues'
 import { BidsTsvElement, type BidsTsvFile, BidsTsvRow } from '../types/tsv'
 import { BidsValidator } from './validator'
@@ -29,8 +31,8 @@ export class BidsHedTsvValidator extends BidsValidator {
   /**
    * Constructor.
    *
-   * @param tsvFile The BIDS TSV file being validated.
-   * @param hedSchemas The HED schemas used to validate the tsv file.
+   * @param tsvFile - The BIDS TSV file being validated.
+   * @param hedSchemas - The HED schemas used to validate the tsv file.
    */
   public constructor(tsvFile: BidsTsvFile, hedSchemas: HedSchemas) {
     super(hedSchemas)
@@ -122,8 +124,8 @@ export class BidsHedTsvValidator extends BidsValidator {
   /**
    * Validate a string in this TSV file's HED column.
    *
-   * @param hedString The string to be validated.
-   * @param rowIndex The index of this row in the TSV file.
+   * @param hedString - The string to be validated.
+   * @param rowIndex - The index of this row in the TSV file.
    */
   private _validateHedColumnString(hedString: string, rowIndex: number) {
     if (!hedString) {
@@ -142,7 +144,7 @@ export class BidsHedTsvValidator extends BidsValidator {
   /**
    * Validate the HED data in a combined event TSV file/sidecar BIDS data collection.
    *
-   * @param elements The elements representing the tsv file.
+   * @param elements - The elements representing the tsv file.
    */
   private _validateDataset(elements: BidsTsvElement[]): void {
     // Final top-tag detection cannot be done until the strings are fully assembled and finalized.
@@ -162,7 +164,7 @@ export class BidsHedTsvValidator extends BidsValidator {
   /**
    * Check the temporal relationships among events.
    *
-   * @param elements The elements representing the tsv file.
+   * @param elements - The elements representing the tsv file.
    */
   private _validateTemporal(elements: BidsTsvElement[]): void {
     // Check basic temporal conflicts such as Offset before Onset, or temporal tags with same def at same time.
@@ -182,11 +184,11 @@ export class BidsHedTsvValidator extends BidsValidator {
   /**
    * Check for duplicate tags when multiple rows with the same onset.
    *
-   * ### Note:
+   * @remarks
    * Duplicate onsets are relatively rare and duplicates for single rows are checked when a ParsedHedString is
    * constructed.
    *
-   * @param elements The elements representing the tsv file.
+   * @param elements - The elements representing the tsv file.
    */
   private _checkDuplicatesAcrossRows(elements: BidsTsvElement[]): void {
     const duplicateMap = this._getOnsetMap(elements)
@@ -206,11 +208,11 @@ export class BidsHedTsvValidator extends BidsValidator {
   /**
    * Get map of onsets to BidsTsvElements.
    *
-   * @param elements The elements representing the tsv file.
+   * @param elements - The elements representing the tsv file.
    * @returns Map of onset value to a list of elements with that onset.
    */
   private _getOnsetMap(elements: BidsTsvElement[]): Map<string, BidsTsvElement[]> {
-    const onsetMap = new Map()
+    const onsetMap = new Map<string, BidsTsvElement[]>()
     for (const element of elements) {
       if (!element.hedString) {
         continue
@@ -227,7 +229,7 @@ export class BidsHedTsvValidator extends BidsValidator {
   /**
    * Top group tag requirements may not be satisfied until all splices have been done.
    *
-   * @param elements The elements to be checked.
+   * @param elements - The elements to be checked.
    */
   private _checkNoTopTags(elements: BidsTsvElement[]): void {
     for (const element of elements) {
@@ -248,7 +250,7 @@ export class BidsHedTsvValidator extends BidsValidator {
   /**
    * Verify that this non-temporal file does not contain any temporal tags.
    *
-   * @param elements The elements representing a tsv file (with HED string parsed).
+   * @param elements - The elements representing a tsv file (with HED string parsed).
    */
   private _checkNoTime(elements: BidsTsvElement[]): void {
     for (const element of elements) {
@@ -284,8 +286,8 @@ export class BidsHedTsvParser {
   /**
    * Constructor.
    *
-   * @param tsvFile The BIDS TSV file being parsed.
-   * @param hedSchemas The HED schema collection being parsed against.
+   * @param tsvFile - The BIDS TSV file being parsed.
+   * @param hedSchemas - The HED schema collection being parsed against.
    */
   constructor(tsvFile: BidsTsvFile, hedSchemas: HedSchemas) {
     this.tsvFile = tsvFile
@@ -307,7 +309,7 @@ export class BidsHedTsvParser {
   /**
    * Parse element HED strings.
    *
-   * @param elements The objects representing tsv rows with their parsed HEd strings.
+   * @param elements - The objects representing tsv rows with their parsed HEd strings.
    * @returns The errors and warnings resulting in creating the parsed HED strings.
    */
   private _parseElementStrings(elements: BidsTsvElement[]): [BidsHedIssue[], BidsHedIssue[]] {
@@ -356,7 +358,7 @@ export class BidsHedTsvParser {
   /**
    * Parse the rows in the TSV file into HED strings.
    *
-   * @param tsvHedRows A list of single-row column-to-value mappings.
+   * @param tsvHedRows - A list of single-row column-to-value mappings.
    * @returns A list of row-based parsed HED strings.
    */
   private _parseHedRows(tsvHedRows: Map<string, string>[]): BidsTsvRow[] {
@@ -373,8 +375,8 @@ export class BidsHedTsvParser {
   /**
    * Parse a row in a TSV file into a BIDS row.
    *
-   * @param rowCells The column-to-value mapping for a single row.
-   * @param tsvLine The index of this row in the TSV file.
+   * @param rowCells - The column-to-value mapping for a single row.
+   * @param tsvLine - The index of this row in the TSV file.
    * @returns A parsed HED string.
    */
   private _parseHedRow(rowCells: Map<string, string>, tsvLine: number): BidsTsvRow {
@@ -404,7 +406,7 @@ export class BidsHedTsvParser {
   /**
    * Generate a mapping from tsv columns to strings (may have splices in the strings)
    *
-   * @param rowCells The column-to-value mapping for a single row.
+   * @param rowCells - The column-to-value mapping for a single row.
    * @returns A mapping of column names to their corresponding parsed sidecar strings.
    */
   private _getColumnMapping(rowCells: Map<string, string>): Map<string, string> {
@@ -444,8 +446,9 @@ export class BidsHedTsvParser {
   /**
    * Update the map to splice-in the values for columns that have splices.
    *
-   * @param columnMap Map of column name to HED string for a row.
+   * @param columnMap - Map of column name to HED string for a row.
    *
+   * @remarks
    * Note: Updates the map in place.
    */
   private _spliceValues(columnMap: Map<string, string>) {
@@ -465,12 +468,12 @@ export class BidsHedTsvParser {
   /**
    * Replace a HED string containing slices with a resolved version for the column value in a row.
    *
-   * @param unspliced A HED string possibly with unresolved splices.
-   * @param columnMap The map of column name to HED string for a row.
+   * @param unspliced - A HED string possibly with unresolved splices.
+   * @param columnMap - The map of column name to HED string for a row.
    * @returns The fully resolved HED string with no splices.
    */
   private _replaceSplices(unspliced: string, columnMap: Map<string, string>): string {
-    const result = unspliced.replace(BidsHedTsvParser.braceRegEx, (match, content) => {
+    const result = unspliced.replace(BidsHedTsvParser.braceRegEx, (match, content: string) => {
       // Resolve the replacement value
       const resolved = columnMap.has(content) ? columnMap.get(content) : ''
       // Replace with resolved value or empty string if in nullSet

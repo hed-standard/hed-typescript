@@ -1,6 +1,8 @@
-/** This module holds the schema container classes.
+/**
+ * This module holds the schema container classes.
  * @module schema/containers
  */
+
 import lt from 'semver/functions/lt'
 
 import { IssueError } from '../issues/issues'
@@ -26,8 +28,8 @@ export class HedSchema {
   /**
    * Constructor.
    *
-   * @param entries A collection of schema entries.
-   * @param withStandard The standard HED schema version this schema is linked to.
+   * @param entries - A collection of schema entries.
+   * @param withStandard - The standard HED schema version this schema is linked to.
    */
   constructor(entries: SchemaEntries, withStandard: string) {
     this.entries = entries
@@ -52,8 +54,8 @@ export class PrimarySchema extends HedSchema {
   /**
    * Constructor.
    *
-   * @param xmlData The schema XML data.
-   * @param entries A collection of schema entries.
+   * @param xmlData - The schema XML data.
+   * @param entries - A collection of schema entries.
    */
   constructor(xmlData: HedSchemaXMLObject, entries: SchemaEntries) {
     let withStandard
@@ -92,7 +94,7 @@ export class PartneredSchema extends HedSchema {
   /**
    * Constructor.
    *
-   * @param actualSchemas The actual HED 3 schemas underlying this partnered schema.
+   * @param actualSchemas - The actual HED 3 schemas underlying this partnered schema.
    */
   constructor(actualSchemas: HedSchema[]) {
     if (actualSchemas.length === 0) {
@@ -110,6 +112,7 @@ export class HedSchemas {
   /**
    * The imported HED schemas.
    *
+   * @remarks
    * The empty string key ("") corresponds to the schema with no prefix,
    * while other keys correspond to the respective prefixes.
    */
@@ -117,7 +120,8 @@ export class HedSchemas {
 
   /**
    * Constructor.
-   * @param schemas The imported HED schemas.
+   *
+   * @param schemas - The imported HED schemas.
    */
   constructor(schemas: Map<string, HedSchema> | HedSchema) {
     if (schemas instanceof Map) {
@@ -137,7 +141,7 @@ export class HedSchemas {
   /**
    * Return the schema with the given prefix.
    *
-   * @param schemaName A prefix in the schema set.
+   * @param schemaName - A prefix in the schema set.
    * @returns The schema object corresponding to that prefix.
    */
   public getSchema(schemaName: string): HedSchema | undefined {

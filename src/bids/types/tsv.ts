@@ -1,11 +1,11 @@
 /**
  * This module contains classes for representing BIDS TSV files and their components.
- *
  * @module bids/types/tsv
  */
+
 import isPlainObject from 'lodash/isPlainObject'
 
-import { BidsFile } from './file'
+import { BidsFile, type FilePath } from './file'
 import { convertParsedTSVData, parseTSV, type OldParsedTSV, type ParsedTSV } from '../tsvParser'
 import { BidsSidecar } from './json'
 import BidsHedTsvValidator from '../validator/tsvValidator'
@@ -35,17 +35,17 @@ export class BidsTsvFile extends BidsFile {
   /**
    * Constructor.
    *
-   * @param name The name of this file.
-   * @param file The Object representing this file data.
-   * @param tsvData This file's TSV data.
-   * @param mergedDictionary This file's merged JSON dictionary.
-   * @param defManager This file's definition manager.
+   * @param name - The name of this file.
+   * @param file - The Object representing this file data.
+   * @param tsvData - This file's TSV data.
+   * @param mergedDictionary - This file's merged JSON dictionary.
+   * @param defManager - This file's definition manager.
    */
   constructor(
     name: string,
-    file: any,
+    file: FilePath,
     tsvData: string | ParsedTSV | OldParsedTSV,
-    mergedDictionary: Record<string, any> = {},
+    mergedDictionary: Record<string, unknown> = {},
     defManager: DefinitionManager = null,
   ) {
     super(name, file, BidsHedTsvValidator)
@@ -58,11 +58,11 @@ export class BidsTsvFile extends BidsFile {
   /**
    * Parse the TSV file.
    *
-   * @param tsvData This file's TSV data.
-   * @param file The Object representing this file data.
+   * @param tsvData - This file's TSV data.
+   * @param file - The Object representing this file data.
    * @returns The parsed TSV data.
    */
-  private _parseTsv(tsvData: string | ParsedTSV | OldParsedTSV, file: any): ParsedTSV {
+  private _parseTsv(tsvData: string | ParsedTSV | OldParsedTSV, file: FilePath): ParsedTSV {
     if (typeof tsvData === 'string') {
       return parseTSV(tsvData)
     } else if (tsvData instanceof Map) {
@@ -125,7 +125,7 @@ export class BidsTsvElement {
   /**
    * The file this element belongs to (usually just the path).
    */
-  public readonly file: any
+  public readonly file: FilePath
 
   /**
    * The name of the file this element belongs to (usually just the path).
@@ -147,10 +147,10 @@ export class BidsTsvElement {
   /**
    * Constructor.
    *
-   * @param hedString The string representation of this element.
-   * @param tsvFile The file this element belongs to (usually just the path).
-   * @param onset The onset represented by this element or a NaN.
-   * @param tsvLine The line number(s) (including the header) represented by this element.
+   * @param hedString - The string representation of this element.
+   * @param tsvFile - The file this element belongs to (usually just the path).
+   * @param onset - The onset represented by this element or a NaN.
+   * @param tsvLine - The line number(s) (including the header) represented by this element.
    */
   constructor(hedString: string, tsvFile: BidsTsvFile, onset: string, tsvLine: string) {
     this.hedString = hedString
@@ -174,7 +174,7 @@ export class BidsTsvElement {
   /**
    * Create a string list of a list of BidsTsvElement objects.
    *
-   * @param elements A list of elements to construct line numbers from.
+   * @param elements - A list of elements to construct line numbers from.
    * @returns A string with the list of line numbers for error messages.
    */
   public static getTsvLines(elements: BidsTsvElement[]): string {
@@ -194,10 +194,10 @@ export class BidsTsvRow extends BidsTsvElement {
   /**
    * Constructor.
    *
-   * @param hedString The string representation of this row.
-   * @param tsvFile The file this row belongs to (usually just the path).
-   * @param tsvLine The line number (including the header) represented by this row.
-   * @param rowCells The map of column name to value for this row.
+   * @param hedString - The string representation of this row.
+   * @param tsvFile - The file this row belongs to (usually just the path).
+   * @param tsvLine - The line number (including the header) represented by this row.
+   * @param rowCells - The map of column name to value for this row.
    */
   constructor(hedString: string, tsvFile: BidsTsvFile, tsvLine: number, rowCells: Map<string, string>) {
     const onset = rowCells.get('onset') ?? ''

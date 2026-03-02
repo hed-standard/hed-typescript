@@ -1,6 +1,7 @@
 /**
  * This module is the primary entry point for BIDS-related functionality.
  *
+ * @remarks
  * It exports the primary data structures and functions for working with BIDS datasets,
  * including {@link BidsDataset}, file-specific classes like {@link BidsTsvFile} and {@link BidsSidecar},
  * and the {@link buildBidsSchemas} function for schema management.

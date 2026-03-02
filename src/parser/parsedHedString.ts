@@ -1,70 +1,70 @@
-/** This module holds the class representing a HED string.
+/**
+ * This module holds the class representing a HED string.
  * @module parser/parsedHedString
  */
-import ParsedHedTag from './parsedHedTag'
-import ParsedHedGroup from './parsedHedGroup'
+
 import ParsedHedColumnSplice from './parsedHedColumnSplice'
+import ParsedHedGroup from './parsedHedGroup'
+import type ParsedHedSubstring from './parsedHedSubstring'
+import ParsedHedTag from './parsedHedTag'
 import { filterByClass, getDuplicates } from './parseUtils'
 import { IssueError } from '../issues/issues'
 
 /**
  * A parsed HED string.
  */
-export class ParsedHedString {
+export default class ParsedHedString {
   /**
    * The original HED string.
-   * @type {string}
    */
-  hedString
+  readonly hedString: string
 
   /**
    * The parsed substring data in unfiltered form.
-   * @type {import('./parsedHedSubstring.js').default[]}
    */
-  parseTree
+  readonly parseTree: ParsedHedSubstring[]
 
   /**
    * The tag groups in the string (top-level).
-   * @type {ParsedHedGroup[]}
    */
-  tagGroups
+  readonly tagGroups: ParsedHedGroup[]
 
   /**
    * All the top-level tags in the string.
-   * @type {ParsedHedTag[]}
    */
-  topLevelTags
+  readonly topLevelTags: ParsedHedTag[]
 
   /**
-   * All the tags in the string at all levels
-   * @type {ParsedHedTag[]}
+   * All the tags in the string at all levels.
    */
-  tags
+  readonly tags: ParsedHedTag[]
 
   /**
    * All the column splices in the string at all levels.
-   * @type {ParsedHedColumnSplice[]}
    */
-  columnSplices
+  readonly columnSplices: ParsedHedColumnSplice[]
 
   /**
-   * The tags in the top-level tag groups in the string, split into arrays.
-   * @type {ParsedHedTag[][]}
+   * The tags in the top-level tag groups in the string.
    */
-  topLevelGroupTags
+  readonly topLevelGroupTags: ParsedHedTag[]
 
   /**
    * The top-level definition tag groups in the string.
-   * @type {import('./parsedHedGroup.js').default[]}
    */
-  definitions
+  readonly definitions: ParsedHedGroup[]
+
+  /**
+   * The normalized string representation of this column splice.
+   */
+  readonly normalized: string
 
   /**
    * Constructor.
-   * @param {string} hedString The original HED string.
-   * @param {import('./parsedHedSubstring.js').default[]} parsedTags The nested list of parsed HED tags, groups, and column splices.
+   * @param hedString - The original HED string.
+   * @param parsedTags - The nested list of parsed HED tags, groups, and column splices.
    */
-  constructor(hedString, parsedTags) {
+  public constructor(hedString: string, parsedTags: ParsedHedSubstring[]) {
     this.hedString = hedString
     this.parseTree = parsedTags
     this.tagGroups = filterByClass(parsedTags, ParsedHedGroup)
@@ -77,8 +77,7 @@ export class ParsedHedString {
     const subgroupColumnSplices = this.tagGroups.flatMap((tagGroup) => Array.from(tagGroup.columnSpliceIterator()))
     this.columnSplices = topLevelColumnSplices.concat(subgroupColumnSplices)
 
-    //this.topLevelGroupTags = this.tagGroups.map((tagGroup) => filterByClass(tagGroup.tags, ParsedHedTag))
-    this.topLevelGroupTags = this.tagGroups.flatMap((tagGroup) => filterByClass(tagGroup.tags, ParsedHedTag))
+    this.topLevelGroupTags = this.tagGroups.flatMap((tagGroup) => tagGroup.topTags)
     this.definitions = this.tagGroups.filter((group) => group.isDefinitionGroup)
     this.normalized = this._getNormalized()
   }
@@ -86,25 +85,24 @@ export class ParsedHedString {
   /**
    * Nicely format this HED string. (Doesn't allow column splices).
    *
-   * @param {boolean} long Whether the tags should be in long form.
-   * @returns {string} The formatted HED string.
+   * @param long - Whether the tags should be in long form.
+   * @returns The formatted HED string.
    */
-  format(long = true) {
+  public format(long: boolean = true): string {
     return this.parseTree.map((substring) => substring.format(long)).join(', ')
   }
 
   /**
    * Return a normalized string representation.
    *
-   * @returns {string} The normalized HED string.
-   * @private
+   * @returns The normalized HED string.
    */
-  _getNormalized() {
+  private _getNormalized(): string {
     // This is an implicit recursion as the items have the same call.
     const normalizedItems = this.parseTree.map((item) => item.normalized)
 
     // Sort normalized items to ensure order independence
-    const sortedNormalizedItems = normalizedItems.sort()
+    const sortedNormalizedItems = normalizedItems.toSorted((a, b) => a.localeCompare(b))
     const duplicates = getDuplicates(sortedNormalizedItems)
     if (duplicates.length > 0) {
       IssueError.generateAndThrow('duplicateTag', { tags: '[' + duplicates.join('],[') + ']', string: this.hedString })
@@ -116,11 +114,9 @@ export class ParsedHedString {
   /**
    * Override of {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString | Object.prototype.toString}.
    *
-   * @returns {string} The original HED string.
+   * @returns The original HED string.
    */
-  toString() {
+  public toString(): string {
     return this.hedString
   }
 }
-
-export default ParsedHedString

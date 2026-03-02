@@ -1,14 +1,15 @@
-import chai from 'chai'
-const assert = chai.assert
+import path from 'node:path'
+
 import { beforeAll, describe, afterAll } from '@jest/globals'
+import { assert } from 'chai'
 
 import ParsedHedTag from '../../src/parser/parsedHedTag'
-import { shouldRun } from '../testHelpers/testUtilities'
-import { parsedHedTagTests } from '../jsonTestData/tagParserTests.data'
 import { SchemaSpec, SchemasSpec } from '../../src/schema/specs'
-import path from 'node:path'
 import { buildSchemas } from '../../src/schema/init'
 import { SchemaValueTag } from '../../src/schema/entries'
+
+import { shouldRun } from '../testHelpers/testUtilities'
+import { parsedHedTagTests } from '../jsonTestData/tagParserTests.data'
 
 // Ability to select individual tests to run
 const skipMap = new Map()
@@ -38,7 +39,7 @@ describe('TagSpec converter tests using JSON tests', () => {
       let issue = null
       let tag = null
       try {
-        tag = new ParsedHedTag(test.tagSpec, thisSchema, test.fullString)
+        tag = new ParsedHedTag(test.tagSpec, thisSchema)
       } catch (error) {
         issue = error.issue
       }
