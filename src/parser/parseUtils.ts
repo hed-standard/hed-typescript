@@ -45,7 +45,7 @@ export function filterTagMapByNames(tagMap: Map<string, ParsedHedTag[]>, tagName
     return []
   }
 
-  return keys.flatMap((key) => tagMap.get(key))
+  return keys.flatMap((key) => tagMap.get(key) ?? [])
 }
 
 /**

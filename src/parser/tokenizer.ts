@@ -108,6 +108,8 @@ export class ColumnSpliceSpec extends SubstringSpec {
   }
 }
 
+export type NonGroupSubstringSpec = TagSpec | ColumnSpliceSpec
+
 /**
  * A class representing the current state of the HED string tokenizer.
  *
@@ -138,7 +140,7 @@ export class TokenizerState {
    */
   lastSlash: number
 
-  currentGroupStack: RecursiveArray<SubstringSpec>[]
+  currentGroupStack: RecursiveArray<NonGroupSubstringSpec>[]
 
   parenthesesStack: GroupSpec[]
 
@@ -190,7 +192,7 @@ export class HedStringTokenizer {
    *
    * @returns A tuple representing the tag specifications, group bounds, and any issues found.
    */
-  public tokenize(): [RecursiveArray<SubstringSpec>, GroupSpec, Issue[]] {
+  public tokenize(): [RecursiveArray<NonGroupSubstringSpec>, GroupSpec, Issue[]] {
     this.initializeTokenizer()
     // Empty strings cannot be tokenized
     if (this.hedString.trim().length === 0) {

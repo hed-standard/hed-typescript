@@ -3,7 +3,7 @@
  * @module bids/types/issues
  */
 
-import { cloneDeep } from 'lodash'
+import cloneDeep from 'lodash/cloneDeep'
 
 import { generateIssue, Issue, IssueError, type IssueParameters } from '../../issues/issues'
 import { type IssueLevel } from '../../issues/data'

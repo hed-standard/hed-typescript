@@ -1,6 +1,5 @@
 import { BidsFileAccessor } from '../../../src/bids/datasetParser'
 import { buildSchemasFromVersion } from '../schema/init'
-import { BidsHedIssue } from '../../../src/bids/types/issues'
 
 /**
  * Build HED schemas from a dataset description for the browser environment.
@@ -12,11 +11,7 @@ async function buildBidsSchemas(description) {
   if (!hedVersionString) {
     return null
   }
-  try {
-    return await buildSchemasFromVersion(hedVersionString)
-  } catch (e) {
-    throw BidsHedIssue.fromHedIssue(e.issue)
-  }
+  return await buildSchemasFromVersion(hedVersionString)
 }
 
 /**

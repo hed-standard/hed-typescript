@@ -301,7 +301,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
    *
    * @returns Whether this HED tag has the `takesValue` attribute.
    */
-  public takesValue(): boolean {
+  public get takesValue(): boolean {
     return this.takesValueTag !== undefined
   }
 
@@ -310,7 +310,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
    *
    * @returns Whether this HED tag has the `unitClass` attribute.
    */
-  public hasUnitClass(): boolean {
+  public get hasUnitClass(): boolean {
     return this.hasAttribute('unitClass')
   }
 

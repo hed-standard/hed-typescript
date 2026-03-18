@@ -218,7 +218,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
    * @yields This object and the ParsedHedGroup objects belonging to this tag group.
    */
   public *subParsedGroupIterator(tagName: string | null = null): Generator<ParsedHedGroup> {
-    if (!tagName || filterByTagName(this.topTags, tagName)) {
+    if (!tagName || filterByTagName(this.topTags, tagName).length > 0) {
       yield this
     }
     for (const innerTag of this.tags) {
