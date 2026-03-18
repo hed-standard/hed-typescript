@@ -2,20 +2,20 @@ name: Tests
 
 on:
   push:
-    branches: [main]
+    branches: [main, typescript]
   pull_request:
-    branches: [main]
+    branches: [main, typescript]
 
 permissions:
   contents: read
 
 jobs:
-  Build:
+  Main:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [22.x, lts/*, 'node']
+        node-version: [22.x, lts/*, node]
 
     steps:
       - name: Check out the code
@@ -33,12 +33,12 @@ jobs:
       - name: Test with Node.js ${{ matrix.node-version }}
         run: npm test
 
-  JSON-spec-tests:
+  JSON:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [22.x, lts/*, 'node']
+        node-version: [22.x, lts/*, node]
 
     steps:
       - name: Check out the code
@@ -56,12 +56,12 @@ jobs:
       - name: Run JSON spec tests with Node.js ${{ matrix.node-version }}
         run: npm run testSpecs
 
-  Browser-tests:
+  Browser:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [22.x, lts/*, 'node']
+        node-version: [22.x, lts/*, node]
 
     steps:
       - name: Check out the code

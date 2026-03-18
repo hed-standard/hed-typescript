@@ -1,6 +1,6 @@
-import { BidsFileAccessor } from '../../../src/bids/datasetParser.js'
-import { buildSchemasFromVersion } from '../schema/init.js'
-import { BidsHedIssue } from '../../../src/bids/types/issues.js'
+import { BidsFileAccessor } from '../../../src/bids/datasetParser'
+import { buildSchemasFromVersion } from '../schema/init'
+import { BidsHedIssue } from '../../../src/bids/types/issues'
 
 /**
  * Build HED schemas from a dataset description for the browser environment.
@@ -90,8 +90,7 @@ export class BidsWebAccessor extends BidsFileAccessor {
    * @private
    */
   constructor(datasetRootDirectory, fileMap) {
-    super(datasetRootDirectory, fileMap)
-    this.schemaBuilder = buildBidsSchemas
+    super(datasetRootDirectory, fileMap, buildBidsSchemas)
   }
 
   async getFileContent(relativePath) {
