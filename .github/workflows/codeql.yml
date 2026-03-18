@@ -16,9 +16,9 @@ permissions:
 
 on:
   push:
-    branches: [typescript]
+    branches: [main]
   pull_request:
-    branches: [typescript]
+    branches: [main]
   schedule:
     - cron: 26 6 * * 5
 
