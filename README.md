@@ -1,11 +1,11 @@
 [![npm](https://img.shields.io/npm/v/hed-validator)](https://www.npmjs.com/package/hed-validator)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8172804.svg)](https://doi.org/10.5281/zenodo.8172804)
-[![Maintainability](https://qlty.sh/gh/hed-standard/projects/hed-javascript/maintainability.svg)](https://qlty.sh/gh/hed-standard/projects/hed-javascript)
-[![Code Coverage](https://qlty.sh/gh/hed-standard/projects/hed-javascript/coverage.svg)](https://qlty.sh/gh/hed-standard/projects/hed-javascript)
+[![Maintainability](https://qlty.sh/gh/hed-standard/projects/hed-typescript/maintainability.svg)](https://qlty.sh/gh/hed-standard/projects/hed-typescript)
+[![Code Coverage](https://qlty.sh/gh/hed-standard/projects/hed-typescript/coverage.svg)](https://qlty.sh/gh/hed-standard/projects/hed-typescript)
 
 # hed-validator
 
-This package contains a JavaScript validator for HED (Hierarchical Event Descriptor) annotations for
+This package contains a TypeScript validator for HED (Hierarchical Event Descriptor) annotations for
 tabular files and their associated JSON metadata files such as those found in datasets formatted
 in [BIDS (Brain Imaging Data Structure)](https://bids.neuroimaging.io/).
 
