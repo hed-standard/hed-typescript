@@ -11,9 +11,12 @@
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
     "typeRoots": ["./node_modules/@types"],
-    "noImplicitAny": true,
-    "resolveJsonModule": true,
-    "useUnknownInCatchVariables": true
+    "strict": true,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "exactOptionalPropertyTypes": false,
+    "resolveJsonModule": true
   },
   "include": ["index.ts", "src/**/*"],
   "exclude": ["node_modules", "dist"]
