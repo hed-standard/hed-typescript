@@ -18,9 +18,9 @@ jobs:
 
     steps:
       - name: Check out the code
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: Set up with Node.js LTS
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
         with:
           node-version: lts/*
       - name: Download dependencies
@@ -28,7 +28,7 @@ jobs:
       - name: Generate coverage report
         run: npm run coverage
       - name: Upload coverage to Quality
-        uses: qltysh/qlty-action/coverage@v2
+        uses: qltysh/qlty-action/coverage@a19242102d17e497f437d7466aa01b528537e899
         with:
           oidc: true
           files: coverage/lcov.info
