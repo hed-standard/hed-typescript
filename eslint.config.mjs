@@ -1,4 +1,4 @@
-import prettier from 'eslint-plugin-prettier'
+import prettier from 'eslint-config-prettier'
 import globals from 'globals'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -14,12 +14,8 @@ const compat = new FlatCompat({
 })
 
 export default [
-  ...compat.extends('eslint:recommended', 'prettier'),
+  ...compat.extends('eslint:recommended'),
   {
-    plugins: {
-      prettier,
-    },
-
     languageOptions: {
       globals: {
         ...globals.node,
@@ -62,4 +58,5 @@ export default [
       ],
     },
   },
+  prettier,
 ]
