@@ -13,6 +13,7 @@ extend-exclude = [
   "docs/_build",
   "docs/source/_static",
   "dist",
+  "tests/jsonTestData"
 ]
 
 [default.extend-words]
