@@ -3,7 +3,7 @@
 /* Imports */
 import { schemaData } from './vite-importer'
 import { IssueError } from '../../../src/issues/issues'
-import AbstractHedSchemaLoader from '../../../src/schema/abstractLoader.js'
+import AbstractHedSchemaLoader from '../../../src/schema/abstractLoader'
 
 export default class HedSchemaLoader extends AbstractHedSchemaLoader {
   /**
@@ -46,7 +46,7 @@ export default class HedSchemaLoader extends AbstractHedSchemaLoader {
     const schemaLoader = schemaData[localPath]
     if (!schemaLoader) {
       // We've already verified this exists, so this is a consistency error.
-      IssueError.generateAndThrowInternalError('Schema loader has disappeared after already being checked.')
+      IssueError.generateAndThrowInternalError('Schema loader has disappeared after already being checked')
     }
     return await schemaLoader()
   }
