@@ -1,7 +1,6 @@
 import path from 'node:path'
 
-import chai from 'chai'
-const assert = chai.assert
+import { assert } from 'chai'
 import { beforeAll, describe, afterAll } from '@jest/globals'
 
 import { buildSchemas } from '../../src/schema/init'

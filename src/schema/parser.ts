@@ -1,6 +1,8 @@
-/** This module holds the classes for populating a schema from XML.
+/**
+ * This module holds the classes for populating a schema from XML.
  * @module schema/parser
  */
+
 import flattenDeep from 'lodash/flattenDeep'
 import zip from 'lodash/zip'
 import semver from 'semver'
@@ -80,7 +82,7 @@ export default class SchemaParser {
   /**
    * Constructor.
    *
-   * @param {Object} rootElement The root XML element.
+   * @param rootElement - The root XML element.
    */
   constructor(rootElement: HedSchemaRootElement) {
     this.rootElement = rootElement
@@ -136,10 +138,10 @@ export default class SchemaParser {
   /**
    * Extract the name of an XML element.
    *
-   * @param element An XML element.
+   * @param element - An XML element.
    * @returns The name of the element.
    */
-  private static getElementTagName(element: NamedElement): string {
+  private static getElementTagName(this: void, element: NamedElement): string {
     return element.name._
   }
 
@@ -285,7 +287,7 @@ export default class SchemaParser {
   /**
    * Generate the map from tag elements to shortened tag names.
    *
-   * @param tags The map from tag elements to tag strings.
+   * @param tags - The map from tag elements to tag strings.
    * @returns The map from tag elements to shortened tag names.
    */
   private _getShortTags(tags: Map<NodeElement, string>): Map<NodeElement, string> {
@@ -303,8 +305,8 @@ export default class SchemaParser {
   /**
    * Process unit classes in tags.
    *
-   * @param shortTags The map from tag elements to shortened tag names.
-   * @param valueAttributeDefinitions The map from shortened tag names to their value schema attributes.
+   * @param shortTags - The map from tag elements to shortened tag names.
+   * @param valueAttributeDefinitions - The map from shortened tag names to their value schema attributes.
    * @returns The map from shortened tag names to their unit classes.
    */
   private _processTagUnitClasses(
@@ -333,8 +335,8 @@ export default class SchemaParser {
   /**
    * Process value classes in tags.
    *
-   * @param shortTags The map from tag elements to shortened tag names.
-   * @param valueAttributeDefinitions The map from shortened tag names to their value schema attributes.
+   * @param shortTags - The map from tag elements to shortened tag names.
+   * @param valueAttributeDefinitions - The map from shortened tag names to their value schema attributes.
    * @returns The map from shortened tag names to their value classes.
    */
   private _processTagValueClasses(
@@ -364,8 +366,8 @@ export default class SchemaParser {
   /**
    * Process recursive schema attributes.
    *
-   * @param shortTags The map from tag elements to shortened tag names.
-   * @param booleanAttributeDefinitions The map from shortened tag names to their boolean schema attributes. Passed by reference.
+   * @param shortTags - The map from tag elements to shortened tag names.
+   * @param booleanAttributeDefinitions - The map from shortened tag names to their boolean schema attributes. Passed by reference.
    */
   private _processRecursiveAttributes(
     shortTags: Map<NodeElement, string>,
@@ -385,8 +387,8 @@ export default class SchemaParser {
   /**
    * Generate a map from tags to their recursive attributes.
    *
-   * @param shortTags The map from tag elements to shortened tag names.
-   * @param booleanAttributeDefinitions The map from shortened tag names to their boolean schema attributes. Passed by reference.
+   * @param shortTags - The map from tag elements to shortened tag names.
+   * @param booleanAttributeDefinitions - The map from shortened tag names to their boolean schema attributes. Passed by reference.
    */
   private _generateRecursiveAttributeMap(
     shortTags: Map<NodeElement, string>,
@@ -422,10 +424,10 @@ export default class SchemaParser {
   /**
    * Create the {@link SchemaTag} objects.
    *
-   * @param booleanAttributeDefinitions The map from shortened tag names to their boolean schema attributes.
-   * @param valueAttributeDefinitions The map from shortened tag names to their value schema attributes.
-   * @param tagUnitClassDefinitions The map from shortened tag names to their unit classes.
-   * @param tagValueClassDefinitions The map from shortened tag names to their value classes.
+   * @param booleanAttributeDefinitions - The map from shortened tag names to their boolean schema attributes.
+   * @param valueAttributeDefinitions - The map from shortened tag names to their value schema attributes.
+   * @param tagUnitClassDefinitions - The map from shortened tag names to their unit classes.
+   * @param tagValueClassDefinitions - The map from shortened tag names to their value classes.
    * @returns The map from lowercase shortened tag names to their tag objects.
    */
   private _createSchemaTags(
@@ -462,9 +464,9 @@ export default class SchemaParser {
   /**
    * Inject special tag fields into the {@link SchemaTag} objects.
    *
-   * @param tags The map from tag elements to tag strings.
-   * @param shortTags The map from tag elements to shortened tag names.
-   * @param tagEntries The map from shortened tag names to tag objects.
+   * @param tags - The map from tag elements to tag strings.
+   * @param shortTags - The map from tag elements to shortened tag names.
+   * @param tagEntries - The map from shortened tag names to tag objects.
    */
   private _injectTagFields(
     tags: Map<NodeElement, string>,

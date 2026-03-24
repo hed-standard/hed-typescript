@@ -1,6 +1,5 @@
 /**
  * This module contains functions for building HED schemas for BIDS datasets.
- *
  * @module bids/schema
  */
 
@@ -12,7 +11,7 @@ import { type BidsJsonFile } from './types/json'
 /**
  * Build a HED schema collection based on the defined BIDS schemas.
  *
- * @param datasetDescription The description of the BIDS dataset being validated.
+ * @param datasetDescription - The description of the BIDS dataset being validated.
  * @returns A Promise with the schema collection, or null if the specification is missing.
  * @throws {IssueError} If the schema specification is invalid.
  */

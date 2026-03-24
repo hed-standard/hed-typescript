@@ -1,22 +1,17 @@
 import { BidsFileAccessor } from '../../../src/bids/datasetParser'
 import { buildSchemasFromVersion } from '../schema/init'
-import { BidsHedIssue } from '../../../src/bids/types/issues'
 
 /**
  * Build HED schemas from a dataset description for the browser environment.
  * @param {object} description The dataset_description.json data.
- * @returns {Promise<Schemas|null>} The HED schemas.
+ * @returns {Promise<HedSchemas|null>} The HED schemas.
  */
 async function buildBidsSchemas(description) {
   const hedVersionString = description.jsonData?.HEDVersion
   if (!hedVersionString) {
     return null
   }
-  try {
-    return await buildSchemasFromVersion(hedVersionString)
-  } catch (e) {
-    throw new BidsHedIssue(e.issue)
-  }
+  return await buildSchemasFromVersion(hedVersionString)
 }
 
 /**

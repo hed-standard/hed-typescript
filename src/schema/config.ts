@@ -1,4 +1,5 @@
-/** Bundled HED schema configuration.
+/**
+ * Bundled HED schema configuration.
  * @module schema/config
  * */
 
@@ -20,6 +21,7 @@ const _localSchemaNames = [
   'HED_score_2.1.0',
   // Add other bundled schema base names here if needed
 ]
+
 /**
  * This list defines the base names of HED XML schema files that are considered "bundled" with the library.
  * The actual loading mechanism is handled by the schema loader, which may use an application-provided loader
@@ -29,13 +31,13 @@ export const localSchemaNames = Object.freeze(_localSchemaNames)
 
 let _localSchemaMap
 
-// @ts-ignore __VITE_ENV__ is defined by Vite in browser builds
+// @ts-expect-error __VITE_ENV__ is defined by Vite in browser builds
 if (typeof __VITE_ENV__ !== 'undefined' && __VITE_ENV__) {
   // In the browser, this map is not used. The loader uses import.meta.glob.
-  _localSchemaMap = new Map()
+  _localSchemaMap = new Map<string, string>()
 } else {
   // For Node.js, pre-load the schemas.
-  _localSchemaMap = new Map(
+  _localSchemaMap = new Map<string, string>(
     localSchemaNames.map((localSchema) => [localSchema, require(`../data/schemas/${localSchema}.xml`)]),
   )
 }

@@ -11,9 +11,13 @@
     "allowSyntheticDefaultImports": true,
     "downlevelIteration": true,
     "typeRoots": ["./node_modules/@types"],
-    "noImplicitAny": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "exactOptionalPropertyTypes": false,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
+  "include": ["index.ts", "src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

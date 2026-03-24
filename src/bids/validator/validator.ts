@@ -28,7 +28,7 @@ export abstract class BidsValidator {
   /**
    * Constructor.
    *
-   * @param hedSchemas The HED schemas used for validation.
+   * @param hedSchemas - The HED schemas used for validation.
    */
   protected constructor(hedSchemas: HedSchemas) {
     this.hedSchemas = hedSchemas

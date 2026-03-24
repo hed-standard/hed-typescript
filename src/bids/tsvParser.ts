@@ -1,6 +1,5 @@
 /**
  * This module provides functions for parsing TSV files.
- *
  * @module bids/tsvParser
  */
 
@@ -17,7 +16,7 @@ const isContentfulRow = (row: string) => row && !/^\s*$/.test(row)
 /**
  * Parse a TSV file.
  *
- * @param contents The contents of a TSV file.
+ * @param contents - The contents of a TSV file.
  * @returns The parsed contents of the TSV file.
  */
 export function parseTSV(contents: string): ParsedTSV {
@@ -38,7 +37,7 @@ export function parseTSV(contents: string): ParsedTSV {
 /**
  * Convert parsed TSV file data from the old BIDS format to the new BIDS format.
  *
- * @param oldParsedTsv Parsed TSV data using the old format
+ * @param oldParsedTsv - Parsed TSV data using the old format
  * @returns The parsed contents of the TSV file, using the new format.
  */
 export function convertParsedTSVData(oldParsedTsv: OldParsedTSV): ParsedTSV {
@@ -48,8 +47,8 @@ export function convertParsedTSVData(oldParsedTsv: OldParsedTSV): ParsedTSV {
 /**
  * Create a parsed TSV map.
  *
- * @param headers The list of headers.
- * @param rows The grid of rows and cells.
+ * @param headers - The list of headers.
+ * @param rows - The grid of rows and cells.
  * @returns The parsed contents of the TSV file.
  */
 function createTsvMap(headers: string[], rows: string[][]): ParsedTSV {

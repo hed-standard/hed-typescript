@@ -1,4 +1,5 @@
-/** This module holds the sidecar validator class.
+/**
+ * This module holds the sidecar validator class.
  * @module bids/validator/sidecarValidator
  */
 
@@ -22,8 +23,8 @@ export class BidsHedSidecarValidator extends BidsValidator {
   /**
    * Constructor for the BidsHedSidecarValidator.
    *
-   * @param sidecar The BIDS sidecar being validated.
-   * @param hedSchemas The schemas used for the sidecar validation.
+   * @param sidecar - The BIDS sidecar being validated.
+   * @param hedSchemas - The schemas used for the sidecar validation.
    */
   public constructor(sidecar: BidsSidecar, hedSchemas: HedSchemas) {
     super(hedSchemas)
@@ -83,8 +84,8 @@ export class BidsHedSidecarValidator extends BidsValidator {
   /**
    * Check definitions and placeholders for a string associated with a sidecar key.
    *
-   * @param sidecarKeyName The name of the sidecar key associated with string to be checked.
-   * @param hedString The parsed string to be checked.
+   * @param sidecarKeyName - The name of the sidecar key associated with string to be checked.
+   * @param hedString - The parsed string to be checked.
    * @returns Issues associated with the check.
    */
   private _checkDetails(sidecarKeyName: string, hedString: ParsedHedString): BidsHedIssue[] {
@@ -97,9 +98,9 @@ export class BidsHedSidecarValidator extends BidsValidator {
   /**
    * Validate the Def and Def-expand usage against the sidecar definitions.
    *
-   * @param sidecarKeyName Name of the sidecar key for this HED string
-   * @param hedString The parsed HED string object associated with this key.
-   * @param placeholdersAllowed If true, placeholders are allowed here.
+   * @param sidecarKeyName - Name of the sidecar key for this HED string
+   * @param hedString - The parsed HED string object associated with this key.
+   * @param placeholdersAllowed - If true, placeholders are allowed here.
    * @returns Issues encountered such as missing definitions or improper Def-expand values.
    */
   private _checkDefs(sidecarKeyName: string, hedString: ParsedHedString, placeholdersAllowed: boolean): BidsHedIssue[] {
@@ -114,8 +115,8 @@ export class BidsHedSidecarValidator extends BidsValidator {
   /**
    * Validate the placeholders.
    *
-   * @param sidecarKeyName Name of the sidecar key for this HED string
-   * @param hedString The parsed HED string object associated with this key.
+   * @param sidecarKeyName - Name of the sidecar key for this HED string
+   * @param hedString - The parsed HED string object associated with this key.
    * @returns Issues encountered relating to invalid placeholders.
    */
   private _checkPlaceholders(sidecarKeyName: string, hedString: ParsedHedString): BidsHedIssue[] {
