@@ -34,7 +34,7 @@ export default abstract class AbstractHedSchemaLoader {
       }),
     )
     const schemaObjects = schemaXmlData.map((schemaXmls) => this.buildSchemaObjects(schemaXmls))
-    const schemas = new Map(zip(schemaPrefixes, schemaObjects))
+    const schemas = new Map<string, HedSchema>(zip<string, HedSchema>(schemaPrefixes, schemaObjects))
     return new HedSchemas(schemas)
   }
 
