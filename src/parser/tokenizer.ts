@@ -129,9 +129,13 @@ export class TokenizerState {
   startingIndex: number
 
   /**
-   * Type and position of the last delimiter.
+   * Type of the last delimiter.
    */
-  lastDelimiter: [string, number]
+  lastDelimiter: string | undefined
+  /**
+   * Position of the last delimiter.
+   */
+  lastDelimiterIndex: number
 
   librarySchema: string
 
@@ -148,7 +152,8 @@ export class TokenizerState {
     this.currentToken = ''
     this.groupDepth = 0
     this.startingIndex = 0
-    this.lastDelimiter = [undefined, -1]
+    this.lastDelimiter = undefined
+    this.lastDelimiterIndex = -1
     this.librarySchema = ''
     this.lastSlash = -1
     this.currentGroupStack = [[]]
@@ -174,7 +179,7 @@ export class HedStringTokenizer {
    * The current state of the tokenizer.
    * @internal
    */
-  private state: TokenizerState
+  private state: TokenizerState | null
 
   /**
    * Constructor.
@@ -233,25 +238,25 @@ export class HedStringTokenizer {
    * @internal
    */
   finalizeTokenizer(): void {
-    if (this.state.lastDelimiter[0] === CHARACTERS.OPENING_COLUMN) {
+    if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
       // Extra opening brace
       this.pushIssue(
         'unclosedCurlyBrace',
-        this.state.lastDelimiter[1],
+        this.state.lastDelimiterIndex,
         'The string ends before the previous "{" has been closed.',
       ) // Extra opening brace
-    } else if (this.state.lastDelimiter[0] === CHARACTERS.OPENING_GROUP) {
+    } else if (this.state.lastDelimiter === CHARACTERS.OPENING_GROUP) {
       // Extra opening parenthesis
       this.pushIssue(
         'unclosedParentheses',
-        this.state.lastDelimiter[1],
+        this.state.lastDelimiterIndex,
         'The string ends before the previous "(" has been closed.',
       ) // Extra opening parenthesis
     } else if (
-      this.state.lastDelimiter[0] === CHARACTERS.COMMA &&
-      this.hedString.slice(this.state.lastDelimiter[1] + 1).trim().length === 0
+      this.state.lastDelimiter === CHARACTERS.COMMA &&
+      this.hedString.slice(this.state.lastDelimiterIndex + 1).trim().length === 0
     ) {
-      this.pushIssue('emptyTagFound', this.state.lastDelimiter[1], 'Probably extra commas at end.') // Extra comma
+      this.pushIssue('emptyTagFound', this.state.lastDelimiterIndex, 'Probably extra commas at end.') // Extra comma
     } else if (this.state.lastSlash >= 0 && this.hedString.slice(this.state.lastSlash + 1).trim().length === 0) {
       this.pushIssue(
         'extraSlash',
@@ -261,12 +266,12 @@ export class HedStringTokenizer {
     }
     if (
       this.state.currentToken.trim().length > 0 &&
-      ![undefined, CHARACTERS.COMMA].includes(this.state.lastDelimiter[0])
+      ![undefined, CHARACTERS.COMMA].includes(this.state.lastDelimiter)
     ) {
       // Missing comma
       this.pushIssue(
         'commaMissing',
-        this.state.lastDelimiter[1] + 1,
+        this.state.lastDelimiterIndex + 1,
         `This likely occurred near the end of "${this.hedString}".`,
       )
     } else {
@@ -322,9 +327,9 @@ export class HedStringTokenizer {
    * @internal
    */
   handleComma(i: number): void {
-    const trimmed = this.hedString.slice(this.state.lastDelimiter[1] + 1, i).trim()
+    const trimmed = this.hedString.slice(this.state.lastDelimiterIndex + 1, i).trim()
     if (
-      [CHARACTERS.OPENING_GROUP, CHARACTERS.COMMA, undefined].includes(this.state.lastDelimiter[0]) &&
+      [CHARACTERS.OPENING_GROUP, CHARACTERS.COMMA, undefined].includes(this.state.lastDelimiter) &&
       trimmed.length === 0
     ) {
       this.pushIssue(
@@ -332,15 +337,15 @@ export class HedStringTokenizer {
         i,
         'Usually a comma after another comma or an open parenthesis or at beginning of string.',
       )
-    } else if (this.state.lastDelimiter[0] === CHARACTERS.OPENING_COLUMN) {
+    } else if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
       this.pushIssue(
         'unclosedCurlyBrace',
-        this.state.lastDelimiter[1],
+        this.state.lastDelimiterIndex,
         'A "{" appears before the previous "{" was closed.',
       ) // Unclosed curly brace Ex: "{ x,"
     }
     if (
-      [CHARACTERS.CLOSING_GROUP, CHARACTERS.CLOSING_COLUMN].includes(this.state.lastDelimiter[0]) &&
+      [CHARACTERS.CLOSING_GROUP, CHARACTERS.CLOSING_COLUMN].includes(this.state.lastDelimiter) &&
       trimmed.length > 0
     ) {
       // A tag followed a group or column with no comma Ex:  (x) yz
@@ -350,7 +355,8 @@ export class HedStringTokenizer {
     } else {
       this.resetToken(i) // After a group or column
     }
-    this.state.lastDelimiter = [CHARACTERS.COMMA, i]
+    this.state.lastDelimiter = CHARACTERS.COMMA
+    this.state.lastDelimiterIndex = i
   }
 
   /**
@@ -384,16 +390,16 @@ export class HedStringTokenizer {
    * @internal
    */
   handleOpeningGroup(i: number): void {
-    if (this.state.lastDelimiter[0] === CHARACTERS.OPENING_COLUMN) {
+    if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
       this.pushIssue(
         'unclosedCurlyBrace',
-        this.state.lastDelimiter[1],
+        this.state.lastDelimiterIndex,
         'Previous "{" is not closed and braces or parentheses cannot appear inside braces.',
       ) // After open curly brace Ex: "{  ("
-    } else if (this.state.lastDelimiter[0] === CHARACTERS.CLOSING_COLUMN) {
-      this.pushIssue('commaMissing', this.state.lastDelimiter[1], 'Missing comma after "}".') // After close curly brace Ex: "} ("
-    } else if (this.state.lastDelimiter[0] === CHARACTERS.CLOSING_GROUP) {
-      this.pushIssue('commaMissing', this.state.lastDelimiter[1] + 1, 'Missing comma after ")".') // After close group Ex: ") ("
+    } else if (this.state.lastDelimiter === CHARACTERS.CLOSING_COLUMN) {
+      this.pushIssue('commaMissing', this.state.lastDelimiterIndex, 'Missing comma after "}".') // After close curly brace Ex: "} ("
+    } else if (this.state.lastDelimiter === CHARACTERS.CLOSING_GROUP) {
+      this.pushIssue('commaMissing', this.state.lastDelimiterIndex + 1, 'Missing comma after ")".') // After close group Ex: ") ("
     } else if (this.state.currentToken.trim().length > 0) {
       this.pushInvalidTag('commaMissing', i, this.state.currentToken.trim(), 'Missing comma before "(".') // After tag Ex: "x ("
     } else {
@@ -401,7 +407,8 @@ export class HedStringTokenizer {
       this.state.parenthesesStack.push(new GroupSpec(i, undefined, []))
       this.resetToken(i)
       this.state.groupDepth++
-      this.state.lastDelimiter = [CHARACTERS.OPENING_GROUP, i]
+      this.state.lastDelimiter = CHARACTERS.OPENING_GROUP
+      this.state.lastDelimiterIndex = i
     }
   }
 
@@ -414,19 +421,20 @@ export class HedStringTokenizer {
   handleClosingGroup(i: number): void {
     if (this.state.groupDepth <= 0) {
       this.pushIssue('unopenedParenthesis', i, 'A ")" appears before a matching "(".')
-    } else if (this.state.lastDelimiter[0] === CHARACTERS.OPENING_COLUMN) {
+    } else if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
       this.pushIssue(
         'unclosedCurlyBrace',
-        this.state.lastDelimiter[1],
+        this.state.lastDelimiterIndex,
         'A "{" appears before the previous "{" has been closed.',
       ) // After open curly brace Ex: "{ )"
     } else {
-      if ([CHARACTERS.OPENING_GROUP, CHARACTERS.COMMA].includes(this.state.lastDelimiter[0])) {
+      if ([CHARACTERS.OPENING_GROUP, CHARACTERS.COMMA].includes(this.state.lastDelimiter)) {
         // Should be a tag here
         this.pushTag(i)
       }
       this.closeGroup(i) // Close the group by updating its bounds and moving it to the parent group.
-      this.state.lastDelimiter = [CHARACTERS.CLOSING_GROUP, i]
+      this.state.lastDelimiter = CHARACTERS.CLOSING_GROUP
+      this.state.lastDelimiterIndex = i
     }
   }
 
@@ -439,10 +447,11 @@ export class HedStringTokenizer {
   handleOpeningColumn(i: number): void {
     if (this.state.currentToken.trim().length > 0) {
       this.pushInvalidCharacterIssue(CHARACTERS.OPENING_COLUMN, i, 'Brace in the middle of a tag Ex: "x {".')
-    } else if (this.state.lastDelimiter[0] === CHARACTERS.OPENING_COLUMN) {
+    } else if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
       this.pushIssue('nestedCurlyBrace', i, 'Often after another open brace Ex:  Ex: "{x{".')
     } else {
-      this.state.lastDelimiter = [CHARACTERS.OPENING_COLUMN, i]
+      this.state.lastDelimiter = CHARACTERS.OPENING_COLUMN
+      this.state.lastDelimiterIndex = i
     }
   }
 
@@ -453,17 +462,18 @@ export class HedStringTokenizer {
    * @internal
    */
   handleClosingColumn(i: number): void {
-    if (this.state.lastDelimiter[0] !== CHARACTERS.OPENING_COLUMN) {
+    if (this.state.lastDelimiter !== CHARACTERS.OPENING_COLUMN) {
       this.pushIssue('unopenedCurlyBrace', i, 'No matching open brace Ex: " x}".')
     } else if (!this.state.currentToken.trim()) {
       this.pushIssue('emptyCurlyBrace', i, 'Column slice cannot be empty Ex: "{  }".')
     } else {
       // Close column by updating bounds and moving it to the parent group, push a column splice on the stack.
       this.state.currentGroupStack[this.state.groupDepth].push(
-        new ColumnSpliceSpec(this.state.currentToken.trim(), this.state.lastDelimiter[1], i),
+        new ColumnSpliceSpec(this.state.currentToken.trim(), this.state.lastDelimiterIndex, i),
       )
       this.resetToken(i)
-      this.state.lastDelimiter = [CHARACTERS.CLOSING_COLUMN, i]
+      this.state.lastDelimiter = CHARACTERS.CLOSING_COLUMN
+      this.state.lastDelimiterIndex = i
     }
   }
 

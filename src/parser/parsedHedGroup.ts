@@ -79,7 +79,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
   /**
    * The unique top-level tag requiring a Def or Def-expand group, if any.
    */
-  readonly requiresDefTag: ParsedHedTag[] | null
+  readonly requiresDefTag: ParsedHedTag[]
 
   /**
    * The normalized string representation of this column splice.

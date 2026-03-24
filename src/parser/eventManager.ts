@@ -62,7 +62,7 @@ export class Event {
    * @param element - The element in which this group appears.
    * @returns A tuple representing the extracted event and issues.
    */
-  public static createEvent(group: ParsedHedGroup, element: BidsTsvElement): [Event, BidsHedIssue[]] {
+  public static createEvent(group: ParsedHedGroup, element: BidsTsvElement): [Event | null, BidsHedIssue[]] {
     if (group.requiresDefTag.length === 0 && !group.reservedTags.has('Delay')) {
       return [null, []]
     }
@@ -134,7 +134,7 @@ export class EventManager {
       for (const group of element.parsedHedString.tagGroups) {
         const [event, eventIssues] = Event.createEvent(group, element)
         if (eventIssues.length > 0) {
-          return [null, eventIssues]
+          return [[], eventIssues]
         }
         if (event) {
           eventList.push(event)

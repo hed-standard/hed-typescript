@@ -120,7 +120,7 @@ export class SchemaEntryManager<T extends SchemaEntry> {
    * @param name - The name of the entry to retrieve.
    * @returns The entry with that name.
    */
-  public getEntry(name: string): T {
+  public getEntry(name: string): T | undefined {
     return this._definitions.get(name)
   }
 
