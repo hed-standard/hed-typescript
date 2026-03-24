@@ -12,6 +12,7 @@ export default class HedSchemaLoader extends AbstractHedSchemaLoader {
    * @param {string} path - The path to the schema XML data.
    * @returns {Promise<never>} The schema XML data.
    * @throws {IssueError} If the schema could not be loaded.
+   * @override
    */
   async loadLocalSchema(path) {
     IssueError.generateAndThrow('localSchemaLoadFailed', {
@@ -21,11 +22,24 @@ export default class HedSchemaLoader extends AbstractHedSchemaLoader {
   }
 
   /**
+   * Determine whether this validator bundles a particular schema.
+   *
+   * @param {SchemaSpec} schemaDef - The description of which schema to use.
+   * @returns {boolean} Whether this validator bundles a particular schema.
+   * @override
+   */
+  hasBundledSchema(schemaDef) {
+    const localPath = `../../../src/data/schemas/${schemaDef.localName}.xml`
+    return localPath in schemaData
+  }
+
+  /**
    * Retrieve the contents of a bundled schema.
    *
    * @param {SchemaSpec} schemaDef - The description of which schema to use.
    * @returns {Promise<string>} The raw schema XML data.
    * @throws {IssueError} If the schema could not be loaded.
+   * @override
    */
   async getBundledSchema(schemaDef) {
     const localPath = `../../../src/data/schemas/${schemaDef.localName}.xml`
@@ -36,15 +50,17 @@ export default class HedSchemaLoader extends AbstractHedSchemaLoader {
     }
     return await schemaLoader()
   }
+}
 
-  /**
-   * Determine whether this validator bundles a particular schema.
-   *
-   * @param {SchemaSpec} schemaDef - The description of which schema to use.
-   * @returns {boolean} Whether this validator bundles a particular schema.
-   */
-  hasBundledSchema(schemaDef) {
-    const localPath = `../../../src/data/schemas/${schemaDef.localName}.xml`
-    return localPath in schemaData
-  }
+/**
+ * Load schema XML data from a schema version or path description.
+ *
+ * @deprecated
+ *
+ * @param {SchemaSpec} schemaDef The description of which schema to use.
+ * @returns {Promise<object>} The schema XML data.
+ * @throws {IssueError} If the schema could not be loaded.
+ */
+export async function loadSchema(schemaDef = null) {
+  return new HedSchemaLoader().loadSchema(schemaDef)
 }

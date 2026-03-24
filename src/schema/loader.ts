@@ -22,16 +22,6 @@ export default class HedSchemaLoader extends AbstractHedSchemaLoader {
   }
 
   /**
-   * Retrieve the contents of a bundled schema.
-   *
-   * @param schemaDef - The description of which schema to use.
-   * @returns The raw schema XML data.
-   */
-  override async getBundledSchema(schemaDef: SchemaSpec): Promise<string> {
-    return localSchemaMap.get(schemaDef.localName)
-  }
-
-  /**
    * Determine whether this validator bundles a particular schema.
    *
    * @param schemaDef - The description of which schema to use.
@@ -39,5 +29,15 @@ export default class HedSchemaLoader extends AbstractHedSchemaLoader {
    */
   override hasBundledSchema(schemaDef: SchemaSpec): boolean {
     return localSchemaMap.has(schemaDef.localName)
+  }
+
+  /**
+   * Retrieve the contents of a bundled schema.
+   *
+   * @param schemaDef - The description of which schema to use.
+   * @returns The raw schema XML data.
+   */
+  override async getBundledSchema(schemaDef: SchemaSpec): Promise<string> {
+    return localSchemaMap.get(schemaDef.localName)
   }
 }

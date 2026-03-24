@@ -1,4 +1,5 @@
-/** This module holds the classes for initializing and building schemas.
+/**
+ * This module holds the classes for initializing and building schemas.
  * @module schema/init
  */
 

@@ -84,8 +84,9 @@ export default abstract class AbstractHedSchemaLoader {
    * @param schemaDef - The description of which schema to use.
    * @returns The schema XML data.
    * @throws {IssueError} If the schema could not be loaded.
+   * @internal
    */
-  private async loadSchema(schemaDef: SchemaSpec): Promise<HedSchemaXMLObject> {
+  public async loadSchema(schemaDef: SchemaSpec): Promise<HedSchemaXMLObject> {
     const xmlData = await this.loadPromise(schemaDef)
     if (xmlData === null) {
       IssueError.generateAndThrow('invalidSchemaSpecification', { spec: JSON.stringify(schemaDef) })
@@ -131,15 +132,6 @@ export default abstract class AbstractHedSchemaLoader {
   }
 
   /**
-   * Retrieve the contents of a bundled schema.
-   *
-   * @param schemaDef - The description of which schema to use.
-   * @returns The raw schema XML data.
-   * @throws {IssueError} If the schema could not be loaded.
-   */
-  protected abstract getBundledSchema(schemaDef: SchemaSpec): Promise<string>
-
-  /**
    * Determine whether this validator bundles a particular schema.
    *
    * @param schemaDef - The description of which schema to use.
@@ -147,6 +139,15 @@ export default abstract class AbstractHedSchemaLoader {
    * @throws {IssueError} If the schema could not be loaded.
    */
   protected abstract hasBundledSchema(schemaDef: SchemaSpec): boolean
+
+  /**
+   * Retrieve the contents of a bundled schema.
+   *
+   * @param schemaDef - The description of which schema to use.
+   * @returns The raw schema XML data.
+   * @throws {IssueError} If the schema could not be loaded.
+   */
+  protected abstract getBundledSchema(schemaDef: SchemaSpec): Promise<string>
 
   /**
    * Load schema XML data from the HED GitHub repository.
