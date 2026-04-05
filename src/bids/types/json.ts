@@ -121,7 +121,7 @@ export class BidsSidecar extends BidsJsonFile {
    *
    * @returns {boolean}
    */
-  public get hasHedData(): boolean {
+  public override get hasHedData(): boolean {
     return this.sidecarKeys.size > 0
   }
 

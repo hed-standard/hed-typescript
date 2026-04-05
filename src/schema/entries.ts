@@ -279,7 +279,7 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
    * @param attributeName - The attribute to check for.
    * @returns Whether this schema entry has this attribute.
    */
-  public hasBooleanAttribute(attributeName: string): boolean {
+  public override hasBooleanAttribute(attributeName: string): boolean {
     return this.booleanAttributeNames.has(attributeName)
   }
 
@@ -724,7 +724,7 @@ export class SchemaValueTag extends SchemaTag {
   /**
    * This tag's long name.
    */
-  public get longName(): string {
+  public override get longName(): string {
     const nameParts = this.ancestors.map((parentTag) => parentTag.name)
     nameParts.reverse()
     nameParts.push('#')
@@ -737,7 +737,7 @@ export class SchemaValueTag extends SchemaTag {
    * @param extension - The extension.
    * @returns The extended short string.
    */
-  public extend(extension: string): string {
+  public override extend(extension: string): string {
     return this.parent.extend(extension)
   }
 
@@ -747,7 +747,7 @@ export class SchemaValueTag extends SchemaTag {
    * @param extension - The extension.
    * @returns The extended long string.
    */
-  public longExtend(extension: string): string {
+  public override longExtend(extension: string): string {
     return this.parent.longExtend(extension)
   }
 }

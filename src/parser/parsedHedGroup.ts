@@ -207,7 +207,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
    *
    * @returns The original string for this group.
    */
-  public toString(): string {
+  public override toString(): string {
     return this.originalTag
   }
 
