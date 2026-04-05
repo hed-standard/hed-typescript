@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "types": ["node"],
     "strict": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "strictFunctionTypes": false,
     "strictPropertyInitialization": false,
     "exactOptionalPropertyTypes": false,

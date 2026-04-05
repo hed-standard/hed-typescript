@@ -7,6 +7,7 @@ import AbstractHedSchemaLoader from './abstractLoader'
 import { localSchemaMap } from './config'
 import type { SchemaSpec } from './specs'
 import type { HedSchemaXMLObject } from './xmlType'
+import { IssueError } from '../issues/issues'
 import * as files from '../utils/files'
 
 export default class HedSchemaLoader extends AbstractHedSchemaLoader {
@@ -38,6 +39,10 @@ export default class HedSchemaLoader extends AbstractHedSchemaLoader {
    * @returns The raw schema XML data.
    */
   override async getBundledSchema(schemaDef: SchemaSpec): Promise<string> {
-    return localSchemaMap.get(schemaDef.localName)
+    const schemaXml = localSchemaMap.get(schemaDef.localName)
+    if (!schemaXml) {
+      IssueError.generateAndThrowInternalError('Bundled schema could not be found')
+    }
+    return schemaXml
   }
 }

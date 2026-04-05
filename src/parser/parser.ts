@@ -90,7 +90,7 @@ class HedStringParser {
     // Returns a parsed HED string unless empty
     const parsedString = new ParsedHedString(this.hedString, parsedTags)
     if (!parsedString) {
-      return [null, null, []]
+      return [null, [], []]
     }
 
     // Check the definition syntax issues

@@ -177,9 +177,8 @@ export class HedStringTokenizer {
 
   /**
    * The current state of the tokenizer.
-   * @internal
    */
-  private state: TokenizerState | null
+  private state: TokenizerState
 
   /**
    * Constructor.
@@ -189,7 +188,7 @@ export class HedStringTokenizer {
   constructor(hedString: string) {
     this.hedString = hedString
     this.issues = []
-    this.state = null
+    this.state = new TokenizerState()
   }
 
   /**
@@ -197,7 +196,7 @@ export class HedStringTokenizer {
    *
    * @returns A tuple representing the tag specifications, group bounds, and any issues found.
    */
-  public tokenize(): [RecursiveArray<NonGroupSubstringSpec>, GroupSpec, Issue[]] {
+  public tokenize(): [RecursiveArray<NonGroupSubstringSpec>, GroupSpec | null, Issue[]] {
     this.initializeTokenizer()
     // Empty strings cannot be tokenized
     if (this.hedString.trim().length === 0) {
@@ -215,7 +214,7 @@ export class HedStringTokenizer {
     if (this.issues.length > 0) {
       return [[], null, this.issues]
     } else {
-      return [this.state.currentGroupStack.pop(), this.state.parenthesesStack.pop(), []]
+      return [this.state.currentGroupStack[0], this.state.parenthesesStack[0], []]
     }
   }
 
@@ -223,9 +222,8 @@ export class HedStringTokenizer {
    * Reset the current token.
    *
    * @param i - The current index in the HED string.
-   * @internal
    */
-  resetToken(i: number): void {
+  private resetToken(i: number): void {
     this.state.startingIndex = i + 1
     this.state.currentToken = ''
     this.state.librarySchema = ''
@@ -234,10 +232,8 @@ export class HedStringTokenizer {
 
   /**
    * Finalize the tokenization process.
-   *
-   * @internal
    */
-  finalizeTokenizer(): void {
+  private finalizeTokenizer(): void {
     if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
       // Extra opening brace
       this.pushIssue(
@@ -284,10 +280,8 @@ export class HedStringTokenizer {
 
   /**
    * Initialize the tokenizer.
-   *
-   * @internal
    */
-  initializeTokenizer(): void {
+  private initializeTokenizer(): void {
     this.issues = []
     this.state = new TokenizerState()
     this.state.parenthesesStack = [new GroupSpec(0, this.hedString.length, [])]
@@ -298,9 +292,8 @@ export class HedStringTokenizer {
    *
    * @param i - The index of the character.
    * @param character - The character to handle.
-   * @internal
    */
-  handleCharacter(i: number, character: string): void {
+  private handleCharacter(i: number, character: string): void {
     const characterHandler = {
       [CHARACTERS.OPENING_GROUP]: () => this.handleOpeningGroup(i),
       [CHARACTERS.CLOSING_GROUP]: () => this.handleClosingGroup(i),
@@ -324,9 +317,8 @@ export class HedStringTokenizer {
    * Handle a comma character.
    *
    * @param i - The index of the comma.
-   * @internal
    */
-  handleComma(i: number): void {
+  private handleComma(i: number): void {
     const trimmed = this.hedString.slice(this.state.lastDelimiterIndex + 1, i).trim()
     if (
       [CHARACTERS.OPENING_GROUP, CHARACTERS.COMMA, undefined].includes(this.state.lastDelimiter) &&
@@ -363,9 +355,8 @@ export class HedStringTokenizer {
    * Handle a slash character.
    *
    * @param i - The index of the slash.
-   * @internal
    */
-  handleSlash(i: number): void {
+  private handleSlash(i: number): void {
     if (this.state.currentToken.trim().length === 0) {
       // Slash at beginning of tag.
       this.pushIssue('extraSlash', i, '"/" at the beginning of tag.') // Slash at beginning of tag.
@@ -387,9 +378,8 @@ export class HedStringTokenizer {
    * Handle an opening group character.
    *
    * @param i - The index of the opening group character.
-   * @internal
    */
-  handleOpeningGroup(i: number): void {
+  private handleOpeningGroup(i: number): void {
     if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
       this.pushIssue(
         'unclosedCurlyBrace',
@@ -416,9 +406,8 @@ export class HedStringTokenizer {
    * Handle a closing group character.
    *
    * @param i - The index of the closing group character.
-   * @internal
    */
-  handleClosingGroup(i: number): void {
+  private handleClosingGroup(i: number): void {
     if (this.state.groupDepth <= 0) {
       this.pushIssue('unopenedParenthesis', i, 'A ")" appears before a matching "(".')
     } else if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
@@ -442,9 +431,8 @@ export class HedStringTokenizer {
    * Handle an opening column character.
    *
    * @param i - The index of the opening column character.
-   * @internal
    */
-  handleOpeningColumn(i: number): void {
+  private handleOpeningColumn(i: number): void {
     if (this.state.currentToken.trim().length > 0) {
       this.pushInvalidCharacterIssue(CHARACTERS.OPENING_COLUMN, i, 'Brace in the middle of a tag Ex: "x {".')
     } else if (this.state.lastDelimiter === CHARACTERS.OPENING_COLUMN) {
@@ -459,9 +447,8 @@ export class HedStringTokenizer {
    * Handle a closing column character.
    *
    * @param i - The index of the closing column character.
-   * @internal
    */
-  handleClosingColumn(i: number): void {
+  private handleClosingColumn(i: number): void {
     if (this.state.lastDelimiter !== CHARACTERS.OPENING_COLUMN) {
       this.pushIssue('unopenedCurlyBrace', i, 'No matching open brace Ex: " x}".')
     } else if (!this.state.currentToken.trim()) {
@@ -481,9 +468,8 @@ export class HedStringTokenizer {
    * Handle a colon character.
    *
    * @param i - The index of the colon.
-   * @internal
    */
-  handleColon(i: number): void {
+  private handleColon(i: number): void {
     const trimmed = this.state.currentToken.trim()
     if (this.state.librarySchema || trimmed.includes(CHARACTERS.BLANK) || trimmed.includes(CHARACTERS.SLASH)) {
       this.state.currentToken += CHARACTERS.COLON // If colon has been seen or is part of a value.
@@ -498,10 +484,8 @@ export class HedStringTokenizer {
 
   /**
    * Unwind the group stack to handle unclosed groups.
-   *
-   * @internal
    */
-  unwindGroupStack(): void {
+  private unwindGroupStack(): void {
     while (this.state.groupDepth > 0) {
       this.pushIssue(
         'unclosedParenthesis',
@@ -516,9 +500,8 @@ export class HedStringTokenizer {
    * Push a tag to the current group stack.
    *
    * @param i - The current index in the HED string.
-   * @internal
    */
-  pushTag(i: number): void {
+  private pushTag(i: number): void {
     if (this.state.currentToken.trim().length === 0) {
       this.pushIssue('emptyTagFound', i, 'Empty tag found likely between commas, before ")" or after "(".')
       return
@@ -544,7 +527,6 @@ export class HedStringTokenizer {
    * Check for issues related to placeholders in the current token.
    *
    * @returns Empty string if no issues, otherwise a message describing the issue.
-   * @internal
    */
   private _checkForBadPlaceholderIssues(): string {
     const tokenSplit = this.state.currentToken.split(CHARACTERS.PLACEHOLDER)
@@ -565,9 +547,8 @@ export class HedStringTokenizer {
    * Close the current group.
    *
    * @param i - The current index in the HED string.
-   * @internal
    */
-  closeGroup(i: number): void {
+  private closeGroup(i: number): void {
     const groupSpec = this.state.parenthesesStack.pop()
     groupSpec.bounds[1] = i + 1
     if (this.hedString.slice(groupSpec.bounds[0] + 1, i).trim().length === 0) {
@@ -583,10 +564,9 @@ export class HedStringTokenizer {
    *
    * @param issueCode - The issue code.
    * @param index - The index of the issue.
-   * @param msg - An optional message to include with the error
-   * @internal
+   * @param msg - An optional message to include with the error.
    */
-  pushIssue(issueCode: string, index: number, msg: string = ''): void {
+  private pushIssue(issueCode: string, index: number, msg: string = ''): void {
     this.issues.push(generateIssue(issueCode, { index: index, string: this.hedString, msg: msg }))
   }
 
@@ -597,9 +577,8 @@ export class HedStringTokenizer {
    * @param index - The index of the issue.
    * @param tag - The invalid tag.
    * @param msg - An optional message to include with the error.
-   * @internal
    */
-  pushInvalidTag(issueCode: string, index: number, tag: string, msg: string = ''): void {
+  private pushInvalidTag(issueCode: string, index: number, tag: string, msg: string = ''): void {
     this.issues.push(generateIssue(issueCode, { index, tag: tag, string: this.hedString, msg: msg }))
   }
 
@@ -609,9 +588,8 @@ export class HedStringTokenizer {
    * @param character - The invalid character.
    * @param index - The index of the character.
    * @param msg - An optional message to include with the error.
-   * @internal
    */
-  pushInvalidCharacterIssue(character: string, index: number, msg: string = ''): void {
+  private pushInvalidCharacterIssue(character: string, index: number, msg: string = ''): void {
     this.issues.push(
       generateIssue('invalidCharacter', { character: unicodeName(character), index, string: this.hedString, msg: msg }),
     )
