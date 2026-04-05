@@ -5,11 +5,9 @@ import { SchemaSpec } from '../../../src/schema/specs.ts'
 vi.mock(import('./vite-importer.js'), () => {
   return {
     schemaData: {
-      '../../../src/data/schemas/HED_HED8.0.0_8.0.0.xml': () => Promise.resolve(
-        '<?xml version="1.0" ?>\n' +
-        '<HED><schema></schema></HED>\n'
-      ),
-    }
+      '../../../src/data/schemas/HED_HED8.0.0_8.0.0.xml': () =>
+        Promise.resolve('<?xml version="1.0" ?>\n<HED><schema></schema></HED>\n'),
+    },
   }
 })
 
