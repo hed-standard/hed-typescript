@@ -94,7 +94,7 @@ export class BidsTsvFile extends BidsFile {
    *
    * @returns Whether this file has any HED data.
    */
-  public get hasHedData(): boolean {
+  public override get hasHedData(): boolean {
     return this.parsedTsv.has('HED') || this.mergedSidecar.hasHedData
   }
 

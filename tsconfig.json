@@ -5,18 +5,15 @@
     "checkJs": false,
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
-    "typeRoots": ["./node_modules/@types"],
+    "types": ["node"],
     "strict": true,
     "strictNullChecks": false,
     "strictFunctionTypes": false,
     "strictPropertyInitialization": false,
     "exactOptionalPropertyTypes": false,
-    "resolveJsonModule": true
+    "noImplicitOverride": true
   },
   "include": ["index.ts", "src/**/*"],
   "exclude": ["node_modules", "dist"]

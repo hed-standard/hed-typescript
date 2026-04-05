@@ -225,7 +225,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
    *
    * @returns The original form of this HED tag.
    */
-  public toString(): string {
+  public override toString(): string {
     if (this.schema?.prefix) {
       return this.schema.prefix + ':' + this.originalTag
     } else {
