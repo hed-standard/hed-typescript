@@ -1,7 +1,7 @@
 /**
  * Bundled HED schema configuration.
  * @module schema/config
- * */
+ */
 
 // This list defines the base names of HED XML schema files
 // that are considered "bundled" with the library.
