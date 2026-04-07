@@ -5,7 +5,7 @@
 
 import { unicodeName } from 'unicode-name'
 
-import { generateIssue, type Issue } from '../issues/issues'
+import { generateIssue, type Issue, IssueError } from '../issues/issues'
 import { type Bounds, type RecursiveArray } from '../utils/types'
 
 const CHARACTERS = {
@@ -20,7 +20,7 @@ const CHARACTERS = {
   PLACEHOLDER: '#',
 }
 
-function getTrimmedBounds(originalString: string): Bounds {
+function getTrimmedBounds(originalString: string): Bounds | null {
   const start = originalString.search(/\S/)
 
   if (start === -1) {
@@ -85,10 +85,10 @@ export class GroupSpec extends SubstringSpec {
    */
   children: GroupSpec[]
 
-  constructor(start: number, end: number, children: GroupSpec[]) {
-    super(start, end)
+  constructor(start: number, end?: number, children?: GroupSpec[]) {
+    super(start, end ?? -1)
 
-    this.children = children
+    this.children = children ?? []
   }
 }
 
@@ -284,7 +284,7 @@ export class HedStringTokenizer {
   private initializeTokenizer(): void {
     this.issues = []
     this.state = new TokenizerState()
-    this.state.parenthesesStack = [new GroupSpec(0, this.hedString.length, [])]
+    this.state.parenthesesStack = [new GroupSpec(0, this.hedString.length)]
   }
 
   /**
@@ -337,7 +337,8 @@ export class HedStringTokenizer {
       ) // Unclosed curly brace Ex: "{ x,"
     }
     if (
-      [CHARACTERS.CLOSING_GROUP, CHARACTERS.CLOSING_COLUMN].includes(this.state.lastDelimiter) &&
+      (this.state.lastDelimiter === CHARACTERS.CLOSING_GROUP ||
+        this.state.lastDelimiter === CHARACTERS.CLOSING_COLUMN) &&
       trimmed.length > 0
     ) {
       // A tag followed a group or column with no comma Ex:  (x) yz
@@ -394,7 +395,7 @@ export class HedStringTokenizer {
       this.pushInvalidTag('commaMissing', i, this.state.currentToken.trim(), 'Missing comma before "(".') // After tag Ex: "x ("
     } else {
       this.state.currentGroupStack.push([])
-      this.state.parenthesesStack.push(new GroupSpec(i, undefined, []))
+      this.state.parenthesesStack.push(new GroupSpec(i))
       this.resetToken(i)
       this.state.groupDepth++
       this.state.lastDelimiter = CHARACTERS.OPENING_GROUP
@@ -417,7 +418,7 @@ export class HedStringTokenizer {
         'A "{" appears before the previous "{" has been closed.',
       ) // After open curly brace Ex: "{ )"
     } else {
-      if ([CHARACTERS.OPENING_GROUP, CHARACTERS.COMMA].includes(this.state.lastDelimiter)) {
+      if (this.state.lastDelimiter === CHARACTERS.OPENING_GROUP || this.state.lastDelimiter === CHARACTERS.COMMA) {
         // Should be a tag here
         this.pushTag(i)
       }
@@ -502,8 +503,9 @@ export class HedStringTokenizer {
    * @param i - The current index in the HED string.
    */
   private pushTag(i: number): void {
-    if (this.state.currentToken.trim().length === 0) {
-      this.pushIssue('emptyTagFound', i, 'Empty tag found likely between commas, before ")" or after "(".')
+    const bounds = getTrimmedBounds(this.state.currentToken)
+    if (bounds === null) {
+      this.pushIssue('emptyTagFound', i, 'Empty tag found likely between commas, before ")" or after "(".') // The tag is empty
       return
     }
     const msg = this._checkForBadPlaceholderIssues()
@@ -511,7 +513,6 @@ export class HedStringTokenizer {
       this.pushInvalidTag('invalidPlaceholder', i, this.state.currentToken, msg)
       return
     }
-    const bounds = getTrimmedBounds(this.state.currentToken)
     this.state.currentGroupStack[this.state.groupDepth].push(
       new TagSpec(
         this.state.currentToken.trim(),
@@ -550,12 +551,19 @@ export class HedStringTokenizer {
    */
   private closeGroup(i: number): void {
     const groupSpec = this.state.parenthesesStack.pop()
+    if (groupSpec === undefined) {
+      IssueError.generateAndThrowInternalError('Group stack is empty when it should not be')
+    }
     groupSpec.bounds[1] = i + 1
     if (this.hedString.slice(groupSpec.bounds[0] + 1, i).trim().length === 0) {
       this.pushIssue('emptyTagFound', i, 'Empty group, e.g. "(  )".') //The group is empty
     }
     this.state.parenthesesStack[this.state.groupDepth - 1].children.push(groupSpec)
-    this.state.currentGroupStack[this.state.groupDepth - 1].push(this.state.currentGroupStack.pop())
+    const currentGroup = this.state.currentGroupStack.pop()
+    if (currentGroup === undefined) {
+      IssueError.generateAndThrowInternalError('Group stack is empty when it should not be')
+    }
+    this.state.currentGroupStack[this.state.groupDepth - 1].push(currentGroup)
     this.state.groupDepth--
   }
 
