@@ -5,6 +5,7 @@
     "checkJs": false,
     "target": "esnext",
     "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "types": ["node"],
