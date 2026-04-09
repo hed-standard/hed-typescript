@@ -84,7 +84,7 @@ export default class SchemaParser {
    *
    * @param rootElement - The root XML element.
    */
-  constructor(rootElement: HedSchemaRootElement) {
+  public constructor(rootElement: HedSchemaRootElement) {
     this.rootElement = rootElement
     this._versionDefinitions = {
       typeProperties: new Set(['boolProperty']),
