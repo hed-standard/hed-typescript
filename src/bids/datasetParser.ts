@@ -77,6 +77,11 @@ export abstract class BidsFileAccessor<FileType> {
    * @param schemaBuilder - The HED schema builder function.
    */
   protected constructor(datasetRootDirectory: string, fileMap: Map<string, FileType>, schemaBuilder: SchemaBuilder) {
+    if (typeof datasetRootDirectory !== 'string') {
+      IssueError.generateAndThrowInternalError(
+        'BidsFileAccessor constructor requires a string for datasetRootDirectory.',
+      )
+    }
     if (!(fileMap instanceof Map)) {
       // Ensure fileMap is a Map
       IssueError.generateAndThrowInternalError('BidsFileAccessor constructor requires a Map argument for fileMap.')
@@ -106,8 +111,8 @@ export abstract class BidsFileAccessor<FileType> {
     const newFileMap = new Map<string, FileType>()
     for (const candidate of candidates) {
       const mappedCandidate = fileMap.get(candidate)
-      if (mappedCandidate) {
-        newFileMap.set(candidate, mappedCandidate)
+      if (fileMap.has(candidate)) {
+        newFileMap.set(candidate, mappedCandidate as FileType)
       }
     }
     this.fileMap = newFileMap
@@ -158,7 +163,7 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
    * @throws {IssueError} If the dataset root directory path is invalid.
    */
   private constructor(datasetRootDirectory: string, fileMap: Map<string, string>) {
-    if (!datasetRootDirectory) {
+    if (typeof datasetRootDirectory !== 'string' || !datasetRootDirectory) {
       const message = `Bids validation requires a non-empty string for the dataset root directory but received: ${datasetRootDirectory}`
       IssueError.generateAndThrow('fileReadError', { filename: datasetRootDirectory, message: `${message}` })
     }
@@ -175,7 +180,7 @@ export class BidsDirectoryAccessor extends BidsFileAccessor<string> {
    * @throws {IssueError} If the dataset root directory path is empty.
    */
   public static async create(datasetRootDirectory: string): Promise<BidsDirectoryAccessor> {
-    if (!datasetRootDirectory) {
+    if (typeof datasetRootDirectory !== 'string' || !datasetRootDirectory) {
       IssueError.generateAndThrowInternalError('Must have a non-empty dataset root directory path.')
     }
     const resolvedDatasetRoot = path.resolve(datasetRootDirectory)

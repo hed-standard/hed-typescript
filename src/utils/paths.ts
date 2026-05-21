@@ -107,7 +107,15 @@ class OrganizedBidsCandidates {
    */
   public addCandidate(relativePath: string, suffix: string, ext: string): void {
     this.candidates.push(relativePath)
-    this.organizedPaths?.get(suffix)?.get(ext)?.push(relativePath)
+    const suffixPaths = this.organizedPaths.get(suffix)
+    if (suffixPaths === undefined) {
+      IssueError.generateAndThrowInternalError(`Uninitialized BIDS suffix key "${suffix}"`)
+    }
+    const extPaths = suffixPaths.get(ext)
+    if (extPaths === undefined) {
+      IssueError.generateAndThrowInternalError(`Uninitialized BIDS extension "${ext}" for suffix "${suffix}"`)
+    }
+    extPaths.push(relativePath)
   }
 }
 
@@ -486,7 +494,7 @@ export function getMergedSidecarData(
     if (!acc.has(dir)) {
       acc.set(dir, [])
     }
-    acc.get(dir)?.push(xpath)
+    acc.get(dir)!.push(xpath)
     return acc
   }, new Map<string, string[]>())
 
