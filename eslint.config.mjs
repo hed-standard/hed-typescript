@@ -12,7 +12,7 @@ export default defineConfig([
   globalIgnores(['src/data/*'], 'Ignore Source Data Directory'),
 
   {
-    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.ts'],
     plugins: {
       js,
     },
@@ -70,9 +70,6 @@ export default defineConfig([
   },
   {
     files: ['**/*.ts'],
-    plugins: {
-      js,
-    },
 
     extends: [tseslint.configs.recommendedTypeChecked],
 
@@ -83,32 +80,7 @@ export default defineConfig([
     },
 
     rules: {
-      'no-console': [
-        'error',
-        {
-          allow: ['warn'],
-        },
-      ],
-
-      'guard-for-in': 'error',
-      'no-var': 'error',
-      'prefer-const': 'error',
-      'array-callback-return': 'error',
-      'no-constructor-return': 'error',
-      'no-duplicate-imports': 'error',
-      'no-self-compare': 'error',
-      'no-template-curly-in-string': 'warn',
-      'no-unmodified-loop-condition': 'warn',
-      'no-unreachable-loop': 'error',
       '@typescript-eslint/require-await': 'off',
-      '@typescript-eslint/explicit-member-accessibility': 'warn',
-
-      'prefer-arrow-callback': [
-        'error',
-        {
-          allowUnboundThis: false,
-        },
-      ],
     },
   },
   prettier,
