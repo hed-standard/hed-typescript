@@ -21,7 +21,7 @@ import { type HedSchemas } from '../schema/containers'
 import { organizePaths } from '../utils/paths'
 import { type ErrnoException } from '../utils/types'
 
-type SchemaBuilder = (datasetDescription: BidsJsonFile) => Promise<HedSchemas>
+type SchemaBuilder = (datasetDescription: BidsJsonFile) => Promise<HedSchemas | null>
 
 /**
  * Base class for BIDS file accessors.
@@ -110,7 +110,10 @@ export abstract class BidsFileAccessor<FileType> {
 
     const newFileMap = new Map<string, FileType>()
     for (const candidate of candidates) {
-      newFileMap.set(candidate, fileMap.get(candidate))
+      const mappedCandidate = fileMap.get(candidate)
+      if (fileMap.has(candidate)) {
+        newFileMap.set(candidate, mappedCandidate as FileType)
+      }
     }
     this.fileMap = newFileMap
   }
