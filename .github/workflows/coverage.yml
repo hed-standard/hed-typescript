@@ -19,15 +19,20 @@ jobs:
     steps:
       - name: Check out the code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
       - name: Set up with Node.js LTS
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: 24.x
+
       - name: Download dependencies
         run: npm ci
+
       - name: Generate coverage report
         run: npm run coverage
+
       - name: Upload coverage to Quality
+        if: github.event_name == 'push'
         uses: qltysh/qlty-action/coverage@a19242102d17e497f437d7466aa01b528537e899
         with:
           oidc: true
