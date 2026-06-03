@@ -178,6 +178,23 @@ export class SchemaEntry {
   }
 
   /**
+   * Determine if this schema entry is equivalent to another schema entry.
+   *
+   * @remarks
+   *
+   * Schema entries are deemed equivalent if they have the same name.
+   *
+   * @param other - A schema entry to compare with this one.
+   * @returns Whether the other tag is equivalent to this schema entry.
+   */
+  public equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaEntry)) {
+      return false
+    }
+    return this.name === other.name
+  }
+
+  /**
    * Whether this schema entry has this attribute (by name).
    *
    * This method is a stub to be overridden in {@link SchemaEntryWithAttributes}.
@@ -261,6 +278,26 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
     for (const [attributeName, value] of this.valueAttributes) {
       this.valueAttributeNames.set(attributeName.name, value)
     }
+  }
+
+  /**
+   * Determine if this schema entry is equivalent to another schema entry.
+   *
+   * @remarks
+   *
+   * Schema entries with attributes are deemed equivalent if they have the same name and equivalent attributes.
+   *
+   * @param other - A schema entry to compare with this one.
+   * @returns Whether the other tag is equivalent to this schema entry.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaEntryWithAttributes)) {
+      return false
+    }
+    if (!super.equivalent(other)) {
+      return false
+    }
+    return this.name === other.name
   }
 
   /**

@@ -7,7 +7,7 @@ type UnitClassElement = DefinitionElement & { unit: DefinitionElement[] }
 type SchemaAttributeElement = NamedElement & { property: AttributeElement[] }
 
 export type HedSchemaRootElement = {
-  $: { version: string; library?: string; withStandard?: string }
+  $: { version: string; library?: string; unmerged?: boolean; withStandard?: string }
   schema: { node: NodeElement[] }
   unitClassDefinitions: {
     unitClassDefinition: UnitClassElement[]

@@ -90,7 +90,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
       if (schemaName !== '') {
         IssueError.generateAndThrow('unmatchedLibrarySchema', {
           tag: this.originalTag,
-          library: schemaName,
+          prefix: schemaName,
         })
       } else {
         IssueError.generateAndThrow('unmatchedBaseSchema', {

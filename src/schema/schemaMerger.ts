@@ -4,24 +4,26 @@
  */
 
 import { IssueError } from '../issues/issues'
-import { type SchemaAttribute, SchemaEntryManager, SchemaTag, SchemaValueTag } from './entries'
-import { type HedSchema, PartneredSchema } from './containers'
+import { type SchemaAttribute, type SchemaEntries, SchemaEntryManager, SchemaTag, SchemaValueTag } from './entries'
+import { type HedSchema } from './containers'
+import { type HedSchemaXMLObject } from './xmlType'
+import SchemaParser from './parser'
 
-export default class PartneredSchemaMerger {
+export default class HedSchemaMerger {
   /**
    * The sources of data to be merged.
    */
-  sourceSchemas: HedSchema[]
+  sourceXmls: HedSchemaXMLObject[]
 
   /**
    * The current source of data to be merged.
    */
-  currentSource: HedSchema
+  currentSource: HedSchemaXMLObject
 
   /**
    * The destination of data to be merged.
    */
-  destination: PartneredSchema
+  destination: HedSchema
 
   /**
    * The tag definitions of the partnered schema
@@ -31,27 +33,13 @@ export default class PartneredSchemaMerger {
   /**
    * Constructor.
    *
-   * @param sourceSchemas The sources of data to be merged.
+   * @param destinationSchema - The destination schema.
+   * @param sourceXmls - The sources of data to be merged.
    */
-  constructor(sourceSchemas: HedSchema[]) {
-    this.sourceSchemas = sourceSchemas
-    this.destination = new PartneredSchema(sourceSchemas)
+  constructor(destinationSchema: HedSchema, sourceXmls: HedSchemaXMLObject[]) {
+    this.destination = destinationSchema
+    this.sourceXmls = sourceXmls
     this.destinationTagDefinitions = this.destination.entries.tags.definitions
-    this._validate()
-  }
-
-  /**
-   * Pre-validate the partnered schemas.
-   */
-  private _validate(): void {
-    for (const schema of this.sourceSchemas.slice(1)) {
-      if (schema.withStandard !== this.destination.withStandard) {
-        IssueError.generateAndThrow('differentWithStandard', {
-          first: schema.withStandard,
-          second: this.destination.withStandard,
-        })
-      }
-    }
   }
 
   /**
@@ -59,33 +47,33 @@ export default class PartneredSchemaMerger {
    *
    * @returns The merged partnered schema.
    */
-  public mergeSchemas(): PartneredSchema {
-    for (const additionalSchema of this.sourceSchemas.slice(1)) {
+  public mergeSchemas(): HedSchema {
+    for (const additionalSchema of this.sourceXmls) {
       this.currentSource = additionalSchema
-      this._mergeData()
+      if (!additionalSchema.HED.$.unmerged) {
+        const sourceEntries = new SchemaParser(additionalSchema.HED).parse()
+        this._mergeMergedSchemaData(sourceEntries)
+      }
     }
     return this.destination
   }
 
   /**
-   * The source schema's tag collection.
+   * Merge two pre-merged partnered schemas.
+   *
+   * @param entries - The source schema's entries.
    */
-  get sourceTags(): SchemaEntryManager<SchemaTag> {
-    return this.currentSource.entries.tags
+  private _mergeMergedSchemaData(entries: SchemaEntries): void {
+    this._mergeTags(entries.tags)
   }
 
   /**
-   * Merge two lazy partnered schemas.
+   * Merge the tags from two pre-merged partnered schemas.
+   *
+   * @param sourceTags - The source schema's tags.
    */
-  private _mergeData(): void {
-    this._mergeTags()
-  }
-
-  /**
-   * Merge the tags from two lazy partnered schemas.
-   */
-  private _mergeTags(): void {
-    for (const tag of this.sourceTags.values()) {
+  private _mergeTags(sourceTags: SchemaEntryManager<SchemaTag>): void {
+    for (const tag of sourceTags.values()) {
       this._mergeTag(tag)
     }
     this.destination.entries.tags = new SchemaEntryManager(this.destinationTagDefinitions)

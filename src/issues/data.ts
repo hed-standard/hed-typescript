@@ -438,17 +438,22 @@ const issueData: Record<string, IssueType> = {
   unmatchedLibrarySchema: {
     hedCode: 'TAG_NAMESPACE_PREFIX_INVALID',
     level: 'error',
-    message: issueMessageTemplate`Tag "${'tag'}" is declared to use a library schema nicknamed "${'library'}" in the dataset's schema listing, but no such schema was found.`,
+    message: issueMessageTemplate`Tag "${'tag'}" is declared to use a library schema nicknamed "${'prefix'}" in the dataset's schema listing, but no such schema was found.`,
   },
   differentWithStandard: {
     hedCode: 'SCHEMA_LOAD_FAILED',
     level: 'error',
-    message: issueMessageTemplate`Could not merge lazy partnered schemas with different "withStandard" values: "${'first'}" and "${'second'}".`,
+    message: issueMessageTemplate`Could not merge lazy partnered schemas with different "withStandard" values: "${'versions'}".`,
   },
   lazyPartneredSchemasShareTag: {
     hedCode: 'SCHEMA_LOAD_FAILED',
     level: 'error',
     message: issueMessageTemplate`Lazy partnered schemas are incompatible because they share the short tag "${'tag'}". These schemas require different prefixes.`,
+  },
+  nonPartneredSchemaWithAnotherSchema: {
+    hedCode: 'SCHEMA_LOAD_FAILED',
+    level: 'error',
+    message: issueMessageTemplate`Could not combine a non-partnered schema and another schema with the same prefix "${'prefix'}".`,
   },
   deprecatedStandardSchemaVersion: {
     hedCode: 'VERSION_DEPRECATED',

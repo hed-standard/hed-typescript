@@ -2,7 +2,7 @@ import { assert } from 'chai'
 import { beforeAll, describe, it } from '@jest/globals'
 
 import { generateIssue, IssueError } from '../../src/issues/issues'
-import { PartneredSchema } from '../../src/schema/containers'
+import { HedSchema } from '../../src/schema/containers'
 import { buildSchemas, buildSchemasFromVersion } from '../../src/schema/init'
 import { SchemaSpec, SchemasSpec } from '../../src/schema/specs'
 import { buildSchemasSpec } from '../../src/bids/schema'
@@ -329,8 +329,8 @@ describe('HED schemas', () => {
       const schemas = await buildSchemas(specs2)
       assert.instanceOf(
         schemas.getSchema('testlib'),
-        PartneredSchema,
-        'Parsed testlib schema (combined 2.0.0 and 3.0.0) is not an instance of PartneredSchema',
+        HedSchema,
+        'Parsed testlib schema (combined 2.0.0 and 3.0.0) is not an instance of HedSchema',
       )
     })
   })
@@ -369,7 +369,7 @@ describe('HED schemas', () => {
         const schemas = await buildSchemasFromVersion(versionString)
 
         assert.isNotNull(schemas, 'Schemas should not be null')
-        assert.instanceOf(schemas.baseSchema, PartneredSchema)
+        assert.instanceOf(schemas.baseSchema, HedSchema)
         assert.strictEqual(schemas.baseSchema.withStandard, '8.2.0')
       })
 
@@ -378,7 +378,7 @@ describe('HED schemas', () => {
         const schemas = await buildSchemasFromVersion(versionString)
 
         assert.isNotNull(schemas, 'Schemas should not be null')
-        assert.instanceOf(schemas.baseSchema, PartneredSchema)
+        assert.instanceOf(schemas.baseSchema, HedSchema)
         assert.strictEqual(schemas.baseSchema.withStandard, '8.4.0')
         assert.strictEqual(schemas.baseSchema.entries.tags._definitions.size, 1994)
       })
