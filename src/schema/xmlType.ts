@@ -10,19 +10,19 @@ export type HedSchemaRootElement = {
   $: { version: string; library?: string; unmerged?: boolean; withStandard?: string }
   schema: { node: NodeElement[] }
   unitClassDefinitions: {
-    unitClassDefinition: UnitClassElement[]
+    unitClassDefinition?: UnitClassElement[]
   }
   unitModifierDefinitions: {
-    unitModifierDefinition: DefinitionElement[]
+    unitModifierDefinition?: DefinitionElement[]
   }
   valueClassDefinitions: {
-    valueClassDefinition: DefinitionElement[]
+    valueClassDefinition?: DefinitionElement[]
   }
   schemaAttributeDefinitions: {
-    schemaAttributeDefinition: SchemaAttributeElement[]
+    schemaAttributeDefinition?: SchemaAttributeElement[]
   }
   propertyDefinitions: {
-    propertyDefinition: NamedElement[]
+    propertyDefinition?: NamedElement[]
   }
 }
 

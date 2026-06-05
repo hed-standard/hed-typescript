@@ -7,7 +7,7 @@ export default class UnitModifierParser extends SchemaDefinitionEntryParser<Sche
     super(xmlCollection, attributes)
   }
 
-  protected override _getDefinitions(schemaXml: HedSchemaXMLObject): Iterable<DefinitionElement> {
+  protected override _getDefinitions(schemaXml: HedSchemaXMLObject): Iterable<DefinitionElement> | undefined {
     return schemaXml.HED.unitModifierDefinitions.unitModifierDefinition
   }
 

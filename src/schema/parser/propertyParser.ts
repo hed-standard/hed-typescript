@@ -24,6 +24,9 @@ export default class PropertyParser extends SchemaEntryParser<SchemaProperty> {
    */
   protected override _parseSchema(schemaXml: HedSchemaXMLObject): void {
     const propertyDefinitions = schemaXml.HED.propertyDefinitions.propertyDefinition
+    if (!propertyDefinitions) {
+      return
+    }
     for (const definition of propertyDefinitions) {
       const propertyName = getElementTagName(definition)
       this.addEntry(propertyName, new SchemaProperty(propertyName))

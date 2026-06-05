@@ -30,14 +30,29 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     this.valueClasses = valueClasses
   }
 
-  private getAllChildTags(parentElement: NodeElement, excludeTakeValueTags = true): NodeElement[] {
-    if (excludeTakeValueTags && getElementTagName(parentElement) === '#') {
-      return []
-    }
-    const childTags = [parentElement]
-    const tagElementChildren = parentElement.node ?? []
-    return childTags.concat(
-      flattenDeep(tagElementChildren.map((child) => this.getAllChildTags(child, excludeTakeValueTags))),
+  /**
+   * Parse the schema's tags.
+   */
+  protected override _parseSchema(schemaXml: HedSchemaXMLObject): void {
+    const tags = this.getAllTags(schemaXml)
+    const shortTags = this.getShortTags(tags)
+    const parentMap = this.generateParentMap(shortTags)
+    const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseAttributeElements(
+      tags.keys(),
+      (element: NodeElement) => shortTags.get(element) ?? '',
+    )
+    this.processRootedElements(parentMap, valueAttributeDefinitions)
+
+    const tagUnitClassDefinitions = this.processTagUnitClasses(shortTags, valueAttributeDefinitions)
+    const tagValueClassDefinitions = this.processTagValueClasses(shortTags, valueAttributeDefinitions)
+    this.processRecursiveAttributes(shortTags, booleanAttributeDefinitions)
+
+    this.createSchemaTags(
+      booleanAttributeDefinitions,
+      valueAttributeDefinitions,
+      tagUnitClassDefinitions,
+      tagValueClassDefinitions,
+      parentMap,
     )
   }
 
@@ -55,28 +70,14 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     return new Map(zip(tagElements, tags) as [NodeElement, string][])
   }
 
-  /**
-   * Parse the schema's tags.
-   */
-  protected override _parseSchema(schemaXml: HedSchemaXMLObject): void {
-    const tags = this.getAllTags(schemaXml)
-    const shortTags = this._getShortTags(tags)
-    const parentMap = this._generateParentMap(shortTags)
-    const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseAttributeElements(
-      tags.keys(),
-      (element: NodeElement) => shortTags.get(element) ?? '',
-    )
-
-    const tagUnitClassDefinitions = this._processTagUnitClasses(shortTags, valueAttributeDefinitions)
-    const tagValueClassDefinitions = this._processTagValueClasses(shortTags, valueAttributeDefinitions)
-    this._processRecursiveAttributes(shortTags, booleanAttributeDefinitions)
-
-    this._createSchemaTags(
-      booleanAttributeDefinitions,
-      valueAttributeDefinitions,
-      tagUnitClassDefinitions,
-      tagValueClassDefinitions,
-      parentMap,
+  private getAllChildTags(parentElement: NodeElement, excludeTakeValueTags = true): NodeElement[] {
+    if (excludeTakeValueTags && getElementTagName(parentElement) === '#') {
+      return []
+    }
+    const childTags = [parentElement]
+    const tagElementChildren = parentElement.node ?? []
+    return childTags.concat(
+      flattenDeep(tagElementChildren.map((child) => this.getAllChildTags(child, excludeTakeValueTags))),
     )
   }
 
@@ -86,14 +87,71 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
    * @param tags - The map from tag elements to tag strings.
    * @returns The map from tag elements to shortened tag names.
    */
-  private _getShortTags(tags: Map<NodeElement, string>): Map<NodeElement, string> {
+  private getShortTags(tags: Map<NodeElement, string>): Map<NodeElement, string> {
     const shortTags = new Map<NodeElement, string>()
     for (const tagElement of tags.keys()) {
       const shortKey =
-        getElementTagName(tagElement) === '#' ? getParentTagName(tagElement) + '-#' : getElementTagName(tagElement)
+        getElementTagName(tagElement) === '#'
+          ? TagParser.getParentTagName(tagElement) + '-#'
+          : getElementTagName(tagElement)
       shortTags.set(tagElement, shortKey)
     }
     return shortTags
+  }
+
+  private static getParentTagName(tagElement: NodeElement): string {
+    const parentTagElement = tagElement.$parent
+    if (parentTagElement?.$parent) {
+      return getElementTagName(parentTagElement)
+    } else {
+      return ''
+    }
+  }
+
+  /**
+   * Generate a map from each tag name to its parent tag name.
+   *
+   * @param shortTags - The map from tag elements to shortened tag names.
+   * @returns A map from each tag name to its parent tag name.
+   */
+  private generateParentMap(shortTags: Map<NodeElement, string>): Map<string, string> {
+    const parentMap = new Map<string, string>()
+    for (const tagElement of shortTags.keys()) {
+      if (!tagElement.$parent) {
+        continue
+      }
+
+      const tagName = lc(shortTags.get(tagElement) ?? '')
+      const parentTagName = lc(shortTags.get(tagElement.$parent) ?? '')
+      parentMap.set(tagName, parentTagName)
+    }
+    return parentMap
+  }
+
+  private processRootedElements(
+    parentMap: Map<string, string>,
+    valueAttributeDefinitions: Map<string, Map<SchemaAttribute, string[]>>,
+  ): void {
+    const rootedAttribute = this.attributes.getEntry('rooted')
+    const inLibraryAttribute = this.attributes.getEntry('inLibrary')
+    if (!rootedAttribute) {
+      return
+    }
+    for (const [shortName, valueAttributes] of valueAttributeDefinitions) {
+      if (inLibraryAttribute && valueAttributes.has(inLibraryAttribute)) {
+        return
+      }
+      const root = valueAttributes.get(rootedAttribute)
+      if (root) {
+        if (root.length !== 1) {
+          IssueError.generateAndThrow('invalidSchema', {
+            error: `Tag "${shortName}" has rooted attribute but incorrect attribute value count`,
+          })
+        }
+        parentMap.set(lc(shortName), lc(root[0]))
+        valueAttributes.delete(rootedAttribute)
+      }
+    }
   }
 
   /**
@@ -103,7 +161,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
    * @param valueAttributeDefinitions - The map from shortened tag names to their value schema attributes.
    * @returns The map from shortened tag names to their unit classes.
    */
-  private _processTagUnitClasses(
+  private processTagUnitClasses(
     shortTags: Map<NodeElement, string>,
     valueAttributeDefinitions: Map<string, Map<SchemaAttribute, string[]>>,
   ): Map<string, SchemaUnitClass[]> {
@@ -138,7 +196,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
    * @param valueAttributeDefinitions - The map from shortened tag names to their value schema attributes.
    * @returns The map from shortened tag names to their value classes.
    */
-  private _processTagValueClasses(
+  private processTagValueClasses(
     shortTags: Map<NodeElement, string>,
     valueAttributeDefinitions: Map<string, Map<SchemaAttribute, string[]>>,
   ): Map<string, SchemaValueClass[]> {
@@ -173,11 +231,11 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
    * @param shortTags - The map from tag elements to shortened tag names.
    * @param booleanAttributeDefinitions - The map from shortened tag names to their boolean schema attributes. Passed by reference.
    */
-  private _processRecursiveAttributes(
+  private processRecursiveAttributes(
     shortTags: Map<NodeElement, string>,
     booleanAttributeDefinitions: Map<string, Set<SchemaAttribute>>,
   ): void {
-    const recursiveAttributeMap = this._generateRecursiveAttributeMap(shortTags, booleanAttributeDefinitions)
+    const recursiveAttributeMap = this.generateRecursiveAttributeMap(shortTags, booleanAttributeDefinitions)
 
     for (const [tagElement, recursiveAttributes] of recursiveAttributeMap) {
       for (const childTag of this.getAllChildTags(tagElement)) {
@@ -195,7 +253,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
    * @param shortTags - The map from tag elements to shortened tag names.
    * @param booleanAttributeDefinitions - The map from shortened tag names to their boolean schema attributes. Passed by reference.
    */
-  private _generateRecursiveAttributeMap(
+  private generateRecursiveAttributeMap(
     shortTags: Map<NodeElement, string>,
     booleanAttributeDefinitions: Map<string, Set<SchemaAttribute>>,
   ): Map<NodeElement, Set<SchemaAttribute>> {
@@ -222,7 +280,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
    * @param parentMap - The map from each tag name to its parent tag name.
    * @returns The map from lowercase shortened tag names to their tag objects.
    */
-  private _createSchemaTags(
+  private createSchemaTags(
     booleanAttributeDefinitions: Map<string, Set<SchemaAttribute>>,
     valueAttributeDefinitions: Map<string, Map<SchemaAttribute, string[]>>,
     tagUnitClassDefinitions: Map<string, SchemaUnitClass[]>,
@@ -272,34 +330,5 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     } else {
       this.entryTypeMap.set(lowercaseName, newTag)
     }
-  }
-
-  /**
-   * Generate a map from each tag name to its parent tag name.
-   *
-   * @param shortTags - The map from tag elements to shortened tag names.
-   * @returns A map from each tag name to its parent tag name.
-   */
-  private _generateParentMap(shortTags: Map<NodeElement, string>): Map<string, string> {
-    const parentMap = new Map<string, string>()
-    for (const tagElement of shortTags.keys()) {
-      if (!tagElement.$parent) {
-        continue
-      }
-
-      const tagName = lc(shortTags.get(tagElement) ?? '')
-      const parentTagName = lc(shortTags.get(tagElement.$parent) ?? '')
-      parentMap.set(tagName, parentTagName)
-    }
-    return parentMap
-  }
-}
-
-export function getParentTagName(tagElement: NodeElement): string {
-  const parentTagElement = tagElement.$parent
-  if (parentTagElement?.$parent) {
-    return getElementTagName(parentTagElement)
-  } else {
-    return ''
   }
 }

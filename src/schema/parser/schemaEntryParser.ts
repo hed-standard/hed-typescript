@@ -144,9 +144,11 @@ export abstract class SchemaDefinitionEntryParser<
 > extends SchemaEntryWithAttributesParser<T> {
   protected override _parseSchema(schemaXml: HedSchemaXMLObject): void {
     this._preprocessSchema(schemaXml)
-    const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseDefinitions(
-      this._getDefinitions(schemaXml),
-    )
+    const definitions = this._getDefinitions(schemaXml)
+    if (!definitions) {
+      return
+    }
+    const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseDefinitions(definitions)
     for (const [name, valueAttributes] of valueAttributeDefinitions) {
       const booleanAttributes = booleanAttributeDefinitions.get(name) ?? new Set<SchemaAttribute>()
       this.addEntry(name, this._buildEntry(name, booleanAttributes, valueAttributes))
@@ -156,7 +158,7 @@ export abstract class SchemaDefinitionEntryParser<
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected _preprocessSchema(schemaXml: HedSchemaXMLObject): void {}
 
-  protected abstract _getDefinitions(schemaXml: HedSchemaXMLObject): Iterable<DefinitionElement>
+  protected abstract _getDefinitions(schemaXml: HedSchemaXMLObject): Iterable<DefinitionElement> | undefined
 
   protected abstract _buildEntry(
     name: string,

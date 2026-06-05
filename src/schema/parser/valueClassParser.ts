@@ -22,7 +22,7 @@ export default class ValueClassParser extends SchemaDefinitionEntryParser<Schema
     super(xmlCollection, attributes)
   }
 
-  protected override _getDefinitions(schemaXml: HedSchemaXMLObject): Iterable<DefinitionElement> {
+  protected override _getDefinitions(schemaXml: HedSchemaXMLObject): Iterable<DefinitionElement> | undefined {
     return schemaXml.HED.valueClassDefinitions.valueClassDefinition
   }
 

@@ -26,6 +26,9 @@ export default class AttributeParser extends SchemaEntryParser<SchemaAttribute> 
    */
   protected override _parseSchema(schemaXml: HedSchemaXMLObject): void {
     const attributeDefinitions = schemaXml.HED.schemaAttributeDefinitions.schemaAttributeDefinition
+    if (!attributeDefinitions) {
+      return
+    }
     for (const definition of attributeDefinitions) {
       const attributeName = getElementTagName(definition)
       const propertyElements = definition.property ?? []
