@@ -138,9 +138,6 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
       return
     }
     for (const [shortName, valueAttributes] of valueAttributeDefinitions) {
-      if (inLibraryAttribute && valueAttributes.has(inLibraryAttribute)) {
-        return
-      }
       const root = valueAttributes.get(rootedAttribute)
       if (root) {
         if (root.length !== 1) {
