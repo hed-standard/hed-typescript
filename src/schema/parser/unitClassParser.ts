@@ -7,10 +7,12 @@ import {
 } from '../entries'
 import { getElementTagName, type HedSchemaXMLCollection, type DefinitionElement, HedSchemaXMLObject } from '../xmlType'
 import { SchemaDefinitionEntryParser } from './schemaEntryParser'
+import { IssueError } from '../../issues/issues'
 
 export default class UnitClassParser extends SchemaDefinitionEntryParser<SchemaUnitClass> {
   private readonly unitModifiers: SchemaEntryManager<SchemaUnitModifier>
-  private unitClassUnits: Map<string, Map<string, SchemaUnit>>
+  private unitClassesUnits: Map<string, Map<string, SchemaUnit>>
+  private unitClassUnits: Map<string, SchemaUnit>
 
   public constructor(
     xmlCollection: HedSchemaXMLCollection,
@@ -38,17 +40,16 @@ export default class UnitClassParser extends SchemaDefinitionEntryParser<SchemaU
       name,
       booleanAttributes,
       valueAttributes,
-      this.unitClassUnits.get(name) ?? new Map<string, SchemaUnit>(),
+      this.unitClassesUnits.get(name) ?? new Map<string, SchemaUnit>(),
     )
   }
 
   private parseUnits(schemaXml: HedSchemaXMLObject): void {
-    this.unitClassUnits = new Map<string, Map<string, SchemaUnit>>()
+    this.unitClassesUnits = new Map<string, Map<string, SchemaUnit>>()
     const unitClassElements = schemaXml.HED.unitClassDefinitions.unitClassDefinition
     for (const element of unitClassElements) {
       const elementName = getElementTagName(element)
-      const units = new Map<string, SchemaUnit>()
-      this.unitClassUnits.set(elementName, units)
+      this.unitClassUnits = this.entryTypeMap.get(elementName)?.units ?? new Map<string, SchemaUnit>()
       if (element.unit === undefined) {
         continue
       }
@@ -58,8 +59,25 @@ export default class UnitClassParser extends SchemaDefinitionEntryParser<SchemaU
       )
       for (const [name, valueAttributes] of unitValueAttributeDefinitions) {
         const booleanAttributes = unitBooleanAttributeDefinitions.get(name) ?? new Set<SchemaAttribute>()
-        units.set(name, new SchemaUnit(name, booleanAttributes, valueAttributes, this.unitModifiers))
+        this.addUnit(name, new SchemaUnit(name, booleanAttributes, valueAttributes, this.unitModifiers))
       }
+      this.unitClassesUnits.set(elementName, this.unitClassUnits)
+    }
+  }
+
+  /**
+   * Add a new unit while checking for duplicates.
+   *
+   * @param newUnitName - The unit name.
+   * @param newUnit - The new unit object to add.
+   */
+  private addUnit(newUnitName: string, newUnit: SchemaUnit): void {
+    if (this.unitClassUnits.has(newUnitName)) {
+      if (!newUnit.equivalent(this.unitClassUnits.get(newUnitName))) {
+        IssueError.generateAndThrow('lazyPartneredSchemasShareEntry', { entryName: newUnitName })
+      }
+    } else {
+      this.unitClassUnits.set(newUnitName, newUnit)
     }
   }
 }

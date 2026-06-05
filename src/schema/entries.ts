@@ -582,7 +582,7 @@ export class SchemaUnitClass extends SchemaEntryWithAttributes {
    *
    * @remarks
    *
-   * Schema unit classes are deemed equivalent if they have the same name and equivalent attributes and units.
+   * Schema unit classes are deemed equivalent if they have the same name and equivalent attributes.
    *
    * @param other - A schema unit class to compare with this one.
    * @returns Whether the other unit class is equivalent to this schema unit class.
@@ -591,18 +591,7 @@ export class SchemaUnitClass extends SchemaEntryWithAttributes {
     if (!(other instanceof SchemaUnitClass)) {
       return false
     }
-    if (!super.equivalent(other)) {
-      return false
-    }
-    if (this._units.size !== other._units.size) {
-      return false
-    }
-    for (const [key, value] of this._units) {
-      if (!other._units.has(key) || !value.equivalent(other._units.get(key))) {
-        return false
-      }
-    }
-    return true
+    return super.equivalent(other)
   }
 
   /**
