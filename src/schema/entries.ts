@@ -3,11 +3,12 @@
  * @module schema/entries
  */
 
+import { isEqual, isEqualWith } from 'lodash'
 import pluralize from 'pluralize'
 pluralize.addUncountableRule('hertz')
 
 import { IssueError } from '../issues/issues'
-import type SchemaParser from './parser'
+import type SchemaParser from './parser/schemaParser'
 
 /**
  * SchemaEntries class
@@ -49,8 +50,8 @@ export class SchemaEntries {
    * @param schemaParser - A constructed schema parser.
    */
   constructor(schemaParser: SchemaParser) {
-    this.properties = new SchemaEntryManager(schemaParser.properties)
-    this.attributes = new SchemaEntryManager(schemaParser.attributes)
+    this.properties = schemaParser.properties
+    this.attributes = schemaParser.attributes
     this.valueClasses = schemaParser.valueClasses
     this.unitClasses = schemaParser.unitClasses
     this.unitModifiers = schemaParser.unitModifiers
@@ -185,7 +186,7 @@ export class SchemaEntry {
    * Schema entries are deemed equivalent if they have the same name.
    *
    * @param other - A schema entry to compare with this one.
-   * @returns Whether the other tag is equivalent to this schema entry.
+   * @returns Whether the other entry is equivalent to this schema entry.
    */
   public equivalent(other: unknown): boolean {
     if (!(other instanceof SchemaEntry)) {
@@ -212,26 +213,55 @@ export class SchemaEntry {
 /**
  * A schema property.
  */
-export class SchemaProperty extends SchemaEntry {}
+export class SchemaProperty extends SchemaEntry {
+  /**
+   * Determine if this schema property is equivalent to another schema property.
+   *
+   * @remarks
+   *
+   * Schema properties are deemed equivalent if they have the same name and equivalent attributes.
+   *
+   * @param other - A schema property to compare with this one.
+   * @returns Whether the other property is equivalent to this schema property.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaProperty)) {
+      return false
+    }
+    return super.equivalent(other)
+  }
+}
 
 /**
  * A schema attribute.
  */
 export class SchemaAttribute extends SchemaEntry {
   /**
+   * The set of all attribute names which are always recursive.
+   */
+  static readonly ALWAYS_RECURSIVE: Set<string> = new Set(['extensionAllowed'])
+
+  /**
    * The properties assigned to this schema attribute.
    */
   readonly _properties: Set<SchemaProperty>
+
+  /**
+   * Whether this attribute is recursive.
+   */
+  readonly _recursive: boolean
 
   /**
    * Constructor.
    *
    * @param name - The name of the schema attribute.
    * @param properties - The properties assigned to this schema attribute.
+   * @param recursive - Whether this attribute is recursive.
    */
-  constructor(name: string, properties: Set<SchemaProperty>) {
+  constructor(name: string, properties: Set<SchemaProperty>, recursive: boolean) {
     super(name)
     this._properties = properties
+    this._recursive = recursive || SchemaAttribute.ALWAYS_RECURSIVE.has(name)
   }
 
   /**
@@ -239,6 +269,33 @@ export class SchemaAttribute extends SchemaEntry {
    */
   public get properties(): Set<SchemaProperty> {
     return new Set(this._properties)
+  }
+
+  /**
+   * Whether this attribute is recursive.
+   */
+  public get recursive(): boolean {
+    return this._recursive
+  }
+
+  /**
+   * Determine if this schema attribute is equivalent to another schema attribute.
+   *
+   * @remarks
+   *
+   * Schema attributes are deemed equivalent if they have the same name and properties.
+   *
+   * @param other - A schema attribute to compare with this one.
+   * @returns Whether the other attribute is equivalent to this schema attribute.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaAttribute)) {
+      return false
+    }
+    if (!super.equivalent(other)) {
+      return false
+    }
+    return this.properties.symmetricDifference(other.properties).size === 0
   }
 }
 
@@ -288,7 +345,7 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
    * Schema entries with attributes are deemed equivalent if they have the same name and equivalent attributes.
    *
    * @param other - A schema entry to compare with this one.
-   * @returns Whether the other tag is equivalent to this schema entry.
+   * @returns Whether the other entry is equivalent to this schema entry.
    */
   public override equivalent(other: unknown): boolean {
     if (!(other instanceof SchemaEntryWithAttributes)) {
@@ -297,7 +354,20 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
     if (!super.equivalent(other)) {
       return false
     }
-    return this.name === other.name
+    if (this.booleanAttributes.symmetricDifference(other.booleanAttributes).size > 0) {
+      return false
+    }
+    if (this.valueAttributes.size !== other.valueAttributes.size) {
+      return false
+    }
+    const otherKeys = Array.from(other.valueAttributes.keys())
+    for (const [key, value] of this.valueAttributes) {
+      const otherKey = otherKeys.find((otherKey) => key.equivalent(otherKey))
+      if (!otherKey || !isEqual(value, other.valueAttributes.get(otherKey))) {
+        return false
+      }
+    }
+    return true
   }
 
   /**
@@ -422,6 +492,23 @@ export class SchemaUnit extends SchemaEntryWithAttributes {
   }
 
   /**
+   * Determine if this schema unit is equivalent to another schema unit.
+   *
+   * @remarks
+   *
+   * Schema units are deemed equivalent if they have the same name and equivalent attributes.
+   *
+   * @param other - A schema unit to compare with this one.
+   * @returns Whether the other unit is equivalent to this schema unit.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaUnit)) {
+      return false
+    }
+    return super.equivalent(other)
+  }
+
+  /**
    * Determine if a value has this unit.
    *
    * @param value - Either the whole value or the part after a blank (if not a prefix unit)
@@ -491,6 +578,34 @@ export class SchemaUnitClass extends SchemaEntryWithAttributes {
   }
 
   /**
+   * Determine if this schema unit class is equivalent to another schema unit class.
+   *
+   * @remarks
+   *
+   * Schema unit classes are deemed equivalent if they have the same name and equivalent attributes and units.
+   *
+   * @param other - A schema unit class to compare with this one.
+   * @returns Whether the other unit class is equivalent to this schema unit class.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaUnitClass)) {
+      return false
+    }
+    if (!super.equivalent(other)) {
+      return false
+    }
+    if (this._units.size !== other._units.size) {
+      return false
+    }
+    for (const [key, value] of this._units) {
+      if (!other._units.has(key) || !value.equivalent(other._units.get(key))) {
+        return false
+      }
+    }
+    return true
+  }
+
+  /**
    * Extract the unit class and remainder.
    *
    * @param value - A value-containing string.
@@ -537,7 +652,24 @@ export class SchemaUnitClass extends SchemaEntryWithAttributes {
 /**
  * SchemaUnitModifier class
  */
-export class SchemaUnitModifier extends SchemaEntryWithAttributes {}
+export class SchemaUnitModifier extends SchemaEntryWithAttributes {
+  /**
+   * Determine if this schema unit modifier is equivalent to another schema unit modifier.
+   *
+   * @remarks
+   *
+   * Schema unit modifiers are deemed equivalent if they have the same name and equivalent attributes.
+   *
+   * @param other - A schema unit modifier to compare with this one.
+   * @returns Whether the other unit modifier is equivalent to this schema unit modifier.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaUnitModifier)) {
+      return false
+    }
+    return super.equivalent(other)
+  }
+}
 
 /**
  * SchemaValueClass class
@@ -583,6 +715,26 @@ export class SchemaValueClass extends SchemaEntryWithAttributes {
   public validateValue(value: string): boolean {
     return this._wordRegex.test(value) && this._charClassRegex.test(value)
   }
+
+  /**
+   * Determine if this schema value class is equivalent to another schema value class.
+   *
+   * @remarks
+   *
+   * Schema value classes are deemed equivalent if they have the same name and equivalent regular expressions.
+   *
+   * @param other - A schema value class to compare with this one.
+   * @returns Whether the other value class is equivalent to this schema value class.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaValueClass)) {
+      return false
+    }
+    if (!super.equivalent(other)) {
+      return false
+    }
+    return isEqual(this._charClassRegex, other._charClassRegex) && isEqual(this._wordRegex, other._wordRegex)
+  }
 }
 
 /**
@@ -592,7 +744,7 @@ export class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * This tag's parent tag.
    */
-  private _parent: SchemaTag
+  protected _parent: SchemaTag | undefined
 
   /**
    * This tag's unit classes.
@@ -607,7 +759,7 @@ export class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * This tag's value-taking child.
    */
-  private _valueTag: SchemaValueTag
+  private _valueTag: WeakRef<SchemaValueTag> | undefined
 
   /**
    * This tag's ancestor tags.
@@ -618,6 +770,7 @@ export class SchemaTag extends SchemaEntryWithAttributes {
    * Constructor.
    *
    * @param name - The name of this tag.
+   * @param parentTag - This tag's parent tag.
    * @param booleanAttributes - The boolean attributes for this tag.
    * @param valueAttributes - The value attributes for this tag.
    * @param unitClasses - The unit classes for this tag.
@@ -625,12 +778,14 @@ export class SchemaTag extends SchemaEntryWithAttributes {
    */
   constructor(
     name: string,
+    parentTag: SchemaTag | undefined,
     booleanAttributes: Set<SchemaAttribute>,
     valueAttributes: Map<SchemaAttribute, string[]>,
     unitClasses: SchemaUnitClass[],
     valueClasses: SchemaValueClass[],
   ) {
     super(name, booleanAttributes, valueAttributes)
+    this._parent = parentTag
     this._unitClasses = unitClasses ?? []
     this._valueClasses = valueClasses ?? []
   }
@@ -659,8 +814,8 @@ export class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * This tag's value-taking child tag.
    */
-  public get valueTag(): SchemaValueTag {
-    return this._valueTag
+  public get valueTag(): SchemaValueTag | undefined {
+    return this._valueTag?.deref()
   }
 
   /**
@@ -669,44 +824,19 @@ export class SchemaTag extends SchemaEntryWithAttributes {
    * @param newValueTag - The new value-taking child tag.
    */
   public set valueTag(newValueTag: SchemaValueTag) {
-    if (!this._isPrivateFieldSet(this._valueTag, 'value tag')) {
-      this._valueTag = newValueTag
+    if (this._valueTag !== undefined && this._valueTag.deref()?.equivalent(newValueTag) === false) {
+      IssueError.generateAndThrowInternalError(
+        `Attempted to set value tag for schema tag ${this.longName} when it already has one.`,
+      )
     }
+    this._valueTag = new WeakRef(newValueTag)
   }
 
   /**
    * This tag's parent tag.
    */
-  public get parent(): SchemaTag {
+  public get parent(): SchemaTag | undefined {
     return this._parent
-  }
-
-  /**
-   * Set the tag's parent tag.
-   *
-   * @param newParent - The new parent tag.
-   */
-  public set parent(newParent: SchemaTag) {
-    if (!this._isPrivateFieldSet(this._parent, 'parent')) {
-      this._parent = newParent
-    }
-  }
-
-  /**
-   * Throw an error if a private field is already set.
-   *
-   * @param field - The field being set.
-   * @param fieldName - The name of the field (for error reporting).
-   * @returns Whether the field is set (never returns true).
-   * @throws {IssueError} If the field is already set.
-   */
-  private _isPrivateFieldSet(field: unknown, fieldName: string): boolean {
-    if (field !== undefined) {
-      IssueError.generateAndThrowInternalError(
-        `Attempted to set ${fieldName} for schema tag ${this.longName} when it already has one.`,
-      )
-    }
-    return false
   }
 
   /**
@@ -757,12 +887,102 @@ export class SchemaTag extends SchemaEntryWithAttributes {
       return this.longName
     }
   }
+
+  /**
+   * Determine if this schema tag is equivalent to another schema tag.
+   *
+   * @remarks
+   *
+   * Schema tags are deemed equivalent if they have the same name and equivalent attributes, unit, and value classes.
+   *
+   * Use {@link SchemaTag.equivalentTree} to check for tree-equivalence.
+   *
+   * @param other - A schema tag to compare with this one.
+   * @returns Whether the other tag is equivalent to this schema tag.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaTag)) {
+      return false
+    }
+    if (!super.equivalent(other)) {
+      return false
+    }
+    if (
+      !isEqualWith(this._unitClasses.toSorted(), other._unitClasses.toSorted(), (a, b) =>
+        a instanceof SchemaUnitClass ? a.equivalent(b) : undefined,
+      )
+    ) {
+      return false
+    }
+    return isEqualWith(this._valueClasses.toSorted(), other._valueClasses.toSorted(), (a, b) =>
+      a instanceof SchemaValueClass ? a.equivalent(b) : undefined,
+    )
+  }
+
+  /**
+   * Determine if this schema tag is tree-equivalent to another schema tag.
+   *
+   * @remarks
+   *
+   * Schema tags are deemed tree-equivalent if they are equivalent and have the same place in the node tree.
+   *
+   * @param other - A schema tag to compare with this one.
+   * @returns Whether the other tag is tree-equivalent to this schema tag.
+   */
+  public equivalentTree(other: unknown): boolean {
+    if (!(other instanceof SchemaTag)) {
+      return false
+    }
+    if (!this.equivalent(other)) {
+      return false
+    }
+    if (this.parent === undefined && other.parent !== undefined) {
+      return false
+    }
+    if (this.parent && !this.parent.equivalent(other.parent)) {
+      return false
+    }
+    if (this.valueTag === undefined && other.valueTag !== undefined) {
+      return false
+    }
+    if (this.valueTag && !this.valueTag.equivalent(other.valueTag)) {
+      return false
+    }
+    return isEqualWith(this.ancestors, other.ancestors, (a, b) =>
+      a instanceof SchemaTag ? a.equivalent(b) : undefined,
+    )
+  }
 }
 
 /**
  * A value-taking tag in a HED schema.
  */
 export class SchemaValueTag extends SchemaTag {
+  /**
+   * Constructor.
+   *
+   * @param name - The name of this tag.
+   * @param parentTag - This tag's parent tag.
+   * @param booleanAttributes - The boolean attributes for this tag.
+   * @param valueAttributes - The value attributes for this tag.
+   * @param unitClasses - The unit classes for this tag.
+   * @param valueClasses - The value classes for this tag.
+   */
+  constructor(
+    name: string,
+    parentTag: SchemaTag | undefined,
+    booleanAttributes: Set<SchemaAttribute>,
+    valueAttributes: Map<SchemaAttribute, string[]>,
+    unitClasses: SchemaUnitClass[],
+    valueClasses: SchemaValueClass[],
+  ) {
+    super(name, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses)
+    if (parentTag === undefined) {
+      IssueError.generateAndThrowInternalError('Value tag must have parent')
+    }
+    parentTag.valueTag = this
+  }
+
   /**
    * This tag's long name.
    */
@@ -791,5 +1011,12 @@ export class SchemaValueTag extends SchemaTag {
    */
   public override longExtend(extension: string): string {
     return this.parent.longExtend(extension)
+  }
+
+  /**
+   * This tag's parent tag.
+   */
+  public override get parent(): SchemaTag {
+    return this._parent as SchemaTag
   }
 }

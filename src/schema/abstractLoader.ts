@@ -7,10 +7,9 @@ import partition from 'lodash/partition'
 import zip from 'lodash/zip'
 
 import { HedSchema, HedSchemas } from './containers'
-import SchemaParser from './parser'
-import PartneredSchemaMerger from './schemaMerger'
+import SchemaParser from './parser/schemaParser'
 import { SchemaSpec, SchemasSpec } from './specs'
-import { type HedSchemaXMLObject } from './xmlType'
+import { HedSchemaXMLCollection, type HedSchemaXMLObject } from './xmlType'
 import { IssueError, type IssueParameters } from '../issues/issues'
 import * as files from '../utils/files'
 import { splitStringTrimAndRemoveBlanks } from '../utils/string'
@@ -78,7 +77,7 @@ export default abstract class AbstractHedSchemaLoader {
       if (xmlData.length > 1) {
         IssueError.generateAndThrow('nonPartneredSchemaWithAnotherSchema', { prefix })
       }
-      const schemaEntries = new SchemaParser(xmlData[0].HED).parse()
+      const schemaEntries = new SchemaParser(new HedSchemaXMLCollection(xmlData[0])).parse()
       return new HedSchema(xmlData[0], schemaEntries)
     }
 
@@ -100,12 +99,15 @@ export default abstract class AbstractHedSchemaLoader {
     if (baseSchemaXml === undefined) {
       baseSchemaXml = await this.loadSchema(new SchemaSpec(prefix, standardVersion))
     }
+    const schemaXmls = new HedSchemaXMLCollection(
+      baseSchemaXml,
+      standardVersion,
+      mergedLibrarySchemas,
+      unmergedLibrarySchemas,
+    )
 
-    const baseSchemaEntries = new SchemaParser(baseSchemaXml.HED).parse()
-    const baseSchema = new HedSchema(baseSchemaXml, baseSchemaEntries)
-
-    const schemaMerger = new PartneredSchemaMerger(baseSchema, [...mergedLibrarySchemas, ...unmergedLibrarySchemas])
-    return schemaMerger.mergeSchemas()
+    const schemaEntries = new SchemaParser(schemaXmls).parse()
+    return new HedSchema(baseSchemaXml, schemaEntries)
   }
 
   /**

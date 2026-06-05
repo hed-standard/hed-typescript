@@ -450,6 +450,11 @@ const issueData: Record<string, IssueType> = {
     level: 'error',
     message: issueMessageTemplate`Lazy partnered schemas are incompatible because they share the short tag "${'tag'}". These schemas require different prefixes.`,
   },
+  lazyPartneredSchemasShareEntry: {
+    hedCode: 'SCHEMA_LOAD_FAILED',
+    level: 'error',
+    message: issueMessageTemplate`Lazy partnered schemas are incompatible because they share the entry "${'entryName'}". These schemas require different prefixes.`,
+  },
   nonPartneredSchemaWithAnotherSchema: {
     hedCode: 'SCHEMA_LOAD_FAILED',
     level: 'error',

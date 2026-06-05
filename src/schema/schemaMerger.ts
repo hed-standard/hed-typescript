@@ -7,7 +7,7 @@ import { IssueError } from '../issues/issues'
 import { type SchemaAttribute, type SchemaEntries, SchemaEntryManager, SchemaTag, SchemaValueTag } from './entries'
 import { type HedSchema } from './containers'
 import { type HedSchemaXMLObject } from './xmlType'
-import SchemaParser from './parser'
+import SchemaParser from './parser/schemaParser'
 
 export default class HedSchemaMerger {
   /**

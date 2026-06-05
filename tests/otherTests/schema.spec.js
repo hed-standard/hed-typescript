@@ -312,18 +312,20 @@ describe('HED schemas', () => {
     it('should fail when trying to merge incompatible schemas', async () => {
       try {
         await buildSchemas(specs1)
-        assert.fail('Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error')
+        assert.fail()
       } catch (issueError) {
         const issue = issueError.issue
-        assert.deepStrictEqual(issue, generateIssue('lazyPartneredSchemasShareTag', { tag: 'A-nonextension' }))
+        assert.isDefined(issue, 'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error')
+        assert.deepStrictEqual(issue, generateIssue('lazyPartneredSchemasShareTag', { tag: 'A-nonextension' }), 'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error')
       }
 
       try {
         await buildSchemas(specs3)
-        assert.fail('Incompatible schemas testlib_2.1.0 and testlib_3.0.0 were incorrectly merged without an error')
+        assert.fail()
       } catch (issueError) {
         const issue = issueError.issue
-        assert.deepStrictEqual(issue, generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-sound' }))
+        assert.isDefined(issue, 'Incompatible schemas testlib_2.1.0 and testlib_3.0.0 were incorrectly merged without an error')
+        assert.deepStrictEqual(issue, generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-sound' }), 'Incompatible schemas testlib_2.1.0 and testlib_3.0.0 were incorrectly merged without an error')
       }
 
       const schemas = await buildSchemas(specs2)
