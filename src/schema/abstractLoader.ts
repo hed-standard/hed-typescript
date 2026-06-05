@@ -78,7 +78,7 @@ export default abstract class AbstractHedSchemaLoader {
         IssueError.generateAndThrow('nonPartneredSchemaWithAnotherSchema', { prefix })
       }
       const schemaEntries = new SchemaParser(new HedSchemaXMLCollection(xmlData[0])).parse()
-      return new HedSchema(xmlData[0], schemaEntries)
+      return new HedSchema(xmlData[0], schemaEntries, prefix)
     }
 
     const standardVersions = new Set([
@@ -107,7 +107,7 @@ export default abstract class AbstractHedSchemaLoader {
     )
 
     const schemaEntries = new SchemaParser(schemaXmls).parse()
-    return new HedSchema(baseSchemaXml, schemaEntries)
+    return new HedSchema(baseSchemaXml, schemaEntries, prefix)
   }
 
   /**
