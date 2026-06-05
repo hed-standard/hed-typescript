@@ -243,12 +243,12 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
 
       if (booleanAttributes.has(tagTakesValueAttribute)) {
         this.addEntry(
-          lc(name),
+          name,
           new SchemaValueTag(name, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses),
         )
       } else {
         this.addEntry(
-          lc(name),
+          name,
           new SchemaTag(name, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses),
         )
       }
@@ -264,12 +264,13 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
    * @param newTag - The new tag object to add.
    */
   protected override addEntry(shortTagName: string, newTag: SchemaTag): void {
-    if (this.entryTypeMap.has(shortTagName)) {
-      if (!newTag.equivalent(this.entryTypeMap.get(shortTagName))) {
+    const lowercaseName = lc(shortTagName)
+    if (this.entryTypeMap.has(lowercaseName)) {
+      if (!newTag.equivalent(this.entryTypeMap.get(lowercaseName))) {
         IssueError.generateAndThrow('lazyPartneredSchemasShareTag', { tag: shortTagName })
       }
     } else {
-      this.entryTypeMap.set(shortTagName, newTag)
+      this.entryTypeMap.set(lowercaseName, newTag)
     }
   }
 

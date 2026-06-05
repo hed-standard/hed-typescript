@@ -363,7 +363,7 @@ export class SchemaEntryWithAttributes extends SchemaEntry {
     const otherKeys = Array.from(other.valueAttributes.keys())
     for (const [key, value] of this.valueAttributes) {
       const otherKey = otherKeys.find((otherKey) => key.equivalent(otherKey))
-      if (!otherKey || !isEqual(value, other.valueAttributes.get(otherKey))) {
+      if (!otherKey || !isEqual(value.toSorted(), other.valueAttributes.get(otherKey)!.toSorted())) {
         return false
       }
     }
@@ -893,9 +893,7 @@ export class SchemaTag extends SchemaEntryWithAttributes {
    *
    * @remarks
    *
-   * Schema tags are deemed equivalent if they have the same name and equivalent attributes, unit, and value classes.
-   *
-   * Use {@link SchemaTag.equivalentTree} to check for tree-equivalence.
+   * Schema tags are deemed equivalent if they have the same name and equivalent attributes, unit and value classes, and parents.
    *
    * @param other - A schema tag to compare with this one.
    * @returns Whether the other tag is equivalent to this schema tag.
@@ -907,6 +905,12 @@ export class SchemaTag extends SchemaEntryWithAttributes {
     if (!super.equivalent(other)) {
       return false
     }
+    if (this.parent === undefined && other.parent !== undefined) {
+      return false
+    }
+    if (this.parent && !this.parent.equivalent(other.parent)) {
+      return false
+    }
     if (
       !isEqualWith(this._unitClasses.toSorted(), other._unitClasses.toSorted(), (a, b) =>
         a instanceof SchemaUnitClass ? a.equivalent(b) : undefined,
@@ -916,40 +920,6 @@ export class SchemaTag extends SchemaEntryWithAttributes {
     }
     return isEqualWith(this._valueClasses.toSorted(), other._valueClasses.toSorted(), (a, b) =>
       a instanceof SchemaValueClass ? a.equivalent(b) : undefined,
-    )
-  }
-
-  /**
-   * Determine if this schema tag is tree-equivalent to another schema tag.
-   *
-   * @remarks
-   *
-   * Schema tags are deemed tree-equivalent if they are equivalent and have the same place in the node tree.
-   *
-   * @param other - A schema tag to compare with this one.
-   * @returns Whether the other tag is tree-equivalent to this schema tag.
-   */
-  public equivalentTree(other: unknown): boolean {
-    if (!(other instanceof SchemaTag)) {
-      return false
-    }
-    if (!this.equivalent(other)) {
-      return false
-    }
-    if (this.parent === undefined && other.parent !== undefined) {
-      return false
-    }
-    if (this.parent && !this.parent.equivalent(other.parent)) {
-      return false
-    }
-    if (this.valueTag === undefined && other.valueTag !== undefined) {
-      return false
-    }
-    if (this.valueTag && !this.valueTag.equivalent(other.valueTag)) {
-      return false
-    }
-    return isEqualWith(this.ancestors, other.ancestors, (a, b) =>
-      a instanceof SchemaTag ? a.equivalent(b) : undefined,
     )
   }
 }

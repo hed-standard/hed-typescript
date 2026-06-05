@@ -316,7 +316,7 @@ describe('HED schemas', () => {
       } catch (issueError) {
         const issue = issueError.issue
         assert.isDefined(issue, 'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error')
-        assert.deepStrictEqual(issue, generateIssue('lazyPartneredSchemasShareTag', { tag: 'A-nonextension' }), 'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error')
+        assert.deepStrictEqual(issue, generateIssue('lazyPartneredSchemasShareTag', { tag: 'Violin-subsound1' }), 'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error')
       }
 
       try {
