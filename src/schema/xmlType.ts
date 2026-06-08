@@ -18,10 +18,10 @@ export type HedSchemaRootElement = {
   valueClassDefinitions: {
     valueClassDefinition: DefinitionElement[]
   }
-  schemaAttributeDefinitions: {
+  schemaAttributeDefinitions?: {
     schemaAttributeDefinition: SchemaAttributeElement[]
   }
-  propertyDefinitions: {
+  propertyDefinitions?: {
     propertyDefinition: NamedElement[]
   }
 }
