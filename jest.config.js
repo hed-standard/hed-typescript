@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   testEnvironment: 'node',
   transform: {
     '\\.xml$': '<rootDir>/xml-transformer.cjs',

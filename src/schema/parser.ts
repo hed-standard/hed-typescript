@@ -160,7 +160,7 @@ export default class SchemaParser {
   }
 
   private parseProperties(): void {
-    const propertyDefinitions = this.rootElement.propertyDefinitions.propertyDefinition
+    const propertyDefinitions = this.rootElement.propertyDefinitions?.propertyDefinition ?? []
     this.properties = new Map<string, SchemaProperty>()
     for (const definition of propertyDefinitions) {
       const propertyName = SchemaParser.getElementTagName(definition)
@@ -170,7 +170,7 @@ export default class SchemaParser {
   }
 
   private parseAttributes(): void {
-    const attributeDefinitions = this.rootElement.schemaAttributeDefinitions.schemaAttributeDefinition
+    const attributeDefinitions = this.rootElement.schemaAttributeDefinitions?.schemaAttributeDefinition ?? []
     this.attributes = new Map<string, SchemaAttribute>()
     for (const definition of attributeDefinitions) {
       const attributeName = SchemaParser.getElementTagName(definition)
@@ -197,7 +197,7 @@ export default class SchemaParser {
   private parseValueClasses(): void {
     const valueClasses = new Map<string, SchemaValueClass>()
     const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseDefinitions(
-      this.rootElement.valueClassDefinitions.valueClassDefinition,
+      this.rootElement.valueClassDefinitions.valueClassDefinition ?? [],
     )
     for (const [name, valueAttributes] of valueAttributeDefinitions) {
       const booleanAttributes = booleanAttributeDefinitions.get(name) ?? new Set<SchemaAttribute>()
@@ -211,7 +211,7 @@ export default class SchemaParser {
   private parseUnitModifiers(): void {
     const unitModifiers = new Map<string, SchemaUnitModifier>()
     const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseDefinitions(
-      this.rootElement.unitModifierDefinitions.unitModifierDefinition,
+      this.rootElement.unitModifierDefinitions.unitModifierDefinition ?? [],
     )
     for (const [name, valueAttributes] of valueAttributeDefinitions) {
       const booleanAttributes = booleanAttributeDefinitions.get(name) ?? new Set<SchemaAttribute>()
@@ -223,7 +223,7 @@ export default class SchemaParser {
   private parseUnitClasses(): void {
     const unitClasses = new Map<string, SchemaUnitClass>()
     const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseDefinitions(
-      this.rootElement.unitClassDefinitions.unitClassDefinition,
+      this.rootElement.unitClassDefinitions.unitClassDefinition ?? [],
     )
     const unitClassUnits = this.parseUnits()
 
@@ -244,7 +244,7 @@ export default class SchemaParser {
 
   private parseUnits(): Map<string, Map<string, SchemaUnit>> {
     const unitClassUnits = new Map<string, Map<string, SchemaUnit>>()
-    const unitClassElements = this.rootElement.unitClassDefinitions.unitClassDefinition
+    const unitClassElements = this.rootElement.unitClassDefinitions.unitClassDefinition ?? []
     const unitModifiers = this.unitModifiers
     for (const element of unitClassElements) {
       const elementName = SchemaParser.getElementTagName(element)
@@ -560,7 +560,9 @@ export default class SchemaParser {
       const attributeName = SchemaParser.getElementTagName(tagAttribute)
       const attribute = this.attributes.get(attributeName)
       if (!attribute) {
-        IssueError.generateAndThrow('invalidSchema', { error: 'Referenced schema attribute was not found' })
+        IssueError.generateAndThrow('invalidSchema', {
+          error: `Referenced schema attribute was not found: "${attributeName}". Available attributes: ${Array.from(this.attributes.keys()).join(', ')}`,
+        })
       }
       if (tagAttribute.value === undefined) {
         booleanAttributes.add(attribute)

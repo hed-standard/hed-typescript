@@ -1,7 +1,66 @@
 <?xml version="1.0" ?>
 <HED version="3.0.0" library="testlib" withStandard="8.2.0">
-   <prologue>This schema is designed to be lazy partnered with testlib_2.0.0 but conflicts with testlib_2.1.0.</prologue>
+   <prologue>This schema is designed to be lazy partnered with testlib_2.0.0 but conflicts with testlib_2.1.0. Violin_subsound2 takes value in 2.1.0 but not in 3.0.0.</prologue>
    <schema>
+      <node>
+         <name>E-extensionallowed</name>
+         <attribute>
+            <name>extensionAllowed</name>
+         </attribute>
+         <attribute>
+            <name>inLibrary</name>
+            <value>testlib</value>
+         </attribute>
+         <node>
+            <name>SubnodeE1</name>
+            <attribute>
+               <name>inLibrary</name>
+               <value>testlib</value>
+            </attribute>
+         </node>
+         <node>
+            <name>SubnodeE2</name>
+            <attribute>
+               <name>inLibrary</name>
+               <value>testlib</value>
+            </attribute>
+         </node>
+         <node>
+            <name>SubnodeE3</name>
+            <attribute>
+               <name>inLibrary</name>
+               <value>testlib</value>
+            </attribute>
+         </node>
+      </node>
+      <node>
+         <name>F-nonextension</name>
+         <attribute>
+            <name>inLibrary</name>
+            <value>testlib</value>
+         </attribute>
+         <node>
+            <name>SubnodeF6</name>
+            <attribute>
+               <name>inLibrary</name>
+               <value>testlib</value>
+            </attribute>
+         </node>
+         <node>
+            <name>SubnodeF1</name>
+            <attribute>
+               <name>inLibrary</name>
+               <value>testlib</value>
+            </attribute>
+         </node>
+         <node>
+            <name>SubnodeF2</name>
+            <attribute>
+               <name>inLibrary</name>
+               <value>testlib</value>
+            </attribute>
+         </node>
+      </node>
       <node>
          <name>Event</name>
          <description>Something that happens at a given time and (typically) place. Elements of this tag subtree designate the general category in which an event falls.</description>
@@ -86,34 +145,6 @@
          <node>
             <name>Software-agent</name>
             <description>An agent computer program.</description>
-         </node>
-      </node>
-      <node>
-         <name>F-nonextension</name>
-         <attribute>
-            <name>inLibrary</name>
-            <value>testlib</value>
-         </attribute>
-         <node>
-            <name>SubnodeF6</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-         <node>
-            <name>SubnodeF1</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-         <node>
-            <name>SubnodeF2</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
          </node>
       </node>
       <node>
@@ -1829,37 +1860,6 @@
                   <description>A loud, continuous sound often varying in frequency designed to indicate an emergency.</description>
                </node>
             </node>
-         </node>
-      </node>
-      <node>
-         <name>E-extensionallowed</name>
-         <attribute>
-            <name>extensionAllowed</name>
-         </attribute>
-         <attribute>
-            <name>inLibrary</name>
-            <value>testlib</value>
-         </attribute>
-         <node>
-            <name>SubnodeE1</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-         <node>
-            <name>SubnodeE2</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-         <node>
-            <name>SubnodeE3</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
          </node>
       </node>
       <node>

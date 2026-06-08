@@ -14,7 +14,18 @@ import { type HedSchemaXMLObject, type HedSchemaRootElement, type NodeElement } 
  * @returns The schema XML data.
  */
 export default function parseSchemaXML(data: string): HedSchemaXMLObject {
-  const alwaysArray = new Set(['node', 'property', 'attribute', 'value', 'unit'])
+  const alwaysArray = new Set([
+    'node',
+    'property',
+    'attribute',
+    'value',
+    'unit',
+    'propertyDefinition',
+    'schemaAttributeDefinition',
+    'valueClassDefinition',
+    'unitModifierDefinition',
+    'unitClassDefinition',
+  ])
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: '',
@@ -24,7 +35,11 @@ export default function parseSchemaXML(data: string): HedSchemaXMLObject {
     ignorePiTags: true,
     attributesGroupName: '$',
     isArray: (name) => {
-      return alwaysArray.has(name)
+      if (alwaysArray.has(name)) {
+        // console.log(`Making ${name} an array`)
+        return true
+      }
+      return false
     },
   })
 

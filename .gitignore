@@ -8,6 +8,8 @@ spec_tests/*.txt
 spec_tests/temp*.json
 spec_tests/temp.spec.js
 tests/temp.spec.js
+.status/
+.vscode/
 
 # Ignore local build output
 /build/
