@@ -73,10 +73,10 @@ export default class SchemaUnitClass extends SchemaEntryWithAttributes {
    */
   public extractUnit(value: string): [SchemaUnit | null, string | null, string] {
     let actualUnit = null // The Unit class of the value
-    let actualValueString = null // The actual value part of the value
-    let actualUnitString = null
-    let lastPart = null
-    let firstPart = null
+    let actualValueString // The actual value part of the value
+    let actualUnitString
+    let lastPart
+    let firstPart
     const index = value.indexOf(' ')
     if (index !== -1) {
       lastPart = value.slice(index + 1)
