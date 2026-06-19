@@ -300,7 +300,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
         ? (this.schemaTags.get(parentTagName) ?? this.entryTypeMap.get(parentTagName))
         : undefined
 
-      if (booleanAttributes.has(tagTakesValueAttribute)) {
+      if (name.endsWith('-#')) {
         this.schemaTags.set(
           lc(name),
           new SchemaValueTag(name, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses),
