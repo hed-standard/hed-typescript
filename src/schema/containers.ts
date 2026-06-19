@@ -5,9 +5,10 @@
 
 import lt from 'semver/functions/lt'
 
-import { IssueError } from '../issues/issues'
-import { type SchemaEntries } from './entries'
+import type SchemaEntries from './entries/schemaEntries'
 import { type HedSchemaXMLObject } from './xmlType'
+
+import { IssueError } from '../issues/issues'
 
 export class HedSchema {
   /**

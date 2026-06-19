@@ -1,7 +1,7 @@
 import semver from 'semver'
 
 import { SchemaEntryParser } from './schemaEntryParser'
-import { SchemaProperty } from '../entries'
+import SchemaProperty from '../entries/property'
 import { getElementTagName, type HedSchemaXMLCollection, type HedSchemaXMLObject } from '../xmlType'
 
 /**

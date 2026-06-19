@@ -1,16 +1,16 @@
 import flattenDeep from 'lodash/flattenDeep'
 import zip from 'lodash/zip'
 
-import {
-  type SchemaAttribute,
-  type SchemaEntryManager,
-  SchemaTag,
-  type SchemaUnitClass,
-  type SchemaValueClass,
-  SchemaValueTag,
-} from '../entries'
 import { getElementTagName, type HedSchemaXMLCollection, type HedSchemaXMLObject, type NodeElement } from '../xmlType'
 import { SchemaEntryWithAttributesParser } from './schemaEntryParser'
+import type SchemaEntryManager from '../entries/schemaEntryManager'
+
+import type SchemaUnitClass from '../entries/unitClass'
+import type SchemaValueClass from '../entries/valueClass'
+import type SchemaAttribute from '../entries/attribute'
+import SchemaTag from '../entries/tag'
+import SchemaValueTag from '../entries/valueTag'
+
 import { IssueError } from '../../issues/issues'
 
 const lc = (str: string) => str.toLowerCase()

@@ -1,4 +1,7 @@
-import { type SchemaAttribute, type SchemaEntry, SchemaEntryManager, type SchemaEntryWithAttributes } from '../entries'
+import type SchemaEntry from '../entries/schemaEntry'
+import SchemaEntryManager from '../entries/schemaEntryManager'
+import type SchemaEntryWithAttributes from '../entries/schemaEntryWithAttributes'
+import type SchemaAttribute from '../entries/attribute'
 import {
   getElementTagName,
   type DefinitionElement,
@@ -6,6 +9,7 @@ import {
   type HedSchemaXMLCollection,
   type HedSchemaXMLObject,
 } from '../xmlType'
+
 import { IssueError } from '../../issues/issues'
 
 /**

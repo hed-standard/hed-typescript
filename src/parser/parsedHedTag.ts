@@ -9,7 +9,11 @@ import TagConverter from './tagConverter'
 import { type TagSpec } from './tokenizer'
 import { IssueError } from '../issues/issues'
 import { type HedSchema, type HedSchemas } from '../schema/containers'
-import { type SchemaTag, type SchemaUnit, type SchemaUnitClass, SchemaValueTag } from '../schema/entries'
+
+import type SchemaTag from '../schema/entries/tag'
+import SchemaValueTag from '../schema/entries/valueTag'
+import type SchemaUnit from '../schema/entries/unit'
+import type SchemaUnitClass from '../schema/entries/unitClass'
 
 const TWO_LEVEL_TAGS = new Set(['Definition', 'Def', 'Def-expand'])
 const allowedRegEx = /^[^{},]*$/

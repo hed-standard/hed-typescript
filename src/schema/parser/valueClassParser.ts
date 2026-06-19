@@ -1,6 +1,9 @@
-import { type SchemaAttribute, type SchemaEntryManager, SchemaValueClass } from '../entries'
 import { SchemaDefinitionEntryParser } from './schemaEntryParser'
 import type { DefinitionElement, HedSchemaXMLCollection, HedSchemaXMLObject } from '../xmlType'
+
+import type SchemaEntryManager from '../entries/schemaEntryManager'
+import type SchemaAttribute from '../entries/attribute'
+import SchemaValueClass from '../entries/valueClass'
 
 interface ClassRegex {
   char_regex: {
@@ -13,7 +16,6 @@ interface ClassRegex {
     [key: string]: string
   }
 }
-
 import * as _classRegex from '../../data/json/classRegex.json'
 const classRegex: ClassRegex = _classRegex
 

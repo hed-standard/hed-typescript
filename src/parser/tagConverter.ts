@@ -7,7 +7,8 @@ import { ReservedChecker } from './reservedChecker'
 import { type TagSpec } from './tokenizer'
 import { IssueError } from '../issues/issues'
 import { type HedSchemas } from '../schema/containers'
-import { type SchemaEntryManager, type SchemaTag } from '../schema/entries'
+import type SchemaEntryManager from '../schema/entries/schemaEntryManager'
+import type SchemaTag from '../schema/entries/tag'
 import { getTagSlashIndices } from '../utils/hedStrings'
 
 /**

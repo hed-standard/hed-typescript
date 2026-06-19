@@ -1,6 +1,9 @@
-import { type SchemaAttribute, type SchemaEntryManager, SchemaUnitModifier } from '../entries'
 import type { DefinitionElement, HedSchemaXMLCollection, HedSchemaXMLObject } from '../xmlType'
 import { SchemaDefinitionEntryParser } from './schemaEntryParser'
+
+import type SchemaEntryManager from '../entries/schemaEntryManager'
+import type SchemaAttribute from '../entries/attribute'
+import SchemaUnitModifier from '../entries/unitModifier'
 
 export default class UnitModifierParser extends SchemaDefinitionEntryParser<SchemaUnitModifier> {
   public constructor(xmlCollection: HedSchemaXMLCollection, attributes: SchemaEntryManager<SchemaAttribute>) {

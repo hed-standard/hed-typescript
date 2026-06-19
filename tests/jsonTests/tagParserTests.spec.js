@@ -6,7 +6,7 @@ import { assert } from 'chai'
 import ParsedHedTag from '../../src/parser/parsedHedTag'
 import { SchemaSpec, SchemasSpec } from '../../src/schema/specs'
 import { buildSchemas } from '../../src/schema/init'
-import { SchemaValueTag } from '../../src/schema/entries'
+import SchemaValueTag from '../../src/schema/entries/valueTag'
 
 import { shouldRun } from '../testHelpers/testUtilities'
 import { parsedHedTagTests } from '../jsonTestData/tagParserTests.data'

@@ -1,20 +1,21 @@
-import {
-  type SchemaAttribute,
-  SchemaEntries,
-  type SchemaEntryManager,
-  type SchemaProperty,
-  type SchemaTag,
-  type SchemaUnitClass,
-  type SchemaUnitModifier,
-  type SchemaValueClass,
-} from '../entries'
 import type { HedSchemaXMLCollection } from '../xmlType'
+
 import AttributeParser from './attributeParser'
 import PropertyParser from './propertyParser'
 import TagParser from './tagParser'
 import UnitClassParser from './unitClassParser'
 import UnitModifierParser from './unitModifierParser'
 import ValueClassParser from './valueClassParser'
+
+import type SchemaProperty from '../entries/property'
+import type SchemaAttribute from '../entries/attribute'
+import type SchemaValueClass from '../entries/valueClass'
+import type SchemaUnitClass from '../entries/unitClass'
+import type SchemaUnitModifier from '../entries/unitModifier'
+import type SchemaTag from '../entries/tag'
+
+import type SchemaEntryManager from '../entries/schemaEntryManager'
+import SchemaEntries from '../entries/schemaEntries'
 
 export default class SchemaParser {
   /**
