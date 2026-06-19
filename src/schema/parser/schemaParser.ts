@@ -1,11 +1,11 @@
 import type { HedSchemaXMLCollection } from '../xmlType'
 
-import AttributeParser from './attributeParser'
-import PropertyParser from './propertyParser'
-import TagParser from './tagParser'
-import UnitClassParser from './unitClassParser'
-import UnitModifierParser from './unitModifierParser'
-import ValueClassParser from './valueClassParser'
+import AttributeParser from './attribute'
+import PropertyParser from './property'
+import TagParser from './tag'
+import UnitClassParser from './unitClass'
+import UnitModifierParser from './unitModifier'
+import ValueClassParser from './valueClass'
 
 import type SchemaProperty from '../entries/property'
 import type SchemaAttribute from '../entries/attribute'

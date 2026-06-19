@@ -2,7 +2,7 @@ import flattenDeep from 'lodash/flattenDeep'
 import zip from 'lodash/zip'
 
 import { getElementTagName, type HedSchemaXMLCollection, type HedSchemaXMLObject, type NodeElement } from '../xmlType'
-import { SchemaEntryWithAttributesParser } from './schemaEntryParser'
+import { SchemaEntryWithAttributesParser } from './schemaEntry'
 import type SchemaEntryManager from '../entries/schemaEntryManager'
 
 import type SchemaUnitClass from '../entries/unitClass'

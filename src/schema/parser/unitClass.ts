@@ -1,5 +1,5 @@
 import { getElementTagName, type HedSchemaXMLCollection, type DefinitionElement, HedSchemaXMLObject } from '../xmlType'
-import { SchemaDefinitionEntryParser } from './schemaEntryParser'
+import { SchemaDefinitionEntryParser } from './schemaEntry'
 
 import type SchemaUnitModifier from '../entries/unitModifier'
 import type SchemaAttribute from '../entries/attribute'
