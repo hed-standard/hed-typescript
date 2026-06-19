@@ -18,7 +18,7 @@ import { type BidsJsonFile } from './types/json'
 export async function buildBidsSchemas(datasetDescription: BidsJsonFile): Promise<HedSchemas | null> {
   if (datasetDescription?.jsonData?.HEDVersion) {
     const schemasSpec = SchemasSpec.parseVersionSpecs(datasetDescription.jsonData.HEDVersion)
-    return buildSchemas(schemasSpec)
+    return await buildSchemas(schemasSpec)
   } else {
     return null
   }

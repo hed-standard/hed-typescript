@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   presets: [
     [
       '@babel/preset-env',
@@ -6,6 +6,7 @@ export default {
         targets: {
           node: '22',
         },
+        modules: 'commonjs',
       },
     ],
     '@babel/preset-typescript',

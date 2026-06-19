@@ -1,58 +1,9 @@
 <?xml version="1.0" ?>
-<HED version="2.1.0" library="testlib" withStandard="8.2.0">
-   <prologue>This schema is designed to conflict with testlib 2.0.0 and testlib 3.0.0. For version 2.0.0, the conflict is that Violin-subsound2 has different parents in the two schemas. For 3.0.0, Violin_subsound2 takes value in 2.1.0 but not in 3.0.0.</prologue>
+<HED xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="8.2.0" xsi:noNamespaceSchemaLocation="https://github.com/hed-standard/hed-specification/raw/master/hedxml/HED8.0.0.xsd">
+   <prologue>The HED standard schema is a hierarchically-organized vocabulary for annotating events and experimental structure. HED annotations consist of comma-separated tags drawn from this vocabulary. This vocabulary can be augmented by terms drawn from specialized library schema. 
+
+Each term in this vocabulary has a human-readable description and may include additional attributes that give additional properties or that specify how tools should treat the tag during analysis. The meaning of these attributes is described in the Additional schema properties section.</prologue>
    <schema>
-      <node>
-         <name>BA-nonextension</name>
-         <description>Does not conflict with testlib 2.0.0 or 3.0.0</description>
-         <attribute>
-            <name>inLibrary</name>
-            <value>testlib</value>
-         </attribute>
-         <node>
-            <name>SubnodeB1A</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-         <node>
-            <name>SubnodeB2A</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-      </node>
-      <node>
-         <name>A-nonextension</name>
-         <description>These should not be sorted.  A should be second. Conflicts with testlib 2.0.0.</description>
-         <attribute>
-            <name>inLibrary</name>
-            <value>testlib</value>
-         </attribute>
-         <node>
-            <name>SubnodeA3</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-         <node>
-            <name>SubnodeA1</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-         <node>
-            <name>SubnodeA2</name>
-            <attribute>
-               <name>inLibrary</name>
-               <value>testlib</value>
-            </attribute>
-         </node>
-      </node>
       <node>
          <name>Event</name>
          <description>Something that happens at a given time and (typically) place. Elements of this tag subtree designate the general category in which an event falls.</description>
@@ -1705,105 +1656,6 @@
                <node>
                   <name>Instrument-sound</name>
                   <description>Sound produced by a musical instrument.</description>
-                  <node>
-                     <name>Oboe-sound</name>
-                     <description>These should be sorted.  Oboe should be second</description>
-                     <attribute>
-                        <name>rooted</name>
-                        <value>Instrument-sound</value>
-                     </attribute>
-                     <attribute>
-                        <name>inLibrary</name>
-                        <value>testlib</value>
-                     </attribute>
-                     <node>
-                        <name>Oboe-subsound1</name>
-                        <attribute>
-                           <name>inLibrary</name>
-                           <value>testlib</value>
-                        </attribute>
-                     </node>
-                     <node>
-                        <name>Oboe-subsound2</name>
-                        <attribute>
-                           <name>inLibrary</name>
-                           <value>testlib</value>
-                        </attribute>
-                     </node>
-                  </node>
-                  <node>
-                     <name>Piano-sound</name>
-                     <description>Conflicts with testlib 3.0.0.</description>
-                     <attribute>
-                        <name>rooted</name>
-                        <value>Instrument-sound</value>
-                     </attribute>
-                     <attribute>
-                        <name>inLibrary</name>
-                        <value>testlib</value>
-                     </attribute>
-                     <node>
-                        <name>Piano-subsound1</name>
-                        <attribute>
-                           <name>inLibrary</name>
-                           <value>testlib</value>
-                        </attribute>
-                     </node>
-                     <node>
-                        <name>Piano-subsound2</name>
-                        <attribute>
-                           <name>inLibrary</name>
-                           <value>testlib</value>
-                        </attribute>
-                        <node>
-                           <name>#</name>
-                           <attribute>
-                              <name>inLibrary</name>
-                              <value>testlib</value>
-                           </attribute>
-                        </node>
-                     </node>
-                     <node>
-                        <name>Piano-subsound2A</name>
-                        <attribute>
-                           <name>inLibrary</name>
-                           <value>testlib</value>
-                        </attribute>
-                     </node>
-                  </node>
-                  <node>
-                     <name>Violin1-sound</name>
-                     <description>Conflicts with testlib 2.0.0.</description>
-                     <attribute>
-                        <name>rooted</name>
-                        <value>Instrument-sound</value>
-                     </attribute>
-                     <attribute>
-                        <name>inLibrary</name>
-                        <value>testlib</value>
-                     </attribute>
-                     <node>
-                        <name>Violin-subsound1</name>
-                        <attribute>
-                           <name>inLibrary</name>
-                           <value>testlib</value>
-                        </attribute>
-                     </node>
-                     <node>
-                        <name>Violin-subsound2</name>
-                        <attribute>
-                           <name>inLibrary</name>
-                           <value>testlib</value>
-                        </attribute>
-                     </node>
-                     <node>
-                        <name>Violin1-subsound3</name>
-                        <attribute>
-                           <name>inLibrary</name>
-                           <value>testlib</value>
-                        </attribute>
-                     </node>
-                  </node>
                </node>
                <node>
                   <name>Tone</name>
@@ -6525,6 +6377,10 @@
       </unitClassDefinition>
       <unitClassDefinition>
          <name>temperatureUnits</name>
+         <attribute>
+            <name>defaultUnits</name>
+            <value>degree Celsius</value>
+         </attribute>
          <unit>
             <name>degree Celsius</name>
             <attribute>
@@ -7437,4 +7293,5 @@
          <description>Indicates that the schema attribute is meant to be applied to value classes.</description>
       </propertyDefinition>
    </propertyDefinitions>
+   <epilogue>This schema is released under the Creative Commons Attribution 4.0 International and is a product of the HED Working Group. The DOI for the latest version of the HED standard schema is 10.5281/zenodo.7876037.</epilogue>
 </HED>

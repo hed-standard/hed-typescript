@@ -2,7 +2,6 @@
   "name": "hed-validator",
   "version": "4.1.4",
   "description": "A JavaScript validator for HED (Hierarchical Event Descriptor) strings.",
-  "type": "module",
   "main": "./dist/commonjs/index.js",
   "exports": {
     ".": {
@@ -12,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "github:hed-standard/hed-javascript"
+    "url": "github:hed-standard/hed-typescript"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -35,9 +34,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hed-standard/hed-javascript/issues"
+    "url": "https://github.com/hed-standard/hed-typescript/issues"
   },
-  "homepage": "https://github.com/hed-standard/hed-javascript",
+  "homepage": "https://github.com/hed-standard/hed-typescript",
   "dependencies": {
     "fast-xml-parser": "^5.5.8",
     "lodash": "^4.17.23",
