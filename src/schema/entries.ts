@@ -196,6 +196,17 @@ export class SchemaEntry {
   }
 
   /**
+   * Comparator to sort schema entries by their names.
+   *
+   * @param a - The first entry.
+   * @param b - The second entry.
+   * @returns The result of calling {@link String.localeCompare} on the two entries' names.
+   */
+  public static sortByName(this: void, a: SchemaEntry, b: SchemaEntry): number {
+    return a.name.localeCompare(b.name)
+  }
+
+  /**
    * Whether this schema entry has this attribute (by name).
    *
    * This method is a stub to be overridden in {@link SchemaEntryWithAttributes}.
@@ -994,14 +1005,18 @@ export class SchemaValueTag extends SchemaTag {
       return false
     }
     if (
-      !isEqualWith(this.unitClasses.toSorted(), other.unitClasses.toSorted(), (a, b) =>
-        a instanceof SchemaUnitClass ? a.equivalent(b) : undefined,
+      !isEqualWith(
+        this.unitClasses.toSorted(SchemaEntry.sortByName),
+        other.unitClasses.toSorted(SchemaEntry.sortByName),
+        (a, b) => (a instanceof SchemaUnitClass ? a.equivalent(b) : undefined),
       )
     ) {
       return false
     }
-    return isEqualWith(this.valueClasses.toSorted(), other.valueClasses.toSorted(), (a, b) =>
-      a instanceof SchemaValueClass ? a.equivalent(b) : undefined,
+    return isEqualWith(
+      this.valueClasses.toSorted(SchemaEntry.sortByName),
+      other.valueClasses.toSorted(SchemaEntry.sortByName),
+      (a, b) => (a instanceof SchemaValueClass ? a.equivalent(b) : undefined),
     )
   }
 }
