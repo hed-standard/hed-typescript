@@ -5,6 +5,9 @@
 
 # hed-validator
 
+> [!CAUTION]
+> This README may contain outdated information.
+
 This package contains a TypeScript validator for HED (Hierarchical Event Descriptor) annotations for
 tabular files and their associated JSON metadata files such as those found in datasets formatted
 in [BIDS (Brain Imaging Data Structure)](https://bids.neuroimaging.io/).

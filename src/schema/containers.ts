@@ -5,9 +5,10 @@
 
 import lt from 'semver/functions/lt'
 
-import { IssueError } from '../issues/issues'
-import { type SchemaEntries } from './entries'
+import type SchemaEntries from './entries/schemaEntries'
 import { type HedSchemaXMLObject } from './xmlType'
+
+import { IssueError } from '../issues/issues'
 
 export class HedSchema {
   /**
@@ -16,92 +17,30 @@ export class HedSchema {
   readonly entries: SchemaEntries
 
   /**
-   * The standard HED schema version this schema is linked to.
-   */
-  readonly withStandard: string
-
-  /**
    * This schema's prefix in the active schema set.
    */
-  prefix: string
-
-  /**
-   * Constructor.
-   *
-   * @param entries - A collection of schema entries.
-   * @param withStandard - The standard HED schema version this schema is linked to.
-   */
-  constructor(entries: SchemaEntries, withStandard: string) {
-    this.entries = entries
-    this.withStandard = withStandard
-  }
-}
-
-/**
- * An imported HED 3 schema.
- */
-export class PrimarySchema extends HedSchema {
-  /**
-   * The HED schema version.
-   */
-  readonly version: string
-
-  /**
-   * The HED library schema name.
-   */
-  readonly library: string
+  readonly prefix: string
 
   /**
    * Constructor.
    *
    * @param xmlData - The schema XML data.
    * @param entries - A collection of schema entries.
+   * @param prefix - This schema's prefix in the active schema set.
    */
-  constructor(xmlData: HedSchemaXMLObject, entries: SchemaEntries) {
-    let withStandard
+  constructor(xmlData: HedSchemaXMLObject, entries: SchemaEntries, prefix: string) {
+    this.entries = entries
+    this.prefix = prefix
+
     const rootElement = xmlData.HED
     const library = rootElement.$.library ?? ''
     const version = rootElement.$.version
-
-    if (!library) {
-      withStandard = version
-    } else {
-      withStandard = xmlData.HED.$.withStandard ?? ''
-    }
-
-    super(entries, withStandard)
 
     if (!library && version && lt(version, '8.0.0')) {
       IssueError.generateAndThrow('deprecatedStandardSchemaVersion', {
         version,
       })
     }
-
-    this.library = library
-    this.version = version
-  }
-}
-
-/**
- * An imported lazy partnered HED 3 schema.
- */
-export class PartneredSchema extends HedSchema {
-  /**
-   * The actual HED 3 schemas underlying this partnered schema.
-   */
-  readonly actualSchemas: HedSchema[]
-
-  /**
-   * Constructor.
-   *
-   * @param actualSchemas - The actual HED 3 schemas underlying this partnered schema.
-   */
-  constructor(actualSchemas: HedSchema[]) {
-    if (actualSchemas.length === 0) {
-      IssueError.generateAndThrowInternalError('A partnered schema set must contain at least one schema.')
-    }
-    super(actualSchemas[0].entries, actualSchemas[0].withStandard)
-    this.actualSchemas = actualSchemas
   }
 }
 
@@ -128,13 +67,6 @@ export class HedSchemas {
       this.schemas = schemas
     } else {
       this.schemas = new Map([['', schemas]])
-    }
-    this.#addPrefixesToSchemas()
-  }
-
-  #addPrefixesToSchemas(): void {
-    for (const [prefix, schema] of this.schemas) {
-      schema.prefix = prefix
     }
   }
 

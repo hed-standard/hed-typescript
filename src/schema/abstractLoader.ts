@@ -3,13 +3,13 @@
  * @module schema/abstractLoader
  */
 
+import partition from 'lodash/partition'
 import zip from 'lodash/zip'
 
-import { HedSchema, PrimarySchema, HedSchemas } from './containers'
-import SchemaParser from './parser'
-import PartneredSchemaMerger from './schemaMerger'
-import { type SchemaSpec, SchemasSpec } from './specs'
-import { type HedSchemaXMLObject } from './xmlType'
+import { HedSchema, HedSchemas } from './containers'
+import SchemaParser from './parser/schemaParser'
+import { SchemaSpec, SchemasSpec } from './specs'
+import { HedSchemaXMLCollection, type HedSchemaXMLObject } from './xmlType'
 import { IssueError, type IssueParameters } from '../issues/issues'
 import * as files from '../utils/files'
 import { splitStringTrimAndRemoveBlanks } from '../utils/string'
@@ -33,7 +33,9 @@ export default abstract class AbstractHedSchemaLoader {
         return Promise.all(specs.map((spec) => this.loadSchema(spec)))
       }),
     )
-    const schemaObjects = schemaXmlData.map((schemaXmls) => this.buildSchemaObjects(schemaXmls))
+    const schemaObjects = await Promise.all(
+      schemaXmlData.map((schemaXmls, index) => this.buildSchemaObjects(schemaPrefixes[index], schemaXmls)),
+    )
     const schemas = new Map<string, HedSchema>(zip(schemaPrefixes, schemaObjects) as [string, HedSchema][])
     return new HedSchemas(schemas)
   }
@@ -55,27 +57,57 @@ export default abstract class AbstractHedSchemaLoader {
   /**
    * Build a single merged schema container object from one or more XML files.
    *
+   * @param prefix - The prefix whose schema object is being created.
    * @param xmlData - The schemas' XML data.
    * @returns The HED schema object.
    */
-  private buildSchemaObjects(xmlData: HedSchemaXMLObject[]): HedSchema {
-    const schemas = xmlData.map((data) => this.buildSchemaObject(data))
-    if (schemas.length === 1) {
-      return schemas[0]
-    }
-    const partneredSchemaMerger = new PartneredSchemaMerger(schemas)
-    return partneredSchemaMerger.mergeSchemas()
-  }
+  private async buildSchemaObjects(prefix: string, xmlData: HedSchemaXMLObject[]): Promise<HedSchema> {
+    const [standardSchemas, librarySchemas] = partition(xmlData, (xml) => xml.HED.$.library === undefined)
+    const [partneredLibrarySchemas, nonPartneredLibrarySchemas] = partition(
+      librarySchemas,
+      (xml) => xml.HED.$.withStandard !== undefined,
+    )
+    const [mergedLibrarySchemas, unmergedLibrarySchemas] = partition(
+      partneredLibrarySchemas,
+      (xml) => xml.HED.$.unmerged === undefined,
+    )
 
-  /**
-   * Build a single schema container object from an XML file.
-   *
-   * @param xmlData - The schema's XML data.
-   * @returns The HED schema object.
-   */
-  private buildSchemaObject(xmlData: HedSchemaXMLObject): PrimarySchema {
-    const schemaEntries = new SchemaParser(xmlData.HED).parse()
-    return new PrimarySchema(xmlData, schemaEntries)
+    const isNonPartneredSchema = nonPartneredLibrarySchemas.length > 0
+    if (isNonPartneredSchema) {
+      if (xmlData.length > 1) {
+        IssueError.generateAndThrow('nonPartneredSchemaWithAnotherSchema', { prefix })
+      }
+      const schemaEntries = new SchemaParser(new HedSchemaXMLCollection(xmlData[0])).parse()
+      return new HedSchema(xmlData[0], schemaEntries, prefix)
+    }
+
+    const standardVersions = new Set([
+      ...standardSchemas.map((xml) => xml.HED.$.version),
+      ...partneredLibrarySchemas.map((xml) => xml.HED.$.withStandard),
+    ] as string[])
+    if (standardVersions.size !== 1) {
+      IssueError.generateAndThrow('differentWithStandard', {
+        versions: JSON.stringify(Array.from(standardVersions).toSorted((a, b) => a.localeCompare(b))),
+      })
+    }
+    const standardVersion = Array.from(standardVersions)[0]
+
+    const standardSchema = standardSchemas?.[0]
+
+    let baseSchemaXml = standardSchema ?? mergedLibrarySchemas.shift()
+
+    if (baseSchemaXml === undefined) {
+      baseSchemaXml = await this.loadSchema(new SchemaSpec(prefix, standardVersion))
+    }
+    const schemaXmls = new HedSchemaXMLCollection(
+      baseSchemaXml,
+      standardVersion,
+      mergedLibrarySchemas,
+      unmergedLibrarySchemas,
+    )
+
+    const schemaEntries = new SchemaParser(schemaXmls).parse()
+    return new HedSchema(baseSchemaXml, schemaEntries, prefix)
   }
 
   /**

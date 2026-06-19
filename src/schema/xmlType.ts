@@ -7,25 +7,54 @@ type UnitClassElement = DefinitionElement & { unit: DefinitionElement[] }
 type SchemaAttributeElement = NamedElement & { property: AttributeElement[] }
 
 export type HedSchemaRootElement = {
-  $: { version: string; library?: string; withStandard?: string }
+  $: { version: string; library?: string; unmerged?: boolean; withStandard?: string }
   schema: { node: NodeElement[] }
   unitClassDefinitions: {
-    unitClassDefinition: UnitClassElement[]
+    unitClassDefinition?: UnitClassElement[]
   }
   unitModifierDefinitions: {
-    unitModifierDefinition: DefinitionElement[]
+    unitModifierDefinition?: DefinitionElement[]
   }
   valueClassDefinitions: {
-    valueClassDefinition: DefinitionElement[]
+    valueClassDefinition?: DefinitionElement[]
   }
-  schemaAttributeDefinitions?: {
-    schemaAttributeDefinition: SchemaAttributeElement[]
+  schemaAttributeDefinitions: {
+    schemaAttributeDefinition?: SchemaAttributeElement[]
   }
-  propertyDefinitions?: {
-    propertyDefinition: NamedElement[]
+  propertyDefinitions: {
+    propertyDefinition?: NamedElement[]
   }
 }
 
 export type HedSchemaXMLObject = {
   HED: HedSchemaRootElement
+}
+
+export class HedSchemaXMLCollection {
+  public readonly baseSchema: HedSchemaXMLObject
+  public readonly mergedSchemas: HedSchemaXMLObject[]
+  public readonly unmergedSchemas: HedSchemaXMLObject[]
+  public readonly standardVersion: string
+
+  constructor(
+    baseSchema: HedSchemaXMLObject,
+    standardVersion?: string,
+    mergedSchemas?: HedSchemaXMLObject[],
+    unmergedSchemas?: HedSchemaXMLObject[],
+  ) {
+    this.baseSchema = baseSchema
+    this.standardVersion = standardVersion ?? ''
+    this.mergedSchemas = mergedSchemas ?? []
+    this.unmergedSchemas = unmergedSchemas ?? []
+  }
+}
+
+/**
+ * Extract the name of an XML element.
+ *
+ * @param element - An XML element.
+ * @returns The name of the element.
+ */
+export function getElementTagName(this: void, element: NamedElement): string {
+  return element.name._
 }

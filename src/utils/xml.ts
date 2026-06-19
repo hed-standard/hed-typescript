@@ -34,6 +34,15 @@ export default function parseSchemaXML(data: string): HedSchemaXMLObject {
     ignoreDeclaration: true,
     ignorePiTags: true,
     attributesGroupName: '$',
+    attributeValueProcessor: (_, attrValue) => {
+      if (attrValue === 'True') {
+        return true
+      }
+      if (attrValue === 'False') {
+        return false
+      }
+      return attrValue
+    },
     isArray: (name) => {
       if (alwaysArray.has(name)) {
         // console.log(`Making ${name} an array`)

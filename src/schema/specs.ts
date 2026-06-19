@@ -59,6 +59,28 @@ export class SchemaSpec {
   }
 
   /**
+   * Determine if this schema specification is equivalent to another schema specification.
+   *
+   * @remarks
+   *
+   * Schema specifications are deemed equivalent if either of the following is true:
+   * - They have the same `localPath`
+   * - They have the same `prefix`, `version`, and `library`.
+   *
+   * @param other - A schema specification to compare with this one.
+   * @returns Whether the other schema specification is equivalent to this one.
+   */
+  public equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaSpec)) {
+      return false
+    }
+    if (this.localPath && this.localPath === other.localPath) {
+      return true
+    }
+    return this.prefix === other.prefix && this.version === other.version && this.library === other.library
+  }
+
+  /**
    * Parse a single schema specification string into a SchemaSpec object.
    *
    * @param versionSpec - A schema version specification string (e.g., "nickname:library_version").
@@ -167,7 +189,10 @@ export class SchemasSpec {
    */
   public addSchemaSpec(schemaSpec: SchemaSpec): this {
     if (this.#data.has(schemaSpec.prefix)) {
-      this.#data.get(schemaSpec.prefix)?.push(schemaSpec)
+      const existingPrefixSpecs = this.#data.get(schemaSpec.prefix) as SchemaSpec[]
+      if (!existingPrefixSpecs.some((spec) => schemaSpec.equivalent(spec))) {
+        this.#data.get(schemaSpec.prefix)?.push(schemaSpec)
+      }
     } else {
       this.#data.set(schemaSpec.prefix, [schemaSpec])
     }
