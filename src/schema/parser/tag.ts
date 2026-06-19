@@ -335,7 +335,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     const lowercaseName = lc(shortTagName)
     if (this.entryTypeMap.has(lowercaseName)) {
       if (!newTag.equivalent(this.entryTypeMap.get(lowercaseName))) {
-        IssueError.generateAndThrow('lazyPartneredSchemasShareTag', { tag: newTag.name })
+        IssueError.generateAndThrow('lazyPartneredSchemasShareTag', { tag: newTag.name.replace('-#', '/#') })
       }
     } else {
       this.entryTypeMap.set(lowercaseName, newTag)
