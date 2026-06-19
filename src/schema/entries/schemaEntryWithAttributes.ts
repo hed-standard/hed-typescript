@@ -68,7 +68,13 @@ export default class SchemaEntryWithAttributes extends SchemaEntry {
     const otherKeys = Array.from(other.valueAttributes.keys())
     for (const [key, value] of this.valueAttributes) {
       const otherKey = otherKeys.find((otherKey) => key.equivalent(otherKey))
-      if (!otherKey || !isEqual(value.toSorted(), other.valueAttributes.get(otherKey)!.toSorted())) {
+      if (
+        !otherKey ||
+        !isEqual(
+          value.toSorted((a, b) => a.localeCompare(b)),
+          other.valueAttributes.get(otherKey)!.toSorted((a, b) => a.localeCompare(b)),
+        )
+      ) {
         return false
       }
     }

@@ -87,7 +87,7 @@ export default abstract class AbstractHedSchemaLoader {
     ] as string[])
     if (standardVersions.size !== 1) {
       IssueError.generateAndThrow('differentWithStandard', {
-        versions: JSON.stringify(Array.from(standardVersions).toSorted()),
+        versions: JSON.stringify(Array.from(standardVersions).toSorted((a, b) => a.localeCompare(b))),
       })
     }
     const standardVersion = Array.from(standardVersions)[0]
