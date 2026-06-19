@@ -4,9 +4,9 @@
  */
 
 import { type HedSchemas } from '../schema/containers'
-import { buildSchemas } from '../schema/init'
 import { SchemasSpec } from '../schema/specs'
 import { type BidsJsonFile } from './types/json'
+import HedSchemaLoader from '../schema/loader'
 
 /**
  * Build a HED schema collection based on the defined BIDS schemas.
@@ -18,7 +18,8 @@ import { type BidsJsonFile } from './types/json'
 export async function buildBidsSchemas(datasetDescription: BidsJsonFile): Promise<HedSchemas | null> {
   if (datasetDescription?.jsonData?.HEDVersion) {
     const schemasSpec = SchemasSpec.parseVersionSpecs(datasetDescription.jsonData.HEDVersion)
-    return await buildSchemas(schemasSpec)
+    const schemaLoader = new HedSchemaLoader()
+    return await schemaLoader.buildSchemas(schemasSpec)
   } else {
     return null
   }
