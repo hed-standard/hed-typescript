@@ -18,6 +18,7 @@ const lc = (str: string) => str.toLowerCase()
 export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag> {
   private readonly unitClasses: SchemaEntryManager<SchemaUnitClass>
   private readonly valueClasses: SchemaEntryManager<SchemaValueClass>
+  private schemaTags: Map<string, SchemaTag>
 
   public constructor(
     xmlCollection: HedSchemaXMLCollection,
@@ -54,6 +55,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
       tagValueClassDefinitions,
       parentMap,
     )
+    this.mergeSchemaEntries()
   }
 
   /**
@@ -133,7 +135,6 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     valueAttributeDefinitions: Map<string, Map<SchemaAttribute, string[]>>,
   ): void {
     const rootedAttribute = this.attributes.getEntry('rooted')
-    const inLibraryAttribute = this.attributes.getEntry('inLibrary')
     if (!rootedAttribute) {
       return
     }
@@ -288,25 +289,37 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     if (!tagTakesValueAttribute) {
       IssueError.generateAndThrow('invalidSchema', { error: 'The required takesValue attribute was not found' })
     }
+    this.schemaTags = new Map<string, SchemaTag>()
 
     for (const [name, valueAttributes] of valueAttributeDefinitions) {
       const booleanAttributes = booleanAttributeDefinitions.get(name) ?? new Set<SchemaAttribute>()
       const unitClasses = tagUnitClassDefinitions.get(name) ?? []
       const valueClasses = tagValueClassDefinitions.get(name) ?? []
       const parentTagName = parentMap.get(lc(name))
-      const parentTag = parentTagName ? this.entryTypeMap.get(parentTagName) : undefined
+      const parentTag = parentTagName
+        ? (this.schemaTags.get(parentTagName) ?? this.entryTypeMap.get(parentTagName))
+        : undefined
 
       if (booleanAttributes.has(tagTakesValueAttribute)) {
-        this.addEntry(
-          name,
+        this.schemaTags.set(
+          lc(name),
           new SchemaValueTag(name, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses),
         )
       } else {
-        this.addEntry(
-          name,
+        this.schemaTags.set(
+          lc(name),
           new SchemaTag(name, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses),
         )
       }
+    }
+  }
+
+  /**
+   * Merge the per-schema tag map into the main tag map.
+   */
+  private mergeSchemaEntries(): void {
+    for (const [shortTagName, newTag] of this.schemaTags) {
+      this.addEntry(shortTagName, newTag)
     }
   }
 
@@ -322,7 +335,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     const lowercaseName = lc(shortTagName)
     if (this.entryTypeMap.has(lowercaseName)) {
       if (!newTag.equivalent(this.entryTypeMap.get(lowercaseName))) {
-        IssueError.generateAndThrow('lazyPartneredSchemasShareTag', { tag: shortTagName })
+        IssueError.generateAndThrow('lazyPartneredSchemasShareTag', { tag: newTag.name })
       }
     } else {
       this.entryTypeMap.set(lowercaseName, newTag)

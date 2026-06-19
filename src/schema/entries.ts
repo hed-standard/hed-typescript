@@ -733,7 +733,7 @@ export class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * This tag's parent tag.
    */
-  protected _parent: SchemaTag | undefined
+  protected readonly _parent: SchemaTag | undefined
 
   /**
    * This tag's unit classes.
@@ -900,16 +900,10 @@ export class SchemaTag extends SchemaEntryWithAttributes {
     if (this.parent && !this.parent.equivalent(other.parent)) {
       return false
     }
-    if (
-      !isEqualWith(this._unitClasses.toSorted(), other._unitClasses.toSorted(), (a, b) =>
-        a instanceof SchemaUnitClass ? a.equivalent(b) : undefined,
-      )
-    ) {
+    if (this.valueTag === undefined && other.valueTag !== undefined) {
       return false
     }
-    return isEqualWith(this._valueClasses.toSorted(), other._valueClasses.toSorted(), (a, b) =>
-      a instanceof SchemaValueClass ? a.equivalent(b) : undefined,
-    )
+    return !(this.valueTag && !this.valueTag.equivalent(other.valueTag))
   }
 }
 
@@ -977,5 +971,37 @@ export class SchemaValueTag extends SchemaTag {
    */
   public override get parent(): SchemaTag {
     return this._parent as SchemaTag
+  }
+
+  /**
+   * Determine if this schema tag is equivalent to another schema tag.
+   *
+   * @remarks
+   *
+   * Schema tags are deemed equivalent if they have the same name and equivalent attributes, unit and value classes, and parents.
+   *
+   * @param other - A schema tag to compare with this one.
+   * @returns Whether the other tag is equivalent to this schema tag.
+   */
+  public override equivalent(other: unknown): boolean {
+    if (!(other instanceof SchemaValueTag)) {
+      return false
+    }
+    if (!SchemaEntryWithAttributes.prototype.equivalent.call(this, other)) {
+      return false
+    }
+    if (!SchemaEntryWithAttributes.prototype.equivalent.call(this.parent, other.parent)) {
+      return false
+    }
+    if (
+      !isEqualWith(this.unitClasses.toSorted(), other.unitClasses.toSorted(), (a, b) =>
+        a instanceof SchemaUnitClass ? a.equivalent(b) : undefined,
+      )
+    ) {
+      return false
+    }
+    return isEqualWith(this.valueClasses.toSorted(), other.valueClasses.toSorted(), (a, b) =>
+      a instanceof SchemaValueClass ? a.equivalent(b) : undefined,
+    )
   }
 }
