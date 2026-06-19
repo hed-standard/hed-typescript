@@ -297,9 +297,9 @@ describe('HED schemas', () => {
   })
 
   describe('HED 3 partnered schemas', () => {
-    const testLib200SchemaFile = 'tests/otherTestData/HED_testlib_2.0.0.xml'
-    const testLib210SchemaFile = 'tests/otherTestData/HED_testlib_2.1.0.xml'
-    const testLib300SchemaFile = 'tests/otherTestData/HED_testlib_3.0.0.xml'
+    const testLib200SchemaFile = 'tests/otherTestData/unmerged/HED_testlib_2.0.0.xml'
+    const testLib210SchemaFile = 'tests/otherTestData/unmerged/HED_testlib_2.1.0.xml'
+    const testLib300SchemaFile = 'tests/otherTestData/unmerged/HED_testlib_3.0.0.xml'
     let specs1, specs2, specs3
 
     beforeAll(() => {
@@ -347,7 +347,7 @@ describe('HED schemas', () => {
         )
         assert.deepStrictEqual(
           issue,
-          generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-sound' }),
+          generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-subsound2' }),
           'Incompatible schemas testlib_2.1.0 and testlib_3.0.0 were incorrectly merged without an error',
         )
       }

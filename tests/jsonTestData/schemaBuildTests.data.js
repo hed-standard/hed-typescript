@@ -161,7 +161,7 @@ export const schemaBuildTestData = [
         testname: 'lazy-partnered-with conflicting-tags-build',
         explanation: '["testlib_2.1.0", "testlib_3.0.0"] have conflicting tags',
         schemaVersion: { Name: 'BadLazyPartnered', HEDVersion: ['testlib_2.1.0', 'testlib_3.0.0'] },
-        schemaError: new IssueError(generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-sound' })),
+        schemaError: new IssueError(generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-subsound2' })),
       },
     ],
   },
