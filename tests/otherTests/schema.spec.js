@@ -317,8 +317,15 @@ describe('HED schemas', () => {
         assert.fail()
       } catch (issueError) {
         const issue = issueError.issue
-        assert.isDefined(issue, 'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error')
-        assert.deepStrictEqual(issue, generateIssue('lazyPartneredSchemasShareTag', { tag: 'Violin-subsound1' }), 'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error')
+        assert.isDefined(
+          issue,
+          'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error',
+        )
+        assert.deepStrictEqual(
+          issue,
+          generateIssue('lazyPartneredSchemasShareTag', { tag: 'Violin-subsound1' }),
+          'Incompatible schemas testlib_2.0.0 and testlib_2.1.0 were incorrectly merged without an error',
+        )
       }
 
       const schemas2 = await buildSchemas(specs2)
@@ -334,8 +341,15 @@ describe('HED schemas', () => {
         assert.fail()
       } catch (issueError) {
         const issue = issueError.issue
-        assert.isDefined(issue, 'Incompatible schemas testlib_2.1.0 and testlib_3.0.0 were incorrectly merged without an error')
-        assert.deepStrictEqual(issue, generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-sound' }), 'Incompatible schemas testlib_2.1.0 and testlib_3.0.0 were incorrectly merged without an error')
+        assert.isDefined(
+          issue,
+          'Incompatible schemas testlib_2.1.0 and testlib_3.0.0 were incorrectly merged without an error',
+        )
+        assert.deepStrictEqual(
+          issue,
+          generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-sound' }),
+          'Incompatible schemas testlib_2.1.0 and testlib_3.0.0 were incorrectly merged without an error',
+        )
       }
     })
   })
