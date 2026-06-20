@@ -113,23 +113,28 @@ describe('HED validation using JSON tests', () => {
   ])
 
   beforeAll(async () => {
-    const spec2 = new SchemaSpec('', '8.2.0', '', path.join(__dirname, '../src/data/schemas/HED8.2.0.xml'))
+    const spec2 = new SchemaSpec('', '8.2.0', '', path.join(__dirname, '../tests/schemaData/unmerged/HED8.2.0.xml'))
     const specs2 = new SchemasSpec().addSchemaSpec(spec2)
 
-    const spec3 = new SchemaSpec('', '8.3.0', '', path.join(__dirname, '../src/data/schemas/HED8.3.0.xml'))
+    const spec3 = new SchemaSpec('', '8.3.0', '', path.join(__dirname, '../tests/schemaData/unmerged/HED8.3.0.xml'))
     const specs3 = new SchemasSpec().addSchemaSpec(spec3)
 
-    const spec4 = new SchemaSpec('', '8.4.0', '', path.join(__dirname, '../src/data/schemas/HED8.4.0.xml'))
+    const spec4 = new SchemaSpec('', '8.4.0', '', path.join(__dirname, '../tests/schemaData/unmerged/HED8.4.0.xml'))
     const specs4 = new SchemasSpec().addSchemaSpec(spec4)
 
-    const spec3Lib = new SchemaSpec('ts', '8.4.0', '', path.join(__dirname, '../src/data/schemas/HED8.4.0.xml'))
+    const spec3Lib = new SchemaSpec(
+      'ts',
+      '8.4.0',
+      '',
+      path.join(__dirname, '../tests/schemaData/unmerged/HED8.4.0.xml'),
+    )
     const specs3Lib = new SchemasSpec().addSchemaSpec(spec3Lib)
 
     const specScore = new SchemaSpec(
       'sc',
       '1.0.0',
       'score',
-      path.join(__dirname, '../tests/otherTestData/HED_score_1.0.0.xml'),
+      path.join(__dirname, '../tests/schemaData/unmerged/HED_score_1.0.0.xml'),
     )
     const specsScore = new SchemasSpec().addSchemaSpec(specScore)
 
