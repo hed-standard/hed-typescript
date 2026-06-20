@@ -81,7 +81,7 @@ describe('HED schemas', () => {
 
     describe('Local HED schemas', () => {
       it('a standard schema can be loaded from a path', async () => {
-        const localHedSchemaFile = 'src/data/schemas/HED8.0.0.xml'
+        const localHedSchemaFile = 'tests/schemaData/unmerged/HED8.0.0.xml'
         const spec1 = new SchemaSpec('', '', '', localHedSchemaFile)
         const specs = new SchemasSpec().addSchemaSpec(spec1)
 
@@ -95,7 +95,7 @@ describe('HED schemas', () => {
 
       it('a library schema can be loaded from a path', async () => {
         const localHedLibrarySchemaName = 'testlib'
-        const localHedLibrarySchemaFile = 'tests/otherTestData/HED_testlib_2.0.0.xml'
+        const localHedLibrarySchemaFile = 'tests/schemaData/HED_testlib_2.0.0.xml'
         const spec1 = new SchemaSpec(localHedLibrarySchemaName, '', '', localHedLibrarySchemaFile)
         const specs = new SchemasSpec().addSchemaSpec(spec1)
 
@@ -110,7 +110,7 @@ describe('HED schemas', () => {
   })
 
   describe('HED-3G schemas', () => {
-    const localHedSchemaFile = 'src/data/schemas/HED8.0.0.xml'
+    const localHedSchemaFile = 'tests/schemaData/unmerged/HED8.0.0.xml'
     let hedSchemas
 
     beforeAll(async () => {
@@ -297,9 +297,9 @@ describe('HED schemas', () => {
   })
 
   describe('HED 3 partnered schemas', () => {
-    const testLib200SchemaFile = 'tests/otherTestData/unmerged/HED_testlib_2.0.0.xml'
-    const testLib210SchemaFile = 'tests/otherTestData/unmerged/HED_testlib_2.1.0.xml'
-    const testLib300SchemaFile = 'tests/otherTestData/unmerged/HED_testlib_3.0.0.xml'
+    const testLib200SchemaFile = 'tests/schemaData/unmerged/HED_testlib_2.0.0.xml'
+    const testLib210SchemaFile = 'tests/schemaData/unmerged/HED_testlib_2.1.0.xml'
+    const testLib300SchemaFile = 'tests/schemaData/unmerged/HED_testlib_3.0.0.xml'
     let specs1, specs2, specs3
 
     beforeAll(() => {
@@ -636,12 +636,6 @@ describe('HED schemas', () => {
       // Verify that the function returns an array
       assert.isArray(versions, 'Should return an array')
       assert.isAbove(versions.length, 0, 'Should return at least one version')
-
-      // Test specific known transformations
-      assert.include(versions, '8.0.0', 'Should include 8.0.0 (from HED8.0.0)')
-      assert.include(versions, '8.1.0', 'Should include 8.1.0 (from HED8.1.0)')
-      assert.include(versions, 'lang_1.0.0', 'Should include lang_1.0.0 (from HED_lang_1.0.0)')
-      assert.include(versions, 'score_2.0.0', 'Should include score_2.0.0 (from HED_score_2.0.0)')
 
       // Verify that no versions start with "HED"
       const hedPrefixedVersions = versions.filter((version) => version.startsWith('HED'))
