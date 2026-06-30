@@ -381,7 +381,7 @@ describe('HED schemas', () => {
       })
 
       it('should build schemas from comma-separated version strings', async () => {
-        const versionString = '8.2.0, testlib_2.0.0'
+        const versionString = '8.4.0, testlib_2.0.0'
 
         try {
           const schemas = await buildSchemasFromVersion(versionString)
@@ -394,7 +394,7 @@ describe('HED schemas', () => {
       })
 
       it('should build schemas from comma-separated version strings with spaces', async () => {
-        const versionString = '  8.2.0  ,  testlib_2.0.0  '
+        const versionString = '  8.4.0  ,  testlib_2.0.0  '
 
         try {
           const schemas = await buildSchemasFromVersion(versionString)
