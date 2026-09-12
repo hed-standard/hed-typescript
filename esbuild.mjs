@@ -4,7 +4,7 @@ import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill
 
 // Node.js target build
 await esbuild.build({
-  entryPoints: [path.join(process.cwd(), 'index.js')],
+  entryPoints: [path.join(process.cwd(), 'src', 'index.js')],
   loader: { '.xml': 'text' },
   outdir: path.join(process.cwd(), 'dist', 'commonjs'),
   target: 'node18',
@@ -18,7 +18,7 @@ await esbuild.build({
 
 // Browser target build
 await esbuild.build({
-  entryPoints: [path.join(process.cwd(), 'index.js')],
+  entryPoints: [path.join(process.cwd(), 'src', 'index.js')],
   loader: { '.xml': 'text' },
   outdir: path.join(process.cwd(), 'dist', 'esm'),
   bundle: true,
