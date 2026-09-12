@@ -25,8 +25,8 @@ const runMap = new Map([['TAG_GROUP_ERROR', ['tag-group-error-deferred-in-splice
 const runOnly = new Set()
 const skippedErrors = {}
 const readFileSync = fs.readFileSync
-const test_file_name = 'javascriptTests.json'
-// const test_file_name = 'temp6.json'
+const test_file_path = ['hed-tests', 'json_test_data', 'validation_tests.json']
+// const test_file_path = ['temp6.json']
 
 function toMatchIssue(receivedError, expectedCode, expectedParams = {}) {
   const expectedIssue = generateIssue(expectedCode, expectedParams)
@@ -69,7 +69,7 @@ function comboListToStrings(items) {
 }
 
 function loadTestData() {
-  const testFile = path.join(__dirname, test_file_name)
+  const testFile = path.join(__dirname, ...test_file_path)
   return JSON.parse(readFileSync(testFile, 'utf8'))
 }
 

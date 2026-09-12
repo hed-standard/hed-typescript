@@ -33,7 +33,20 @@ export default class MockHedSchemaLoader extends loaderModule.default {
    */
   protected override async getBundledSchema(schemaDef: SchemaSpec): Promise<string> {
     if (specTestLibraries.has(schemaDef.library) || bundledStandard.has(schemaDef.localName)) {
-      return files.readFile(path.join(__dirname, `../../../spec_tests/hedxml/${schemaDef.localName}.xml`))
+      return files.readFile(
+        path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'spec_tests',
+          'hed-tests',
+          'json_test_data',
+          'test_schemas',
+          'hedxml',
+          `${schemaDef.localName}.xml`,
+        ),
+      )
     } else {
       return super.getBundledSchema(schemaDef)
     }
