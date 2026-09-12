@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
     "outDir": "./built",
     "allowJs": true,
     "checkJs": false,
@@ -14,6 +15,6 @@
     "strictPropertyInitialization": false,
     "noImplicitOverride": true
   },
-  "include": ["index.ts", "src/**/*"],
+  "include": ["src/index.ts", "src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
