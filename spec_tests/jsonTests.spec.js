@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { assert } from 'chai'
 
-import { jest, beforeAll, describe, afterAll } from '@jest/globals'
+import { jest, beforeAll, describe, afterAll, test } from '@jest/globals'
 import { BidsHedIssue } from '../src/bids/types/issues'
 import { buildSchemas } from '../src/schema/init'
 import { SchemaSpec, SchemasSpec } from '../src/schema/specs'
@@ -117,6 +117,7 @@ describe('HED validation using JSON tests', () => {
       let defList
       let expectedErrors
       let noErrors
+      let testRunner
 
       const failedSidecars = stringifyList(tests.sidecar_tests?.fails)
       const passedSidecars = stringifyList(tests.sidecar_tests?.passes)
@@ -258,27 +259,41 @@ describe('HED validation using JSON tests', () => {
         }
       }
 
-      const getSchemas = async function (schemaVersion) {
+      const getSchemas = async function (schemaVersion, expectedErrors) {
         if (schemaMap.has(schemaVersion)) {
           return schemaMap.get(schemaVersion)
         }
-        const schemasSpec = SchemasSpec.parseVersionSpecs(schemaVersion)
-        const schemas = await buildSchemas(schemasSpec)
-        if (typeof schemaVersion === 'string') {
-          schemaMap.set(schemaVersion, schemas)
+        const status = expectedErrors.size === 0 ? 'Expect pass' : 'Expect fail'
+        const header = `\n[${error_code} ${name}](${status})\tSCHEMA`
+        let schemas, schemaIssues
+        try {
+          const schemasSpec = SchemasSpec.parseVersionSpecs(schemaVersion)
+          schemas = await buildSchemas(schemasSpec)
+          if (typeof schemaVersion === 'string') {
+            schemaMap.set(schemaVersion, schemas)
+          }
+          schemaIssues = []
+        } catch (e) {
+          schemaIssues = [convertIssue(e)]
         }
+        assertErrors(expectedErrors, schemaIssues, header)
         return schemas
       }
 
       beforeAll(async () => {
-        hedSchema = await getSchemas(schema)
-        assert(hedSchema !== undefined, 'HED schemas required should be defined')
-        let defIssues
-        ;[defList, defIssues] = DefinitionManager.createDefinitions(definitions, hedSchema)
-        assert.equal(defIssues.length, 0, `${name}: input definitions "${definitions}" have errors "${defIssues}"`)
         expectedErrors = new Set(alt_codes)
         expectedErrors.add(error_code)
         noErrors = new Set()
+        let errorSet
+        if (error_code === 'SCHEMA_LOAD_FAILED' && tests.string_tests.fails.length > 0) {
+          errorSet = expectedErrors
+        } else {
+          errorSet = noErrors
+        }
+        hedSchema = await getSchemas(schema, errorSet)
+        let defIssues
+        ;[defList, defIssues] = DefinitionManager.createDefinitions(definitions, hedSchema)
+        assert.equal(defIssues.length, 0, `${name}: input definitions "${definitions}" have errors "${defIssues}"`)
       })
 
       afterAll(() => {})
@@ -295,54 +310,64 @@ describe('HED validation using JSON tests', () => {
       } else if (name in skippedErrors) {
         test.skip(`Skipping tests ${error_code} [${name}] skipped because ${skippedErrors[name]}`, () => {})
       } else {
-        test('it should have HED schema defined', () => {
-          expect(hedSchema).toBeDefined()
+        test('Schema load', async () => {
+          if (error_code === 'SCHEMA_LOAD_FAILED' && tests.string_tests.fails.length > 0) {
+            assert.isUndefined(hedSchema, 'Schema built successfully when it should not have')
+          } else {
+            assert.isDefined(hedSchema, 'Schema did not build when it should have')
+          }
         })
 
+        if (error_code === 'SCHEMA_LOAD_FAILED' && tests.string_tests.fails.length > 0) {
+          testRunner = test.skip
+        } else {
+          testRunner = test
+        }
+
         if (tests.string_tests.passes.length > 0 && (runOnly.size === 0 || runOnly.has('stringPass'))) {
-          test.each(tests.string_tests.passes)('Valid string: %s', (str) => {
+          testRunner.each(tests.string_tests.passes)('Valid string: %s', (str) => {
             stringValidator(str, new Set())
           })
         }
 
         if (tests.string_tests.fails.length > 0 && (runOnly.size === 0 || runOnly.has('stringFail'))) {
-          test.each(tests.string_tests.fails)('Invalid string: %s', (str) => {
+          testRunner.each(tests.string_tests.fails)('Invalid string: %s', (str) => {
             stringValidator(str, expectedErrors)
           })
         }
 
         if (passedSidecars.length > 0 && (runOnly.size === 0 || runOnly.has('sidecarPass'))) {
-          test.each(passedSidecars)(`Valid sidecar: %s`, (side) => {
+          testRunner.each(passedSidecars)(`Valid sidecar: %s`, (side) => {
             sideValidator(side, noErrors)
           })
         }
 
         if (failedSidecars.length > 0 && (runOnly.size === 0 || runOnly.has('sidecarFail'))) {
-          test.each(failedSidecars)(`Invalid sidecar: %s`, (side) => {
+          testRunner.each(failedSidecars)(`Invalid sidecar: %s`, (side) => {
             sideValidator(side, expectedErrors)
           })
         }
 
         if (passedEvents.length > 0 && (runOnly.size === 0 || runOnly.has('eventsPass'))) {
-          test.each(passedEvents)(`Valid events: %s`, (events) => {
+          testRunner.each(passedEvents)(`Valid events: %s`, (events) => {
             eventsValidator(events, noErrors)
           })
         }
 
         if (failedEvents.length > 0 && (runOnly.size === 0 || runOnly.has('eventsFail'))) {
-          test.each(failedEvents)(`Invalid events: %s`, (events) => {
+          testRunner.each(failedEvents)(`Invalid events: %s`, (events) => {
             eventsValidator(events, expectedErrors)
           })
         }
 
         if (passedCombos.length > 0 && (runOnly.size === 0 || runOnly.has('combosPass'))) {
-          test.each(passedCombos)(`Valid combo: [%s] [%s]`, (side, events) => {
+          testRunner.each(passedCombos)(`Valid combo: [%s] [%s]`, (side, events) => {
             comboValidator(side, events, noErrors)
           })
         }
 
         if (failedCombos.length > 0 && (runOnly.size === 0 || runOnly.has('combosFail'))) {
-          test.each(failedCombos)(`Invalid combo: [%s] [%s]`, (side, events) => {
+          testRunner.each(failedCombos)(`Invalid combo: [%s] [%s]`, (side, events) => {
             comboValidator(side, events, expectedErrors)
           })
         }
