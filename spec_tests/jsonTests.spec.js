@@ -13,7 +13,6 @@ import { generateIssue, IssueError } from '../src/issues/issues'
 import { DefinitionManager } from '../src/parser/definitionManager'
 import parseTSV from '../src/bids/tsvParser'
 import { shouldRun } from '../tests/testHelpers/testUtilities'
-import HedSchemaLoader from '../src/schema/loader'
 jest.mock('../src/schema/loader')
 
 const skipMap = new Map()
