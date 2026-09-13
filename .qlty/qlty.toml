@@ -21,7 +21,8 @@ exclude_patterns = [
   "**/README*",
   "**/LICENSE",
   ".codespellrc",
-  "tests/*Data/**"
+  "tests/*Data/**",
+  "spec_tests/hed-tests/**"
 ]
 
 test_patterns = [
