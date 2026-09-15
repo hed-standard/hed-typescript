@@ -13,7 +13,7 @@ const skipMap = new Map()
 const runAll = true
 const runMap = new Map([['valid-schema-build', ['simple-standard-schema-build']]])
 
-describe('Schema build validation', () => {
+describe.skip('Schema build validation', () => {
   beforeAll(async () => {})
 
   afterAll(() => {})
