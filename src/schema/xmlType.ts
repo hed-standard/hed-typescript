@@ -1,10 +1,12 @@
 export type NamedElement = { name: { _: string } }
+export type DescribedElement = { description?: { _: string } }
 export type AttributeValue = string | number
 export type AttributeElement = NamedElement & { value?: { _: AttributeValue }[] }
-export type DefinitionElement = NamedElement & { attribute?: AttributeElement[] }
+export type DefinitionElement = NamedElement & DescribedElement & { attribute?: AttributeElement[] }
 export type NodeElement = DefinitionElement & { node?: NodeElement[]; $parent?: NodeElement | null }
 type UnitClassElement = DefinitionElement & { unit: DefinitionElement[] }
-type SchemaAttributeElement = NamedElement & { property: AttributeElement[] }
+type SchemaAttributeElement = NamedElement & DescribedElement & { property: AttributeElement[] }
+type PropertyElement = NamedElement & DescribedElement
 
 export type HedSchemaRootElement = {
   $: { version: string; library?: string; unmerged?: boolean; withStandard?: string }
@@ -22,7 +24,7 @@ export type HedSchemaRootElement = {
     schemaAttributeDefinition?: SchemaAttributeElement[]
   }
   propertyDefinitions: {
-    propertyDefinition?: NamedElement[]
+    propertyDefinition?: PropertyElement[]
   }
 }
 
@@ -55,6 +57,16 @@ export class HedSchemaXMLCollection {
  * @param element - An XML element.
  * @returns The name of the element.
  */
-export function getElementTagName(this: void, element: NamedElement): string {
+export function getElementName(this: void, element: NamedElement): string {
   return element.name._
+}
+
+/**
+ * Extract the description of an XML element.
+ *
+ * @param element - An XML element.
+ * @returns The description of the element.
+ */
+export function getElementDescription(this: void, element: DescribedElement): string | undefined {
+  return element.description?._
 }

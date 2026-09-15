@@ -1,7 +1,7 @@
 import flattenDeep from 'lodash/flattenDeep'
 import zip from 'lodash/zip'
 
-import { getElementTagName, type HedSchemaXMLCollection, type HedSchemaXMLObject, type NodeElement } from '../xmlType'
+import { getElementName, type HedSchemaXMLCollection, type HedSchemaXMLObject, type NodeElement } from '../xmlType'
 import { SchemaEntryWithAttributesParser } from './schemaEntry'
 import type SchemaEntryManager from '../entries/schemaEntryManager'
 
@@ -38,7 +38,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     const tags = this.getAllTags(schemaXml)
     const shortTags = this.getShortTags(tags)
     const parentMap = this.generateParentMap(shortTags)
-    const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseAttributeElements(
+    const [booleanAttributeDefinitions, valueAttributeDefinitions, descriptions] = this._parseAttributeElements(
       tags.keys(),
       (element: NodeElement) => shortTags.get(element) ?? '',
     )
@@ -51,6 +51,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     this.createSchemaTags(
       booleanAttributeDefinitions,
       valueAttributeDefinitions,
+      descriptions,
       tagUnitClassDefinitions,
       tagValueClassDefinitions,
       parentMap,
@@ -68,12 +69,12 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     const tagElements = []
     const tagElementChildren = nodeRoot.node
     tagElements.push(...flattenDeep(tagElementChildren.map((child) => this.getAllChildTags(child, false))))
-    const tags = tagElements.map((element) => getElementTagName(element))
+    const tags = tagElements.map((element) => getElementName(element))
     return new Map(zip(tagElements, tags) as [NodeElement, string][])
   }
 
   private getAllChildTags(parentElement: NodeElement, excludeTakeValueTags = true): NodeElement[] {
-    if (excludeTakeValueTags && getElementTagName(parentElement) === '#') {
+    if (excludeTakeValueTags && getElementName(parentElement) === '#') {
       return []
     }
     const childTags = [parentElement]
@@ -93,9 +94,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     const shortTags = new Map<NodeElement, string>()
     for (const tagElement of tags.keys()) {
       const shortKey =
-        getElementTagName(tagElement) === '#'
-          ? TagParser.getParentTagName(tagElement) + '-#'
-          : getElementTagName(tagElement)
+        getElementName(tagElement) === '#' ? TagParser.getParentTagName(tagElement) + '-#' : getElementName(tagElement)
       shortTags.set(tagElement, shortKey)
     }
     return shortTags
@@ -104,7 +103,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
   private static getParentTagName(tagElement: NodeElement): string {
     const parentTagElement = tagElement.$parent
     if (parentTagElement) {
-      return getElementTagName(parentTagElement)
+      return getElementName(parentTagElement)
     } else {
       return ''
     }
@@ -237,7 +236,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
 
     for (const [tagElement, recursiveAttributes] of recursiveAttributeMap) {
       for (const childTag of this.getAllChildTags(tagElement)) {
-        const childTagName = getElementTagName(childTag)
+        const childTagName = getElementName(childTag)
         const newBooleanAttributes =
           booleanAttributeDefinitions.get(childTagName)?.union(recursiveAttributes) ??
           new Set<SchemaAttribute>(recursiveAttributes)
@@ -274,6 +273,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
    *
    * @param booleanAttributeDefinitions - The map from shortened tag names to their boolean schema attributes.
    * @param valueAttributeDefinitions - The map from shortened tag names to their value schema attributes.
+   * @param descriptions - The map from shortened tag names to their descriptions.
    * @param tagUnitClassDefinitions - The map from shortened tag names to their unit classes.
    * @param tagValueClassDefinitions - The map from shortened tag names to their value classes.
    * @param parentMap - The map from each tag name to its parent tag name.
@@ -282,6 +282,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
   private createSchemaTags(
     booleanAttributeDefinitions: Map<string, Set<SchemaAttribute>>,
     valueAttributeDefinitions: Map<string, Map<SchemaAttribute, string[]>>,
+    descriptions: Map<string, string | undefined>,
     tagUnitClassDefinitions: Map<string, SchemaUnitClass[]>,
     tagValueClassDefinitions: Map<string, SchemaValueClass[]>,
     parentMap: Map<string, string>,
@@ -294,6 +295,7 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
 
     for (const [name, valueAttributes] of valueAttributeDefinitions) {
       const booleanAttributes = booleanAttributeDefinitions.get(name) ?? new Set<SchemaAttribute>()
+      const description = descriptions.get(name)
       const unitClasses = tagUnitClassDefinitions.get(name) ?? []
       const valueClasses = tagValueClassDefinitions.get(name) ?? []
       const parentTagName = parentMap.get(lc(name))
@@ -304,12 +306,20 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
       if (name.endsWith('-#')) {
         this.schemaTags.set(
           lc(name),
-          new SchemaValueTag(name, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses),
+          new SchemaValueTag(
+            name,
+            description,
+            parentTag,
+            booleanAttributes,
+            valueAttributes,
+            unitClasses,
+            valueClasses,
+          ),
         )
       } else {
         this.schemaTags.set(
           lc(name),
-          new SchemaTag(name, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses),
+          new SchemaTag(name, description, parentTag, booleanAttributes, valueAttributes, unitClasses, valueClasses),
         )
       }
     }

@@ -1,4 +1,4 @@
-import { getElementTagName, type HedSchemaXMLCollection, type DefinitionElement, HedSchemaXMLObject } from '../xmlType'
+import { getElementName, type HedSchemaXMLCollection, type DefinitionElement, HedSchemaXMLObject } from '../xmlType'
 import { SchemaDefinitionEntryParser } from './schemaEntry'
 
 import type SchemaUnitModifier from '../entries/unitModifier'
@@ -33,11 +33,13 @@ export default class UnitClassParser extends SchemaDefinitionEntryParser<SchemaU
 
   protected override _buildEntry(
     name: string,
+    description: string | undefined,
     booleanAttributes: Set<SchemaAttribute>,
     valueAttributes: Map<SchemaAttribute, string[]>,
   ): SchemaUnitClass {
     return new SchemaUnitClass(
       name,
+      description,
       booleanAttributes,
       valueAttributes,
       this.unitClassesUnits.get(name) ?? new Map<string, SchemaUnit>(),
@@ -51,18 +53,17 @@ export default class UnitClassParser extends SchemaDefinitionEntryParser<SchemaU
       return
     }
     for (const element of unitClassElements) {
-      const elementName = getElementTagName(element)
+      const elementName = getElementName(element)
       this.unitClassUnits = this.entryTypeMap.get(elementName)?.units ?? new Map<string, SchemaUnit>()
       if (element.unit === undefined) {
         continue
       }
-      const [unitBooleanAttributeDefinitions, unitValueAttributeDefinitions] = this._parseAttributeElements(
-        element.unit,
-        getElementTagName,
-      )
+      const [unitBooleanAttributeDefinitions, unitValueAttributeDefinitions, unitValueDescriptions] =
+        this._parseAttributeElements(element.unit, getElementName)
       for (const [name, valueAttributes] of unitValueAttributeDefinitions) {
         const booleanAttributes = unitBooleanAttributeDefinitions.get(name) ?? new Set<SchemaAttribute>()
-        this.addUnit(name, new SchemaUnit(name, booleanAttributes, valueAttributes, this.unitModifiers))
+        const description = unitValueDescriptions.get(name)
+        this.addUnit(name, new SchemaUnit(name, description, booleanAttributes, valueAttributes, this.unitModifiers))
       }
       this.unitClassesUnits.set(elementName, this.unitClassUnits)
     }

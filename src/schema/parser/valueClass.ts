@@ -30,12 +30,13 @@ export default class ValueClassParser extends SchemaDefinitionEntryParser<Schema
 
   protected override _buildEntry(
     name: string,
+    description: string | undefined,
     booleanAttributes: Set<SchemaAttribute>,
     valueAttributes: Map<SchemaAttribute, string[]>,
   ): SchemaValueClass {
     const charRegex = this._getValueClassChars(name)
     const wordRegex = new RegExp(classRegex.class_words[name] ?? '^.+$')
-    return new SchemaValueClass(name, booleanAttributes, valueAttributes, charRegex, wordRegex)
+    return new SchemaValueClass(name, description, booleanAttributes, valueAttributes, charRegex, wordRegex)
   }
 
   private _getValueClassChars(name: string): RegExp {

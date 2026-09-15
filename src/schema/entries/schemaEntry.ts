@@ -7,8 +7,14 @@ export default class SchemaEntry {
    */
   private readonly _name: string
 
-  constructor(name: string) {
+  /**
+   * The description of this schema entry.
+   */
+  private readonly _description: string | undefined
+
+  constructor(name: string, description: string | undefined) {
     this._name = name
+    this._description = description
   }
 
   /**
@@ -16,6 +22,13 @@ export default class SchemaEntry {
    */
   public get name(): string {
     return this._name
+  }
+
+  /**
+   * The description of this schema entry.
+   */
+  public get description(): string | undefined {
+    return this._description
   }
 
   /**
@@ -32,7 +45,7 @@ export default class SchemaEntry {
     if (!(other instanceof SchemaEntry)) {
       return false
     }
-    return this.name === other.name
+    return this.name === other.name && this.description === other.description
   }
 
   /**

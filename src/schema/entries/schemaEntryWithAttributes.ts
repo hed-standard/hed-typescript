@@ -28,8 +28,13 @@ export default class SchemaEntryWithAttributes extends SchemaEntry {
    */
   readonly valueAttributeNames: Map<string, string[]>
 
-  constructor(name: string, booleanAttributes: Set<SchemaAttribute>, valueAttributes: Map<SchemaAttribute, string[]>) {
-    super(name)
+  constructor(
+    name: string,
+    description: string | undefined,
+    booleanAttributes: Set<SchemaAttribute>,
+    valueAttributes: Map<SchemaAttribute, string[]>,
+  ) {
+    super(name, description)
     this.booleanAttributes = booleanAttributes
     this.valueAttributes = valueAttributes
     this.booleanAttributeNames = new Set()

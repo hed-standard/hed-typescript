@@ -3,11 +3,12 @@ import SchemaEntryManager from '../entries/schemaEntryManager'
 import type SchemaEntryWithAttributes from '../entries/schemaEntryWithAttributes'
 import type SchemaAttribute from '../entries/attribute'
 import {
-  getElementTagName,
+  getElementName,
   type DefinitionElement,
   type NamedElement,
   type HedSchemaXMLCollection,
   type HedSchemaXMLObject,
+  getElementDescription,
 } from '../xmlType'
 
 import { IssueError } from '../../issues/issues'
@@ -97,16 +98,17 @@ export abstract class SchemaEntryWithAttributesParser<
 
   protected _parseDefinitions(
     definitionElements: Iterable<DefinitionElement>,
-  ): [Map<string, Set<SchemaAttribute>>, Map<string, Map<SchemaAttribute, string[]>>] {
-    return this._parseAttributeElements(definitionElements, getElementTagName)
+  ): [Map<string, Set<SchemaAttribute>>, Map<string, Map<SchemaAttribute, string[]>>, Map<string, string | undefined>] {
+    return this._parseAttributeElements(definitionElements, getElementName)
   }
 
   protected _parseAttributeElements(
     elements: Iterable<DefinitionElement>,
     namer: (element: NamedElement) => string,
-  ): [Map<string, Set<SchemaAttribute>>, Map<string, Map<SchemaAttribute, string[]>>] {
+  ): [Map<string, Set<SchemaAttribute>>, Map<string, Map<SchemaAttribute, string[]>>, Map<string, string | undefined>] {
     const booleanAttributeDefinitions = new Map<string, Set<SchemaAttribute>>()
     const valueAttributeDefinitions = new Map<string, Map<SchemaAttribute, string[]>>()
+    const descriptions = new Map<string, string | undefined>()
 
     for (const element of elements) {
       const [booleanAttributes, valueAttributes] = this._parseAttributeElement(element)
@@ -114,9 +116,10 @@ export abstract class SchemaEntryWithAttributesParser<
       const elementName = namer(element)
       booleanAttributeDefinitions.set(elementName, booleanAttributes)
       valueAttributeDefinitions.set(elementName, valueAttributes)
+      descriptions.set(elementName, getElementDescription(element))
     }
 
-    return [booleanAttributeDefinitions, valueAttributeDefinitions]
+    return [booleanAttributeDefinitions, valueAttributeDefinitions, descriptions]
   }
 
   private _parseAttributeElement(element: DefinitionElement): [Set<SchemaAttribute>, Map<SchemaAttribute, string[]>] {
@@ -126,7 +129,7 @@ export abstract class SchemaEntryWithAttributesParser<
     const tagAttributes = element.attribute ?? []
 
     for (const tagAttribute of tagAttributes) {
-      const attributeName = getElementTagName(tagAttribute)
+      const attributeName = getElementName(tagAttribute)
       const attribute = this.attributes.getEntry(attributeName)
       if (!attribute) {
         IssueError.generateAndThrow('invalidSchema', { error: 'Referenced schema attribute was not found' })
@@ -152,10 +155,11 @@ export abstract class SchemaDefinitionEntryParser<
     if (!definitions) {
       return
     }
-    const [booleanAttributeDefinitions, valueAttributeDefinitions] = this._parseDefinitions(definitions)
+    const [booleanAttributeDefinitions, valueAttributeDefinitions, descriptions] = this._parseDefinitions(definitions)
     for (const [name, valueAttributes] of valueAttributeDefinitions) {
       const booleanAttributes = booleanAttributeDefinitions.get(name) ?? new Set<SchemaAttribute>()
-      this.addEntry(name, this._buildEntry(name, booleanAttributes, valueAttributes))
+      const description = descriptions.get(name)
+      this.addEntry(name, this._buildEntry(name, description, booleanAttributes, valueAttributes))
     }
   }
 
@@ -166,6 +170,7 @@ export abstract class SchemaDefinitionEntryParser<
 
   protected abstract _buildEntry(
     name: string,
+    description: string | undefined,
     booleanAttributes: Set<SchemaAttribute>,
     valueAttributes: Map<SchemaAttribute, string[]>,
   ): T

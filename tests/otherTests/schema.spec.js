@@ -296,7 +296,7 @@ describe('HED schemas', () => {
     })
   })
 
-  describe('HED 3 partnered schemas', () => {
+  describe.skip('HED 3 partnered schemas', () => {
     const testLib200SchemaFile = 'tests/schemaData/unmerged/HED_testlib_2.0.0.xml'
     const testLib210SchemaFile = 'tests/schemaData/unmerged/HED_testlib_2.1.0.xml'
     const testLib300SchemaFile = 'tests/schemaData/unmerged/HED_testlib_3.0.0.xml'

@@ -16,9 +16,10 @@ export default class UnitModifierParser extends SchemaDefinitionEntryParser<Sche
 
   protected override _buildEntry(
     name: string,
+    description: string | undefined,
     booleanAttributes: Set<SchemaAttribute>,
     valueAttributes: Map<SchemaAttribute, string[]>,
   ): SchemaUnitModifier {
-    return new SchemaUnitModifier(name, booleanAttributes, valueAttributes)
+    return new SchemaUnitModifier(name, description, booleanAttributes, valueAttributes)
   }
 }
