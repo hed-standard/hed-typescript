@@ -304,6 +304,9 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
         : undefined
 
       if (name.endsWith('-#')) {
+        if (this.entryTypeMap.has(parentTagName!) && !this.entryTypeMap.has(lc(name))) {
+          IssueError.generateAndThrow('lazyPartneredSchemasShareTag', { tag: name.replace('-#', '/#') })
+        }
         this.schemaTags.set(
           lc(name),
           new SchemaValueTag(
@@ -345,7 +348,11 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
   protected override addEntry(shortTagName: string, newTag: SchemaTag): void {
     const lowercaseName = lc(shortTagName)
     if (this.entryTypeMap.has(lowercaseName)) {
-      if (!newTag.equivalent(this.entryTypeMap.get(lowercaseName))) {
+      const existingTag = this.entryTypeMap.get(lowercaseName)!
+      if (newTag.hasAttribute('inLibrary') && !existingTag.hasAttribute('inLibrary')) {
+        IssueError.generateAndThrow('lazyPartneredSchemaOverloadsStandardTag', { tag: newTag.name.replace('-#', '/#') })
+      }
+      if (!newTag.equivalent(existingTag)) {
         IssueError.generateAndThrow('lazyPartneredSchemasShareTag', { tag: newTag.name.replace('-#', '/#') })
       }
     } else {
