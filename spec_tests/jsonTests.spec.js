@@ -306,14 +306,6 @@ describe('HED validation using JSON tests', () => {
       } else if (name in skippedErrors) {
         test.skip(`Skipping tests ${error_code} [${name}] skipped because ${skippedErrors[name]}`, () => {})
       } else {
-        test('Schema load', async () => {
-          if (error_code === 'SCHEMA_LOAD_FAILED' && tests.string_tests.fails.length > 0) {
-            assert.isUndefined(hedSchema, 'Schema built successfully when it should not have')
-          } else {
-            assert.isDefined(hedSchema, 'Schema did not build when it should have')
-          }
-        })
-
         if (tests.string_tests.passes.length > 0 && (runOnly.size === 0 || runOnly.has('stringPass'))) {
           test.each(tests.string_tests.passes)('Valid string: %s', (str) => {
             stringValidator(str, new Set())

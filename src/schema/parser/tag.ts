@@ -287,10 +287,6 @@ export default class TagParser extends SchemaEntryWithAttributesParser<SchemaTag
     tagValueClassDefinitions: Map<string, SchemaValueClass[]>,
     parentMap: Map<string, string>,
   ): void {
-    const tagTakesValueAttribute = this.attributes.getEntry('takesValue')
-    if (!tagTakesValueAttribute) {
-      IssueError.generateAndThrow('invalidSchema', { error: 'The required takesValue attribute was not found' })
-    }
     this.schemaTags = new Map<string, SchemaTag>()
 
     for (const [name, valueAttributes] of valueAttributeDefinitions) {
