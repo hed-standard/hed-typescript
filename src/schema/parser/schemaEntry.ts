@@ -46,12 +46,9 @@ export abstract class SchemaEntryParser<T extends SchemaEntry> {
    * @internal
    */
   public parse(): SchemaEntryManager<T> {
-    this._parseSchema(this.xmlCollection.baseSchema)
-    for (const mergedSchema of this.xmlCollection.mergedSchemas) {
-      this._parseSchema(mergedSchema)
-    }
-    for (const unmergedSchema of this.xmlCollection.unmergedSchemas) {
-      this._parseSchema(unmergedSchema)
+    this._preprocessSchemas(this.xmlCollection)
+    for (const schema of this.xmlCollection) {
+      this._parseSchema(schema)
     }
     this._addCustomEntries()
     return new SchemaEntryManager(this.entryTypeMap)
@@ -72,6 +69,14 @@ export abstract class SchemaEntryParser<T extends SchemaEntry> {
       this.entryTypeMap.set(newEntryName, newEntry)
     }
   }
+
+  /**
+   * Preprocess the schema collection.
+   *
+   * @param schemaXml - The XML collection.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected _preprocessSchemas(schemaXml: HedSchemaXMLCollection): void {}
 
   /**
    * Parse this entry type for a specific schema.
@@ -150,7 +155,6 @@ export abstract class SchemaDefinitionEntryParser<
   T extends SchemaEntryWithAttributes,
 > extends SchemaEntryWithAttributesParser<T> {
   protected override _parseSchema(schemaXml: HedSchemaXMLObject): void {
-    this._preprocessSchema(schemaXml)
     const definitions = this._getDefinitions(schemaXml)
     if (!definitions) {
       return
@@ -162,9 +166,6 @@ export abstract class SchemaDefinitionEntryParser<
       this.addEntry(name, this._buildEntry(name, description, booleanAttributes, valueAttributes))
     }
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  protected _preprocessSchema(schemaXml: HedSchemaXMLObject): void {}
 
   protected abstract _getDefinitions(schemaXml: HedSchemaXMLObject): Iterable<DefinitionElement> | undefined
 

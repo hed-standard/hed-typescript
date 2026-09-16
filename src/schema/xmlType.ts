@@ -49,6 +49,12 @@ export class HedSchemaXMLCollection {
     this.mergedSchemas = mergedSchemas ?? []
     this.unmergedSchemas = unmergedSchemas ?? []
   }
+
+  public *[Symbol.iterator](): Generator<HedSchemaXMLObject> {
+    yield this.baseSchema
+    yield* this.mergedSchemas
+    yield* this.unmergedSchemas
+  }
 }
 
 /**

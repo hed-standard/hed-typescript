@@ -23,8 +23,11 @@ export default class UnitClassParser extends SchemaDefinitionEntryParser<SchemaU
     this.unitModifiers = unitModifiers
   }
 
-  protected override _preprocessSchema(schemaXml: HedSchemaXMLObject) {
-    this.parseUnits(schemaXml)
+  protected override _preprocessSchemas(schemaXml: HedSchemaXMLCollection) {
+    this.unitClassesUnits = new Map<string, Map<string, SchemaUnit>>()
+    for (const schema of schemaXml) {
+      this.parseUnits(schema)
+    }
   }
 
   protected override _getDefinitions(schemaXml: HedSchemaXMLObject): Iterable<DefinitionElement> | undefined {
@@ -47,14 +50,13 @@ export default class UnitClassParser extends SchemaDefinitionEntryParser<SchemaU
   }
 
   private parseUnits(schemaXml: HedSchemaXMLObject): void {
-    this.unitClassesUnits = new Map<string, Map<string, SchemaUnit>>()
     const unitClassElements = schemaXml.HED.unitClassDefinitions.unitClassDefinition
     if (!unitClassElements) {
       return
     }
     for (const element of unitClassElements) {
       const elementName = getElementName(element)
-      this.unitClassUnits = this.entryTypeMap.get(elementName)?.units ?? new Map<string, SchemaUnit>()
+      this.unitClassUnits = this.unitClassesUnits.get(elementName) ?? new Map<string, SchemaUnit>()
       if (element.unit === undefined) {
         continue
       }

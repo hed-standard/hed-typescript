@@ -8,7 +8,7 @@ import * as files from '../../utils/files'
 const loaderModule = jest.requireActual<typeof import('../loader')>('../loader')
 
 const bundledStandard = new Set<string>(['HED8.4.0', 'HED8.5.0'])
-const specTestLibraries = new Set<string>(['testclash', 'testconflict', 'testminimal'])
+const specTestLibraries = new Set<string>(['testaux', 'testclash', 'testconflict', 'testminimal'])
 
 export default class MockHedSchemaLoader extends loaderModule.default {
   /**
