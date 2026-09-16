@@ -24,11 +24,12 @@ export default class SchemaAttribute extends SchemaEntry {
    * Constructor.
    *
    * @param name - The name of the schema attribute.
+   * @param description - The description of the schema attribute.
    * @param properties - The properties assigned to this schema attribute.
    * @param recursive - Whether this attribute is recursive.
    */
-  constructor(name: string, properties: Set<SchemaProperty>, recursive: boolean) {
-    super(name)
+  constructor(name: string, description: string | undefined, properties: Set<SchemaProperty>, recursive: boolean) {
+    super(name, description)
     this._properties = properties
     this._recursive = recursive || SchemaAttribute.ALWAYS_RECURSIVE.has(name)
   }

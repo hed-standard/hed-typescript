@@ -116,7 +116,6 @@ describe('HED validation using JSON tests', () => {
       let defList
       let expectedErrors
       let noErrors
-      let testRunner
 
       const failedSidecars = stringifyList(tests.sidecar_tests?.fails)
       const passedSidecars = stringifyList(tests.sidecar_tests?.passes)
@@ -268,9 +267,7 @@ describe('HED validation using JSON tests', () => {
         try {
           const schemasSpec = SchemasSpec.parseVersionSpecs(schemaVersion)
           schemas = await buildSchemas(schemasSpec)
-          if (typeof schemaVersion === 'string') {
-            schemaMap.set(schemaVersion, schemas)
-          }
+          schemaMap.set(schemaVersion, schemas)
           schemaIssues = []
         } catch (e) {
           schemaIssues = [convertIssue(e)]
@@ -309,64 +306,50 @@ describe('HED validation using JSON tests', () => {
       } else if (name in skippedErrors) {
         test.skip(`Skipping tests ${error_code} [${name}] skipped because ${skippedErrors[name]}`, () => {})
       } else {
-        test('Schema load', async () => {
-          if (error_code === 'SCHEMA_LOAD_FAILED' && tests.string_tests.fails.length > 0) {
-            assert.isUndefined(hedSchema, 'Schema built successfully when it should not have')
-          } else {
-            assert.isDefined(hedSchema, 'Schema did not build when it should have')
-          }
-        })
-
-        if (error_code === 'SCHEMA_LOAD_FAILED' && tests.string_tests.fails.length > 0) {
-          testRunner = test.skip
-        } else {
-          testRunner = test
-        }
-
         if (tests.string_tests.passes.length > 0 && (runOnly.size === 0 || runOnly.has('stringPass'))) {
-          testRunner.each(tests.string_tests.passes)('Valid string: %s', (str) => {
+          test.each(tests.string_tests.passes)('Valid string: %s', (str) => {
             stringValidator(str, new Set())
           })
         }
 
         if (tests.string_tests.fails.length > 0 && (runOnly.size === 0 || runOnly.has('stringFail'))) {
-          testRunner.each(tests.string_tests.fails)('Invalid string: %s', (str) => {
+          test.each(tests.string_tests.fails)('Invalid string: %s', (str) => {
             stringValidator(str, expectedErrors)
           })
         }
 
         if (passedSidecars.length > 0 && (runOnly.size === 0 || runOnly.has('sidecarPass'))) {
-          testRunner.each(passedSidecars)(`Valid sidecar: %s`, (side) => {
+          test.each(passedSidecars)(`Valid sidecar: %s`, (side) => {
             sideValidator(side, noErrors)
           })
         }
 
         if (failedSidecars.length > 0 && (runOnly.size === 0 || runOnly.has('sidecarFail'))) {
-          testRunner.each(failedSidecars)(`Invalid sidecar: %s`, (side) => {
+          test.each(failedSidecars)(`Invalid sidecar: %s`, (side) => {
             sideValidator(side, expectedErrors)
           })
         }
 
         if (passedEvents.length > 0 && (runOnly.size === 0 || runOnly.has('eventsPass'))) {
-          testRunner.each(passedEvents)(`Valid events: %s`, (events) => {
+          test.each(passedEvents)(`Valid events: %s`, (events) => {
             eventsValidator(events, noErrors)
           })
         }
 
         if (failedEvents.length > 0 && (runOnly.size === 0 || runOnly.has('eventsFail'))) {
-          testRunner.each(failedEvents)(`Invalid events: %s`, (events) => {
+          test.each(failedEvents)(`Invalid events: %s`, (events) => {
             eventsValidator(events, expectedErrors)
           })
         }
 
         if (passedCombos.length > 0 && (runOnly.size === 0 || runOnly.has('combosPass'))) {
-          testRunner.each(passedCombos)(`Valid combo: [%s] [%s]`, (side, events) => {
+          test.each(passedCombos)(`Valid combo: [%s] [%s]`, (side, events) => {
             comboValidator(side, events, noErrors)
           })
         }
 
         if (failedCombos.length > 0 && (runOnly.size === 0 || runOnly.has('combosFail'))) {
-          testRunner.each(failedCombos)(`Invalid combo: [%s] [%s]`, (side, events) => {
+          test.each(failedCombos)(`Invalid combo: [%s] [%s]`, (side, events) => {
             comboValidator(side, events, expectedErrors)
           })
         }

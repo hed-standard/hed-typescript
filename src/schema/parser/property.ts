@@ -2,7 +2,7 @@ import semver from 'semver'
 
 import { SchemaEntryParser } from './schemaEntry'
 import SchemaProperty from '../entries/property'
-import { getElementTagName, type HedSchemaXMLCollection, type HedSchemaXMLObject } from '../xmlType'
+import { getElementDescription, getElementName, type HedSchemaXMLCollection, type HedSchemaXMLObject } from '../xmlType'
 
 /**
  * A parser for schema properties.
@@ -28,8 +28,9 @@ export default class PropertyParser extends SchemaEntryParser<SchemaProperty> {
       return
     }
     for (const definition of propertyDefinitions) {
-      const propertyName = getElementTagName(definition)
-      this.addEntry(propertyName, new SchemaProperty(propertyName))
+      const propertyName = getElementName(definition)
+      const propertyDescription = getElementDescription(definition)
+      this.addEntry(propertyName, new SchemaProperty(propertyName, propertyDescription))
     }
   }
 
@@ -41,7 +42,7 @@ export default class PropertyParser extends SchemaEntryParser<SchemaProperty> {
    */
   protected override _addCustomEntries(): void {
     if (this.xmlCollection.standardVersion && semver.lt(this.xmlCollection.standardVersion, '8.2.0')) {
-      const recursiveProperty = new SchemaProperty('isInheritedProperty')
+      const recursiveProperty = new SchemaProperty('isInheritedProperty', undefined)
       this.addEntry('isInheritedProperty', recursiveProperty)
     }
   }

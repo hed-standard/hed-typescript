@@ -415,6 +415,11 @@ const issueData: Record<string, IssueType> = {
     level: 'error',
     message: issueMessageTemplate`No valid HED schema specification was supplied.`,
   },
+  multipleVersionsOfSameLibrarySchema: {
+    hedCode: 'SCHEMA_LOAD_FAILED',
+    level: 'error',
+    message: issueMessageTemplate`The supplied HED schema specification is invalid because it contains multiple versions of the library schema "${'library'}".`,
+  },
   bundledSchemaLoadFailed: {
     hedCode: 'SCHEMA_LOAD_FAILED',
     level: 'error',
@@ -444,6 +449,11 @@ const issueData: Record<string, IssueType> = {
     hedCode: 'SCHEMA_LOAD_FAILED',
     level: 'error',
     message: issueMessageTemplate`Could not merge lazy partnered schemas with different "withStandard" values: "${'versions'}".`,
+  },
+  lazyPartneredSchemaOverloadsStandardTag: {
+    hedCode: 'SCHEMA_LOAD_FAILED',
+    level: 'error',
+    message: issueMessageTemplate`Could not merge lazy partnered schema because short tag "${'tag'}" overloads the same tag in the standard schema.`,
   },
   lazyPartneredSchemasShareTag: {
     hedCode: 'SCHEMA_LOAD_FAILED',
