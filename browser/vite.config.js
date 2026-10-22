@@ -5,6 +5,17 @@ import * as path from 'node:path'
 import { createRequire } from 'node:module' // Add this line
 const require = createRequire(import.meta.url) // Add this line
 
+// The validator's source imports its bundled schemas as text, as esbuild (esbuild.mjs) and jest (jest.config.js) do.
+const xmlAsText = {
+  name: 'xml-as-text',
+  enforce: 'pre',
+  load(id) {
+    if (id.endsWith('.xml')) {
+      return `export default ${JSON.stringify(fs.readFileSync(id, 'utf8'))}`
+    }
+  },
+}
+
 // This configuration combines your specific project needs (React, multi-page, custom scripts)
 // with a dynamic base path for seamless local development and GitHub Pages deployment.
 
@@ -70,6 +81,8 @@ export default defineConfig(({ command }) => {
     },
 
     plugins: [
+      xmlAsText,
+
       // Your React plugin.
       react(),
 
