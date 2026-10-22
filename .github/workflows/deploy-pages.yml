@@ -45,7 +45,7 @@ jobs:
       - name: Install browser dependencies
         # Specifies the working directory for the command
         working-directory: ./browser
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build hed-validator package
         run: npm run build
