@@ -128,6 +128,22 @@ describe('BidsDataset', () => {
 
       getFileContentSpy.mockRestore()
     })
+
+    it('should name the unreadable file in a fileReadError', async () => {
+      class InvalidJsonAccessor extends BidsFileAccessor {
+        async getFileContent() {
+          return '{"HED": "something", "invalidJson": }'
+        }
+      }
+      const accessor = new InvalidJsonAccessor('/fake/dir', new Map([['task-testing_events.json', {}]]))
+      const dataset = new BidsDataset(accessor)
+      const issues = await dataset.setSidecars()
+
+      expect(issues.length).toBe(1)
+      expect(issues[0].hedIssue.internalCode).toBe('fileReadError')
+      expect(issues[0].hedIssue.parameters.fileName).toBe('task-testing_events.json')
+      expect(issues[0].issueMessage).toContain('file or directory "task-testing_events.json"')
+    })
   })
 
   describe('validate', () => {

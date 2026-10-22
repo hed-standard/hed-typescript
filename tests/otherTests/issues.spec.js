@@ -246,4 +246,13 @@ describe('BidsHedIssue', () => {
       expect(warning1.issueMessage).toContain('There are 1 total issues of this type in 1 unique files.')
     })
   })
+
+  describe('code', () => {
+    it('should report an internal error with the BIDS code HED_ERROR and the subcode INTERNAL_ERROR', () => {
+      const issue = new BidsHedIssue(generateIssue('internalError', { message: 'x' }), { path: '/test/file.tsv' })
+      expect(issue.code).toBe('HED_ERROR')
+      expect(issue.subCode).toBe('INTERNAL_ERROR')
+      expect(issue.severity).toBe('error')
+    })
+  })
 })

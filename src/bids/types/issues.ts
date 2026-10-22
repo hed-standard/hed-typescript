@@ -9,7 +9,7 @@ import { generateIssue, Issue, IssueError, type IssueParameters } from '../../is
 import { type IssueLevel } from '../../issues/data'
 import { type FilePath } from './file'
 
-type BidsIssueCode = 'HED_ERROR' | 'HED_WARNING' | 'INTERNAL_ERROR'
+type BidsIssueCode = 'HED_ERROR' | 'HED_WARNING'
 
 /**
  * A wrapper for a HED validation issue that is compatible with the BIDS validator.
@@ -71,9 +71,7 @@ export class BidsHedIssue {
     this.file = file
 
     // BIDS fields
-    if (hedIssue.internalCode === 'internalError') {
-      this.code = 'INTERNAL_ERROR'
-    } else if (hedIssue.level === 'warning') {
+    if (hedIssue.level === 'warning') {
       this.code = 'HED_WARNING'
     } else {
       this.code = 'HED_ERROR'
