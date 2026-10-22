@@ -201,7 +201,7 @@ export class BidsDataset<FileType> {
               const errorMessage = `Could not read JSON file: ${jsonPath}`
               sidecarIssues.push(
                 BidsHedIssue.fromHedIssue(
-                  generateIssue('fileReadError', { filename: `${jsonPath}`, message: `${errorMessage}` }),
+                  generateIssue('fileReadError', { fileName: `${jsonPath}`, message: `${errorMessage}` }),
                   { path: jsonPath, name: fileName },
                 ),
               )
@@ -223,7 +223,7 @@ export class BidsDataset<FileType> {
                 const errorMessage = `Could not parse the JSON file: ${jsonPath}`
                 sidecarIssues.push(
                   BidsHedIssue.fromHedIssue(
-                    generateIssue('fileReadError', { filename: `${jsonPath}`, message: `${errorMessage}` }),
+                    generateIssue('fileReadError', { fileName: `${jsonPath}`, message: `${errorMessage}` }),
                     { path: jsonPath, name: fileName },
                   ),
                 )
@@ -241,7 +241,7 @@ export class BidsDataset<FileType> {
             const issueMessage = `Unexpected exception '${errorMessage}' occurred when setting sidecar: ${jsonPath}`
             return [
               BidsHedIssue.fromHedIssue(
-                generateIssue('fileReadError', { filename: `${jsonPath}`, message: `${issueMessage}` }),
+                generateIssue('fileReadError', { fileName: `${jsonPath}`, message: `${issueMessage}` }),
                 { path: jsonPath, name: fileName },
               ),
             ]
@@ -336,7 +336,7 @@ export class BidsDataset<FileType> {
     if (tsvContents === null) {
       const message = `Could not read TSV file: ${tsvPath}`
       return [
-        BidsHedIssue.fromHedIssue(generateIssue('fileReadError', { filename: tsvPath, message: `${message}` }), {
+        BidsHedIssue.fromHedIssue(generateIssue('fileReadError', { fileName: tsvPath, message: `${message}` }), {
           path: tsvPath,
           name: parsedPath.base,
         }),
