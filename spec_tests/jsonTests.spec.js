@@ -13,6 +13,7 @@ import { generateIssue, IssueError } from '../src/issues/issues'
 import { DefinitionManager } from '../src/parser/definitionManager'
 import parseTSV from '../src/bids/tsvParser'
 import { shouldRun } from '../tests/testHelpers/testUtilities'
+import { skippedTests } from './skippedTests'
 jest.mock('../src/schema/loader')
 
 const skipMap = new Map()
@@ -22,7 +23,8 @@ const runAll = true
 const runMap = new Map([['TAG_GROUP_ERROR', ['tag-group-error-deferred-in-splice']]])
 //const runOnly = new Set(["eventsPass"])
 const runOnly = new Set()
-const skippedErrors = {}
+// Set HED_RUN_SKIPPED=1 to run the cases listed in skippedTests.js instead of skipping them.
+const runSkipped = process.env.HED_RUN_SKIPPED === '1'
 const readFileSync = fs.readFileSync
 const test_file_path = ['hed-tests', 'json_test_data', 'validation_tests.json']
 // const test_file_path = ['temp6.json']
@@ -300,11 +302,9 @@ describe('HED validation using JSON tests', () => {
         console.log(`----Skipping JSON Spec tests ${error_code} [${name}]}`)
         return
       }
-      // Run tests except for the ones explicitly skipped or because they are warnings
-      if (error_code in skippedErrors) {
-        test.skip(`Skipping tests ${error_code} [${name}] skipped because ${skippedErrors[error_code]}`, () => {})
-      } else if (name in skippedErrors) {
-        test.skip(`Skipping tests ${error_code} [${name}] skipped because ${skippedErrors[name]}`, () => {})
+      // Run tests except for the cases listed in skippedTests.js
+      if (name in skippedTests && !runSkipped) {
+        test.skip(`Skipping ${error_code} [${name}]: ${skippedTests[name]}`, () => {})
       } else {
         if (tests.string_tests.passes.length > 0 && (runOnly.size === 0 || runOnly.has('stringPass'))) {
           test.each(tests.string_tests.passes)('Valid string: %s', (str) => {
