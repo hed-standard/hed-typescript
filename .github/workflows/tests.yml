@@ -86,7 +86,7 @@ jobs:
           rm -rf package-lock.json node_modules
       - name: Install browser dependencies
         working-directory: ./browser
-        run: npm install
+        run: npm install --legacy-peer-deps
       - name: Run browser tests with Node.js ${{ matrix.node-version }}
         working-directory: ./browser
         run: npm test
