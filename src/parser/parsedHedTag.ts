@@ -15,7 +15,6 @@ import SchemaValueTag from '../schema/entries/valueTag'
 import type SchemaUnit from '../schema/entries/unit'
 import type SchemaUnitClass from '../schema/entries/unitClass'
 
-const TWO_LEVEL_TAGS = new Set(['Definition', 'Def', 'Def-expand'])
 const allowedRegEx = /^[^{},]*$/
 
 /**
@@ -129,8 +128,15 @@ export default class ParsedHedTag extends ParsedHedSubstring {
       IssueError.generateAndThrow('valueRequired', { tag: this.originalTag })
     }
     // Check if this could have a two-level value
-    const [value, rest] = this._getSplitValue(remainder)
+    const [value, rest] = this._getSplitValue(remainder, reserved)
     this._splitValue = rest
+    // After a Definition name only # may follow (specification 3.2.8.1, DEFINITION_INVALID l).
+    if (ReservedChecker.valueForms.get(this.schemaTag.name)?.secondPart === 'placeholder' && rest && rest !== '#') {
+      IssueError.generateAndThrow('invalidDefinition', {
+        definition: this.originalTag,
+        msg: `Only "#" may follow the definition name, not "${rest}".`,
+      })
+    }
 
     // Resolve the units and check
     const [actualUnit, actualUnitString, actualValueString] = this._separateUnits(schemaTag, value)
@@ -169,12 +175,14 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   }
 
   /**
-   * Handle reserved three-level tags.
+   * Split the value of a tag whose value has two parts (the valueForms of the reserved-tag file).
    *
    * @param remainder - The remainder of the tag string after schema tag.
+   * @param reserved - The reserved-tag checker.
+   * @returns The name and the part after it, or the remainder and null for other tags.
    */
-  private _getSplitValue(remainder: string): [string, string | null] {
-    if (!TWO_LEVEL_TAGS.has(this.schemaTag.name)) {
+  private _getSplitValue(remainder: string, reserved: ReservedChecker): [string, string | null] {
+    if (!reserved.twoPartValueTags.has(this.schemaTag.name)) {
       return [remainder, null]
     }
     const [first, ...rest] = remainder.split('/')
