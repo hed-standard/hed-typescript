@@ -31,7 +31,7 @@ jobs:
         run: npm run coverage
       - name: Upload coverage to Quality
         if: github.event_name == 'push'
-        uses: qltysh/qlty-action/coverage@ebcd284bf32e36a030afe15f1e136c7be08b9506 # v1.0.0
+        uses: qltysh/qlty-action/coverage@ebcd284bf32e36a030afe15f1e136c7be08b9506 # v2.5.0
         with:
           oidc: true
           files: coverage/lcov.info
