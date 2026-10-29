@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - main
+      - fix_required
   pull_request:
     branches:
       - main
+      - fix_required
+  workflow_dispatch:
 
 permissions:
   contents: read
