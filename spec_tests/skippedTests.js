@@ -3,7 +3,7 @@
  *
  * The runner (jsonTests.spec.js) skips a whole case by name and reports the reason in the jest
  * summary. Remove an entry once the case passes. Reasons record what was observed when the entry
- * was added (hed-tests a5c66bb), not a diagnosis. Set HED_RUN_SKIPPED=1 to run the listed cases anyway.
+ * was added (hed-tests a5c66bb; c15ebf4 for the last three), not a diagnosis. Set HED_RUN_SKIPPED=1 to run the listed cases anyway.
  */
 export const skippedTests = {
   'duplicate-schema-in-merge-group': 'A schema listed twice in one merge group loads without SCHEMA_LOAD_FAILED.',
@@ -30,4 +30,10 @@ export const skippedTests = {
     'An invalid value in a column referenced in curly braces, in a row that does not substitute it, gives no error.',
   'value-invalid-date-time-format':
     'dateTimeClass values outside the BIDS Datetime format or calendar (2026-09-30T24:00:00, 2026-02-31) give no error.',
+  'placeholder-invalid-after-extension':
+    'Item/# and Item/Blech/# in a sidecar value column (alone or in a combo) give TAG_EXTENSION_INVALID, not PLACEHOLDER_INVALID.',
+  'tag-extension-invalid-no-letter':
+    'Extension terms with no letter (Item/Blech/3, Item/1-2, Item/42, Item/_, Item/-1, Item/ + U+00B0 or U+0663) give no error.',
+  'tag-extension-invalid-no-letter-8-2-0':
+    'Extension terms with no letter (Item/Blech/3, Item/1-2) under 8.2.0 give no error.',
 }
