@@ -35,7 +35,7 @@ export abstract class BidsFile {
   /**
    * The validator class used to validate this file.
    */
-  readonly #validatorClass: BidsValidatorConstructor
+  private readonly _validatorClass: BidsValidatorConstructor
 
   /**
    * Constructor.
@@ -47,7 +47,7 @@ export abstract class BidsFile {
   protected constructor(name: string, file: FilePath, validatorClass: BidsValidatorConstructor) {
     this.name = name
     this.file = file
-    this.#validatorClass = validatorClass
+    this._validatorClass = validatorClass
   }
 
   /**
@@ -105,6 +105,6 @@ export abstract class BidsFile {
    * @returns The validator class used to validate this file.
    */
   public get validatorClass(): BidsValidatorConstructor {
-    return this.#validatorClass
+    return this._validatorClass
   }
 }

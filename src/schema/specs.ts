@@ -169,27 +169,27 @@ export class SchemasSpec {
   /**
    * The specification mapping data.
    */
-  readonly #data: Map<string, SchemaSpec[]>
+  private readonly _data: Map<string, SchemaSpec[]>
 
   /**
    * Constructor.
    */
   constructor() {
-    this.#data = new Map<string, SchemaSpec[]>()
+    this._data = new Map<string, SchemaSpec[]>()
   }
 
   /**
    * The specification mapping data.
    */
   public get data(): Map<string, SchemaSpec[]> {
-    return new Map(this.#data)
+    return new Map(this._data)
   }
 
   /**
    * Iterate over the schema specifications.
    */
   *[Symbol.iterator](): MapIterator<[string, SchemaSpec[]]> {
-    yield* this.#data.entries()
+    yield* this._data.entries()
   }
 
   /**
@@ -199,17 +199,17 @@ export class SchemasSpec {
    * @returns This object.
    */
   public addSchemaSpec(schemaSpec: SchemaSpec): this {
-    if (this.#data.has(schemaSpec.prefix)) {
-      const existingPrefixSpecs = this.#data.get(schemaSpec.prefix) as SchemaSpec[]
+    if (this._data.has(schemaSpec.prefix)) {
+      const existingPrefixSpecs = this._data.get(schemaSpec.prefix) as SchemaSpec[]
       if (
         existingPrefixSpecs.some((spec) => schemaSpec.library === spec.library && schemaSpec.version !== spec.version)
       ) {
         IssueError.generateAndThrow('multipleVersionsOfSameLibrarySchema', { library: schemaSpec.library })
       } else if (!existingPrefixSpecs.some((spec) => schemaSpec.equivalent(spec))) {
-        this.#data.get(schemaSpec.prefix)?.push(schemaSpec)
+        this._data.get(schemaSpec.prefix)?.push(schemaSpec)
       }
     } else {
-      this.#data.set(schemaSpec.prefix, [schemaSpec])
+      this._data.set(schemaSpec.prefix, [schemaSpec])
     }
     return this
   }
