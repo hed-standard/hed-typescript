@@ -62,9 +62,9 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   private _units: string | null
 
   /**
-   * The normalized string representation of this column splice.
+   * The normalized string representation of this tag.
    */
-  readonly #normalized: string
+  private readonly _normalized: string
 
   /**
    * Constructor.
@@ -76,7 +76,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
   public constructor(tagSpec: TagSpec, hedSchemas: HedSchemas) {
     super(tagSpec.tag, tagSpec.bounds) // Sets originalTag and originalBounds
     this._convertTag(hedSchemas, tagSpec)
-    this.#normalized = this.format(false) // Sets various forms of the tag.
+    this._normalized = this.format(false) // Sets various forms of the tag.
   }
 
   /**
@@ -218,7 +218,7 @@ export default class ParsedHedTag extends ParsedHedSubstring {
    * @returns The normalized version of this tag.
    */
   public get normalized(): string {
-    return this.#normalized
+    return this._normalized
   }
 
   public get remainder(): string {

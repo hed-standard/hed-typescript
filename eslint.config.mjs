@@ -48,6 +48,13 @@ export default defineConfig([
       'no-template-curly-in-string': 'warn',
       'no-unmodified-loop-condition': 'warn',
       'no-unreachable-loop': 'error',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'PrivateIdentifier',
+          message: 'Use private _x, not #x (issue https://github.com/hed-standard/hed-javascript/issues/946).',
+        },
+      ],
 
       'prefer-arrow-callback': [
         'error',

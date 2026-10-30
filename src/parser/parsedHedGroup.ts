@@ -82,9 +82,9 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
   readonly requiresDefTag: ParsedHedTag[]
 
   /**
-   * The normalized string representation of this column splice.
+   * The normalized string representation of this group.
    */
-  #normalized: string | undefined
+  private _normalized: string | undefined
 
   /**
    * Constructor.
@@ -101,7 +101,7 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
     this.topTags = filterByClass(parsedHedTags, ParsedHedTag)
     this.topSplices = filterByClass(parsedHedTags, ParsedHedColumnSplice)
     this.allTags = this._getAllTags()
-    this.#normalized = undefined
+    this._normalized = undefined
 
     // Initialize groups.
     const reserved = ReservedChecker.getInstance()
@@ -182,8 +182,8 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
    * @returns The normalized string representation of this group.
    */
   public get normalized(): string {
-    if (this.#normalized) {
-      return this.#normalized
+    if (this._normalized) {
+      return this._normalized
     }
     // Recursively normalize each item in the group
     const normalizedItems = this.tags.map((item) => item.normalized)
@@ -198,8 +198,8 @@ export default class ParsedHedGroup extends ParsedHedSubstring {
         string: this.originalTag,
       })
     }
-    this.#normalized = '(' + sortedNormalizedItems.join(',') + ')'
-    return this.#normalized
+    this._normalized = '(' + sortedNormalizedItems.join(',') + ')'
+    return this._normalized
   }
 
   /**

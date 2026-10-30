@@ -33,7 +33,7 @@ export default class SchemaTag extends SchemaEntryWithAttributes {
   /**
    * This tag's ancestor tags.
    */
-  #ancestors: SchemaTag[]
+  private _ancestors: SchemaTag[]
 
   /**
    * Constructor.
@@ -114,11 +114,11 @@ export default class SchemaTag extends SchemaEntryWithAttributes {
    * Return all of this tag's ancestors.
    */
   public get ancestors(): SchemaTag[] {
-    if (this.#ancestors !== undefined) {
-      return this.#ancestors
+    if (this._ancestors !== undefined) {
+      return this._ancestors
     }
-    this.#ancestors = this.parent ? [this.parent, ...this.parent.ancestors] : []
-    return this.#ancestors
+    this._ancestors = this.parent ? [this.parent, ...this.parent.ancestors] : []
+    return this._ancestors
   }
 
   /**
