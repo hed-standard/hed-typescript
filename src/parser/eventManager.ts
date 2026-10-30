@@ -84,7 +84,7 @@ export class Event {
     }
     onset = onset + Event.extractDelay(group)
     const eventType = group.requiresDefTag[0].schemaTag.name
-    let defName = null
+    let defName: string
     if (group.defTags.length === 1) {
       defName = group.defTags[0].remainder.toLowerCase()
     } else if (group.defExpandChildren.length === 1) {

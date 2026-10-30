@@ -392,17 +392,6 @@ export function parseBidsFilename(filePath: string): ParsedBidsFilename {
 }
 
 /**
- * Get the directory part of a path.
- *
- * @param path - The path.
- * @returns The directory part of the path.
- */
-export function getDir(path: string): string {
-  const lastSlash = path.lastIndexOf('/')
-  return lastSlash === -1 ? '' : path.substring(0, lastSlash)
-}
-
-/**
  * Filter a list of JSON sidecar paths to find candidates for a given TSV file.
  *
  * @param jsonList - A list of relative paths of JSON sidecars.

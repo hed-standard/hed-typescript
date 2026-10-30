@@ -38,12 +38,12 @@ const issueData: Record<string, IssueType> = {
   deprecatedTag: {
     hedCode: 'ELEMENT_DEPRECATED',
     level: 'warning',
-    message: issueMessageTemplate`Tags "${'tags'} in "${'string'} are deprecated. Please see tag description for instructions on replacement.".`,
+    message: issueMessageTemplate`Tags "${'tags'}" in "${'string'}" are deprecated. Please see tag description for instructions on replacement.`,
   },
   duplicateTag: {
     hedCode: 'TAG_EXPRESSION_REPEATED',
     level: 'error',
-    message: issueMessageTemplate`Duplicate tags - "${'tags'} in "${'string'}".`,
+    message: issueMessageTemplate`Duplicate tags - "${'tags'}" in "${'string'}".`,
   },
   extendedTag: {
     hedCode: 'TAG_EXTENDED',
@@ -175,12 +175,17 @@ const issueData: Record<string, IssueType> = {
   invalidDefinitionGroupStructure: {
     hedCode: 'DEFINITION_INVALID',
     level: 'error',
-    message: issueMessageTemplate`The Definition or Def-expand tag "${'tag'} in "${'tagGroup'}" has multiple top tags or more than one top group.`,
+    message: issueMessageTemplate`The Definition or Def-expand tag "${'tag'}" in "${'tagGroup'}" has multiple top tags or more than one top group.`,
+  },
+  invalidDefExpandGroupStructure: {
+    hedCode: 'DEF_EXPAND_INVALID',
+    level: 'error',
+    message: issueMessageTemplate`The Def-expand tag "${'tag'}" in "${'tagGroup'}" has multiple top tags or more than one top group.`,
   },
   invalidDefinitionForbidden: {
     hedCode: 'DEFINITION_INVALID',
     level: 'error',
-    message: issueMessageTemplate`The Definition or Def-expand tag "${'tag'} in "${'tagGroup'}" has other definition-related tags in subgroups.`,
+    message: issueMessageTemplate`The Definition or Def-expand tag "${'tag'}" in "${'tagGroup'}" has other definition-related tags in subgroups.`,
   },
   defExpandContentsInvalid: {
     hedCode: 'DEF_EXPAND_INVALID',
@@ -195,7 +200,7 @@ const issueData: Record<string, IssueType> = {
   conflictingDefinitions: {
     hedCode: 'DEFINITION_INVALID',
     level: 'error',
-    message: issueMessageTemplate`Definition "${'definition1'}" and "${'definition2'}' conflict.`,
+    message: issueMessageTemplate`Definition "${'definition1'}" and "${'definition2'}" conflict.`,
   },
   duplicateDefinitionNames: {
     hedCode: 'DEFINITION_INVALID',
@@ -236,6 +241,11 @@ const issueData: Record<string, IssueType> = {
     hedCode: 'TEMPORAL_TAG_ERROR',
     level: 'error',
     message: issueMessageTemplate`${'tag'} found in tag group "${'tagGroup'}" with the wrong number of Def tags and Def-expand groups.`,
+  },
+  temporalWithWrongNumberOfGroups: {
+    hedCode: 'TEMPORAL_TAG_ERROR',
+    level: 'error',
+    message: issueMessageTemplate`${'tag'} found in tag group "${'tagGroup'}" with too many or too few inner tag groups.`,
   },
   temporalWithoutDefinition: {
     hedCode: 'TEMPORAL_TAG_ERROR',
@@ -315,7 +325,7 @@ const issueData: Record<string, IssueType> = {
   invalidNumberOfSubgroups: {
     hedCode: 'TAG_GROUP_ERROR',
     level: 'error',
-    message: issueMessageTemplate`The tag "${'tag'} is in a "${'string'} with too many or too few subgroups.`,
+    message: issueMessageTemplate`The tag "${'tag'}" is in a "${'string'}" with too many or too few subgroups.`,
   },
   invalidTopLevelTag: {
     hedCode: 'TAG_GROUP_ERROR',
@@ -378,6 +388,11 @@ const issueData: Record<string, IssueType> = {
     hedCode: 'DEFINITION_INVALID',
     level: 'error',
     message: issueMessageTemplate`Illegal curly brace expression "${'sidecarKey'}" found in HED string containing definition "${'definition'}".`,
+  },
+  curlyBracesInReservedGroup: {
+    hedCode: 'TAG_GROUP_ERROR',
+    level: 'error',
+    message: issueMessageTemplate`Illegal curly brace expression "${'splice'}" found in the "${'tag'}" tag group "${'tagGroup'}".`,
   },
   curlyBracesInHedColumn: {
     hedCode: 'CHARACTER_INVALID',

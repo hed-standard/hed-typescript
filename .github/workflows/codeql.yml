@@ -18,9 +18,11 @@ on:
   push:
     branches:
       - main
+      - fix_required
   pull_request:
     branches:
       - main
+      - fix_required
   schedule:
     - cron: 26 6 * * 5
 
