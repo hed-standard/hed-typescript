@@ -54,6 +54,7 @@ spec_tests/temp.spec.js
 tests/temp.spec.js
 
 # Build
+built/
 dist/
 docs/
 
