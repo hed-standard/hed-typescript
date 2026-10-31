@@ -57,11 +57,23 @@ export default abstract class AbstractHedSchemaLoader {
   /**
    * Build a single merged schema container object from one or more XML files.
    *
+   * @remarks
+   * A schema name listed twice in the group is rejected earlier, when the version specification is parsed
+   * ({@link SchemasSpec.addSchemaSpec}), except for schemas given by local path, whose names are checked here.
+   *
    * @param prefix - The prefix whose schema object is being created.
    * @param xmlData - The schemas' XML data.
    * @returns The HED schema object.
+   * @throws {IssueError} If the group breaks a merge group rule or two of its schemas conflict.
    */
   private async buildSchemaObjects(prefix: string, xmlData: HedSchemaXMLObject[]): Promise<HedSchema> {
+    const names = xmlData.map((xml) => xml.HED.$.library ?? '')
+    const repeatedName = names.find((name, index) => names.indexOf(name) !== index)
+    if (repeatedName !== undefined) {
+      const schema = repeatedName ? `library "${repeatedName}"` : 'the standard schema'
+      IssueError.generateAndThrow('multipleVersionsOfSameLibrarySchema', { schema, prefix })
+    }
+
     const [standardSchemas, librarySchemas] = partition(xmlData, (xml) => xml.HED.$.library === undefined)
     const [partneredLibrarySchemas, nonPartneredLibrarySchemas] = partition(
       librarySchemas,
