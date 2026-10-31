@@ -106,6 +106,28 @@ describe('HED schemas', () => {
           assert.fail(`Bundled schema failed to load: ${issue}.`)
         }
       })
+
+      it('a standard and a library schema given only by path are merged', async () => {
+        const specs = new SchemasSpec()
+          .addSchemaSpec(new SchemaSpec('', '', '', 'src/data/schemas/HED8.4.0.xml'))
+          .addSchemaSpec(new SchemaSpec('', '', '', 'src/data/schemas/HED_lang_1.1.0.xml'))
+        const hedSchemas = await buildSchemas(specs)
+        assert.isTrue(hedSchemas.baseSchema.entries.tags.hasEntry('event'))
+        assert.isTrue(hedSchemas.baseSchema.entries.tags.hasEntry('language-item'))
+      })
+
+      it('a schema name given twice by path is rejected once the files are read', async () => {
+        const specs = new SchemasSpec()
+          .addSchemaSpec(new SchemaSpec('', '', '', 'src/data/schemas/HED_lang_1.1.0.xml'))
+          .addSchemaSpec(new SchemaSpec('', '', '', 'src/data/schemas/HED_score_2.1.0.xml'))
+          .addSchemaSpec(new SchemaSpec('', '', '', 'src/data/schemas/HED_lang_1.1.0.xml'))
+        const error = await buildSchemas(specs).catch((caught) => caught)
+        assert.instanceOf(error, IssueError)
+        assert.deepStrictEqual(
+          error.issue,
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'library "lang"', prefix: '' }),
+        )
+      })
     })
   })
 

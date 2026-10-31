@@ -7,7 +7,6 @@
  *
  */
 export const skippedTests = {
-  'duplicate-schema-in-merge-group': 'A schema listed twice in one merge group loads without SCHEMA_LOAD_FAILED.',
   'sidecar-invalid-key-whitespace':
     'A top-level sidecar key that begins or ends with whitespace gives no SIDECAR_INVALID.',
   'sidecar-invalid-value-key-whitespace':

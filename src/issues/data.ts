@@ -433,7 +433,7 @@ const issueData: Record<string, IssueType> = {
   multipleVersionsOfSameLibrarySchema: {
     hedCode: 'SCHEMA_LOAD_FAILED',
     level: 'error',
-    message: issueMessageTemplate`The supplied HED schema specification is invalid because it contains multiple versions of the library schema "${'library'}".`,
+    message: issueMessageTemplate`The supplied HED schema specification is invalid because it lists ${'schema'} more than once in the merge group with prefix "${'prefix'}".`,
   },
   bundledSchemaLoadFailed: {
     hedCode: 'SCHEMA_LOAD_FAILED',
