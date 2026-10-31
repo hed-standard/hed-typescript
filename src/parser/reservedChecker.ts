@@ -86,7 +86,7 @@ export class ReservedChecker {
   /**
    * Singleton instance of ReservedChecker.
    */
-  static #instance: ReservedChecker
+  private static _instance: ReservedChecker
 
   /**
    * The rows of the reserved-tag file, keyed by tag name.
@@ -106,7 +106,7 @@ export class ReservedChecker {
   readonly twoPartValueTags: Set<string>
 
   private constructor() {
-    if (ReservedChecker.#instance) {
+    if (ReservedChecker._instance) {
       IssueError.generateAndThrowInternalError('Use ReservedChecker.getInstance() to get an instance of this class.')
     }
 
@@ -130,10 +130,10 @@ export class ReservedChecker {
    * @returns The singleton instance of this class.
    */
   public static getInstance(): ReservedChecker {
-    if (!ReservedChecker.#instance) {
-      ReservedChecker.#instance = new ReservedChecker()
+    if (!ReservedChecker._instance) {
+      ReservedChecker._instance = new ReservedChecker()
     }
-    return ReservedChecker.#instance
+    return ReservedChecker._instance
   }
 
   /**
