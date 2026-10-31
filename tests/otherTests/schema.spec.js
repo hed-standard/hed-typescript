@@ -113,7 +113,7 @@ describe('HED schemas', () => {
           .addSchemaSpec(new SchemaSpec('', '', '', 'src/data/schemas/HED_lang_1.1.0.xml'))
         const hedSchemas = await buildSchemas(specs)
         assert.isTrue(hedSchemas.baseSchema.entries.tags.hasEntry('event'))
-        assert.isTrue(hedSchemas.baseSchema.entries.tags.hasEntry('language-item'))
+        assert.isTrue(hedSchemas.baseSchema.entries.tags.hasEntry('arabic'))
       })
 
       it('a schema name given twice by path is rejected once the files are read', async () => {
