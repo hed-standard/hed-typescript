@@ -195,19 +195,25 @@ export class SchemasSpec {
   /**
    * Add a schema to this specification.
    *
+   * @remarks
+   * A schema name (a library name, or the standard schema) may appear only once in a merge group, whatever the
+   * versions (specification 3.1.2.4). A specification with a local path is not checked here: its name is known only
+   * once its file is read, and the loader checks it then.
+   *
    * @param schemaSpec - A schema specification.
    * @returns This object.
+   * @throws {IssueError} If the schema's name is already listed under its prefix.
    */
   public addSchemaSpec(schemaSpec: SchemaSpec): this {
     if (this._data.has(schemaSpec.prefix)) {
       const existingPrefixSpecs = this._data.get(schemaSpec.prefix) as SchemaSpec[]
-      if (
-        existingPrefixSpecs.some((spec) => schemaSpec.library === spec.library && schemaSpec.version !== spec.version)
-      ) {
-        IssueError.generateAndThrow('multipleVersionsOfSameLibrarySchema', { library: schemaSpec.library })
-      } else if (!existingPrefixSpecs.some((spec) => schemaSpec.equivalent(spec))) {
-        this._data.get(schemaSpec.prefix)?.push(schemaSpec)
+      const sameName = (spec: SchemaSpec): boolean =>
+        !spec.localPath && !schemaSpec.localPath && spec.library === schemaSpec.library
+      if (existingPrefixSpecs.some(sameName)) {
+        const schema = schemaSpec.library ? `library "${schemaSpec.library}"` : 'the standard schema'
+        IssueError.generateAndThrow('multipleVersionsOfSameLibrarySchema', { schema, prefix: schemaSpec.prefix })
       }
+      existingPrefixSpecs.push(schemaSpec)
     } else {
       this._data.set(schemaSpec.prefix, [schemaSpec])
     }

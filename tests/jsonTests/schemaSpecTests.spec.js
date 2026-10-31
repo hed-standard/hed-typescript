@@ -10,7 +10,7 @@ const skipMap = new Map()
 const runAll = true
 const runMap = new Map([])
 
-describe.skip('Schema validation', () => {
+describe('Schema validation', () => {
   beforeAll(async () => {})
 
   afterAll(() => {})

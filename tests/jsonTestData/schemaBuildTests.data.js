@@ -41,37 +41,44 @@ export const schemaSpecTestData = [
         schemaVersion: { Name: 'TwoTests', HEDVersion: ['ts:testlib_1.0.2', 'bg:testlib_1.0.2'] },
         schemaError: null,
       },
-      {
-        testname: 'good-lazy-partnered-libraries',
-        explanation: 'Version  ["testlib_2.0.0", "testlib_3.0.0"] is lazy partnered',
-        schemaVersion: { Name: 'GoodLazyPartnered', HEDVersion: ['testlib_2.0.0', 'testlib_3.0.0'] },
-        schemaError: null,
-      },
-      {
-        testname: 'good-lazy-partnered-libraries',
-        explanation: 'Version  ["testlib_2.0.0", "testlib_3.0.0"] is lazy partnered',
-        schemaVersion: { Name: 'GoodLazyPartnered', HEDVersion: ['testlib_2.0.0', 'testlib_3.0.0'] },
-        schemaError: null,
-      },
-      {
-        testname: 'lazy-partnered-libraries-with-conflicting-tags',
-        explanation: 'Version  ["testlib_2.0.0", "testlib_2.1.0"] have conflicting tags but error not in SchemaSpec',
-        schemaVersion: { Name: 'Lazy', HEDVersion: ['testlib_2.0.0', 'testlib_2.1.0'] },
-        schemaError: null,
-      },
-      {
-        testname: 'lazy-partnered-libraries-with-wrong-standard',
-        explanation:
-          'Version  ["testlib_2.0.0", "testlib_3.0.0", "8.3.0"] have conflicting standard schema but error not in SchemaSpec',
-        schemaVersion: { Name: 'Lazy', HEDVersion: ['testlib_2.0.0', 'testlib_3.0.0', '8.3.0'] },
-        schemaError: null,
-      },
     ],
   },
   {
     name: 'invalid-schemaSpecs',
     description: 'Invalid schema specs in various forms',
     tests: [
+      {
+        testname: 'two-versions-of-one-library',
+        explanation: 'Version  ["testlib_2.0.0", "testlib_3.0.0"] lists one library twice in a merge group',
+        schemaVersion: { Name: 'TwoVersions', HEDVersion: ['testlib_2.0.0', 'testlib_3.0.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'library "testlib"', prefix: '' }),
+        ),
+      },
+      {
+        testname: 'two-versions-of-one-library-with-conflicting-tags',
+        explanation: 'Version  ["testlib_2.0.0", "testlib_2.1.0"] lists one library twice in a merge group',
+        schemaVersion: { Name: 'Lazy', HEDVersion: ['testlib_2.0.0', 'testlib_2.1.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'library "testlib"', prefix: '' }),
+        ),
+      },
+      {
+        testname: 'two-versions-of-one-library-with-standard',
+        explanation: 'Version  ["testlib_2.0.0", "testlib_3.0.0", "8.3.0"] lists one library twice in a merge group',
+        schemaVersion: { Name: 'Lazy', HEDVersion: ['testlib_2.0.0', 'testlib_3.0.0', '8.3.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'library "testlib"', prefix: '' }),
+        ),
+      },
+      {
+        testname: 'same-library-version-twice',
+        explanation: 'Version  ["testlib_2.0.0", "testlib_2.0.0"] lists the same library schema twice',
+        schemaVersion: { Name: 'ExactDuplicate', HEDVersion: ['testlib_2.0.0', 'testlib_2.0.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'library "testlib"', prefix: '' }),
+        ),
+      },
       {
         testname: 'bad-standard-semantic-version-string',
         explanation: 'Bad standard version "8.3.0.4"',
@@ -133,12 +140,6 @@ export const schemaBuildTestData = [
         schemaVersion: { Name: 'TwoTests', HEDVersion: ['ts:testlib_1.0.2', 'bg:testlib_1.0.2'] },
         schemaError: null,
       },
-      {
-        testname: 'good-lazy-partnered-remote-schema-build',
-        explanation: '["testlib_2.0.0", "testlib_3.0.0"] is lazy partnered and testlib_3.0.0 is remote',
-        schemaVersion: { Name: 'GoodLazyPartnered', HEDVersion: ['testlib_2.0.0', 'testlib_3.0.0'] },
-        schemaError: null,
-      },
     ],
   },
   {
@@ -155,13 +156,49 @@ export const schemaBuildTestData = [
         testname: 'lazy-partnered-with wrong-standard-build',
         explanation: '["testlib_2.0.0", "8.3.0"] has wrong standard schema',
         schemaVersion: { Name: 'BadLazyPartnered', HEDVersion: ['testlib_2.0.0', '8.3.0'] },
-        schemaError: new IssueError(generateIssue('differentWithStandard', { versions: JSON.stringify(['8.3.0', '8.4.0']) })),
+        schemaError: new IssueError(
+          generateIssue('differentWithStandard', { versions: JSON.stringify(['8.3.0', '8.4.0']) }),
+        ),
       },
       {
-        testname: 'lazy-partnered-with conflicting-tags-build',
-        explanation: '["testlib_2.1.0", "testlib_3.0.0"] have conflicting tags',
-        schemaVersion: { Name: 'BadLazyPartnered', HEDVersion: ['testlib_2.1.0', 'testlib_3.0.0'] },
-        schemaError: new IssueError(generateIssue('lazyPartneredSchemasShareTag', { tag: 'Piano-subsound2' })),
+        testname: 'two-versions-of-one-library-build',
+        explanation: '["score_2.0.0", "score_2.1.0"] are two versions of the same library',
+        schemaVersion: { Name: 'TwoVersions', HEDVersion: ['score_2.0.0', 'score_2.1.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'library "score"', prefix: '' }),
+        ),
+      },
+      {
+        testname: 'same-library-version-twice-build',
+        explanation: '["score_2.1.0", "score_2.1.0"] lists the same library schema twice',
+        schemaVersion: { Name: 'ExactDuplicate', HEDVersion: ['score_2.1.0', 'score_2.1.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'library "score"', prefix: '' }),
+        ),
+      },
+      {
+        testname: 'standard-schema-twice-build',
+        explanation: '["8.4.0", "8.4.0"] lists the standard schema twice',
+        schemaVersion: { Name: 'StandardTwice', HEDVersion: ['8.4.0', '8.4.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'the standard schema', prefix: '' }),
+        ),
+      },
+      {
+        testname: 'prefixed-standard-schemas-build',
+        explanation: '["sc:8.3.0", "sc:8.4.0"] lists two standard versions under one prefix',
+        schemaVersion: { Name: 'PrefixedStandardTwice', HEDVersion: ['sc:8.3.0', 'sc:8.4.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'the standard schema', prefix: 'sc' }),
+        ),
+      },
+      {
+        testname: 'two-versions-of-one-library-different-partners-build',
+        explanation: '["lang_1.0.0", "lang_1.1.0"] are two versions of the same library with different partners',
+        schemaVersion: { Name: 'TwoVersions', HEDVersion: ['lang_1.0.0', 'lang_1.1.0'] },
+        schemaError: new IssueError(
+          generateIssue('multipleVersionsOfSameLibrarySchema', { schema: 'library "lang"', prefix: '' }),
+        ),
       },
     ],
   },

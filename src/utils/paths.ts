@@ -128,12 +128,12 @@ class BidsPathOrganizer {
   /**
    * A list of filename suffixes to categorize by (e.g., 'events').
    */
-  private readonly suffixes: string[]
+  private readonly suffixes: readonly string[]
 
   /**
    * A list of special directory names (e.g., 'phenotype').
    */
-  private readonly specialDirs: string[]
+  private readonly specialDirs: readonly string[]
 
   /**
    * The relative file paths organized according to BIDS naming conventions.
@@ -152,7 +152,7 @@ class BidsPathOrganizer {
    * @param suffixes - A list of filename suffixes to categorize by (e.g., 'events').
    * @param specialDirs - A list of special directory names (e.g., 'phenotype').
    */
-  constructor(relativeFilePaths: string[], suffixes: string[], specialDirs: string[]) {
+  constructor(relativeFilePaths: string[], suffixes: readonly string[], specialDirs: readonly string[]) {
     this.relativeFilePaths = relativeFilePaths
     this.suffixes = suffixes
     this.specialDirs = specialDirs
@@ -246,8 +246,8 @@ class BidsPathOrganizer {
  */
 export function organizePaths(
   relativeFilePaths: string[],
-  suffixes: string[],
-  specialDirs: string[],
+  suffixes: readonly string[],
+  specialDirs: readonly string[],
 ): OrganizedBidsCandidates {
   const organizer = new BidsPathOrganizer(relativeFilePaths, suffixes, specialDirs)
   return organizer.organizePaths()
