@@ -16,7 +16,7 @@ describe('BidsFileAccessor', () => {
     const fileMap = new Map()
     const accessor = new BidsFileAccessor(datasetRoot, fileMap)
     expect(accessor.fileMap.size).toBe(0)
-    expect(accessor.organizedPaths.size).toBe(BidsFileAccessor._SUFFIXES.length + BidsFileAccessor.SPECIAL_DIRS.length)
+    expect(accessor.organizedPaths.size).toBe(BidsFileAccessor.SUFFIXES.length + BidsFileAccessor.SPECIAL_DIRS.length)
     accessor.organizedPaths.forEach((category) => {
       expect(category.get('json')).toEqual([])
       expect(category.get('tsv')).toEqual([])

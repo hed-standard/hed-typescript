@@ -54,7 +54,7 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * BIDS suffixes.
    */
-  private static readonly _SUFFIXES: string[] = [
+  public static readonly SUFFIXES: readonly string[] = [
     'dataset_description',
     'participants',
     '_events',
@@ -67,7 +67,7 @@ export abstract class BidsFileAccessor<FileType> {
   /**
    * BIDS special directories.
    */
-  static readonly SPECIAL_DIRS: string[] = ['phenotype', 'stimuli']
+  public static readonly SPECIAL_DIRS: readonly string[] = ['phenotype', 'stimuli']
 
   /**
    * Constructs a BidsFileAccessor.
@@ -103,7 +103,7 @@ export abstract class BidsFileAccessor<FileType> {
     const relativeFilePaths = Array.from(fileMap.keys())
     const { candidates, organizedPaths } = organizePaths(
       relativeFilePaths,
-      BidsFileAccessor._SUFFIXES,
+      BidsFileAccessor.SUFFIXES,
       BidsFileAccessor.SPECIAL_DIRS,
     )
     this.organizedPaths = organizedPaths
