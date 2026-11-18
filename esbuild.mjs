@@ -6,9 +6,24 @@ await esbuild.build({
   entryPoints: [path.join(process.cwd(), 'src', 'index.js')],
   loader: { '.xml': 'text' },
   outdir: path.join(process.cwd(), 'dist', 'commonjs'),
-  target: 'node18',
+  target: 'node22',
   bundle: true,
   sourcemap: true,
+  format: 'cjs',
+  platform: 'node',
+  define: {
+    'import.meta.env': 'undefined',
+  },
+})
+
+await esbuild.build({
+  entryPoints: [path.join(process.cwd(), 'src', 'index.js')],
+  loader: { '.xml': 'text' },
+  outdir: path.join(process.cwd(), 'dist', 'esm'),
+  target: 'node22',
+  bundle: true,
+  sourcemap: true,
+  format: 'esm',
   platform: 'node',
   define: {
     'import.meta.env': 'undefined',
@@ -24,7 +39,7 @@ await esbuild.build({
 await esbuild.build({
   entryPoints: [path.join(process.cwd(), 'src', 'index.js')],
   loader: { '.xml': 'text' },
-  outdir: path.join(process.cwd(), 'dist', 'esm'),
+  outdir: path.join(process.cwd(), 'dist', 'browser'),
   bundle: true,
   sourcemap: true,
   format: 'esm',
