@@ -133,7 +133,7 @@ export default class TagConverter {
    * @throws {IssueError} If a blank is next to a slash of the tag path.
    */
   private _checkSlashBlanks(lastPathSlash: number): void {
-    const blank = this.tagSpec.slashBlanks.find((slashBlank) => slashBlank.slash <= lastPathSlash)
+    const blank = (this.tagSpec.slashBlanks ?? []).find((slashBlank) => slashBlank.slash <= lastPathSlash)
     if (blank !== undefined) {
       IssueError.generateAndThrow('extraBlank', { index: blank.index, string: blank.string, msg: blank.msg })
     }
