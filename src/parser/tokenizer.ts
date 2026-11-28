@@ -47,6 +47,34 @@ export class SubstringSpec {
 }
 
 /**
+ * A blank directly before or after a slash of a tag, recorded by the tokenizer.
+ *
+ * Whether it is an error depends on where the tag's value starts, which only the schema knows (specification 3.2.2,
+ * TAG_INVALID b), so the tag converter decides.
+ */
+export interface SlashBlank {
+  /**
+   * The index of the slash in the tag string.
+   */
+  slash: number
+
+  /**
+   * The index of the blank in the HED string.
+   */
+  index: number
+
+  /**
+   * The HED string.
+   */
+  string: string
+
+  /**
+   * Which side of the slash the blank is on, as the issue message.
+   */
+  msg: string
+}
+
+/**
  * A specification for a tokenized tag.
  */
 export class TagSpec extends SubstringSpec {
@@ -60,11 +88,17 @@ export class TagSpec extends SubstringSpec {
    */
   library: string
 
-  constructor(tag: string, start: number, end: number, librarySchema: string) {
+  /**
+   * The blanks next to a slash of this tag, in string order.
+   */
+  slashBlanks: SlashBlank[]
+
+  constructor(tag: string, start: number, end: number, librarySchema: string, slashBlanks: SlashBlank[] = []) {
     super(start, end)
 
     this.tag = tag.trim()
     this.library = librarySchema
+    this.slashBlanks = slashBlanks
   }
 }
 
@@ -136,6 +170,11 @@ export class TokenizerState {
    */
   lastSlash: number
 
+  /**
+   * Blanks next to a slash in the current token, with the slash's index in the HED string.
+   */
+  slashBlanks: SlashBlank[]
+
   currentGroupStack: RecursiveArray<NonGroupSubstringSpec>[]
 
   parenthesesStack: GroupSpec[]
@@ -148,6 +187,7 @@ export class TokenizerState {
     this.lastDelimiterIndex = -1
     this.librarySchema = ''
     this.lastSlash = -1
+    this.slashBlanks = []
     this.currentGroupStack = [[]]
     this.parenthesesStack = []
   }
@@ -220,6 +260,7 @@ export class HedStringTokenizer {
     this.state.currentToken = ''
     this.state.librarySchema = ''
     this.state.lastSlash = -1
+    this.state.slashBlanks = []
   }
 
   /**
@@ -348,6 +389,9 @@ export class HedStringTokenizer {
   /**
    * Handle a slash character.
    *
+   * A blank next to the slash is recorded, not reported: whether the slash is in the tag path or inside a value is
+   * known only after the tag is matched to the schema, so the tag converter decides.
+   *
    * @param i - The index of the slash.
    */
   private handleSlash(i: number): void {
@@ -356,16 +400,28 @@ export class HedStringTokenizer {
       this.pushIssue('extraSlash', i, '"/" at the beginning of tag.') // Slash at beginning of tag.
     } else if (this.state.lastSlash >= 0 && this.hedString.slice(this.state.lastSlash + 1, i).trim().length === 0) {
       this.pushIssue('extraSlash', i, 'Slashes with only blanks between.') // Slashes with only blanks between
-    } else if (i > 0 && this.hedString.charAt(i - 1) === CHARACTERS.BLANK) {
-      this.pushIssue('extraBlank', i - 1, 'Blank before an internal slash -- often a slash in a value.') // Blank before slash such as slash in value
-    } else if (i < this.hedString.length - 1 && this.hedString.charAt(i + 1) === CHARACTERS.BLANK) {
-      this.pushIssue('extraBlank', i + 1, 'Blank after a slash.') //Blank after a slash
     } else if (this.hedString.slice(i).trim().length === 0) {
       this.pushIssue('extraSlash', this.state.startingIndex, 'Extra slash at the end.') // Extra slash at the end
     } else {
+      if (i > 0 && this.hedString.charAt(i - 1) === CHARACTERS.BLANK) {
+        this.recordSlashBlank(i, i - 1, 'Blank before an internal slash -- often a slash in a value.')
+      } else if (i < this.hedString.length - 1 && this.hedString.charAt(i + 1) === CHARACTERS.BLANK) {
+        this.recordSlashBlank(i, i + 1, 'Blank after a slash.')
+      }
       this.state.currentToken += CHARACTERS.SLASH
       this.state.lastSlash = i
     }
+  }
+
+  /**
+   * Record a blank next to a slash of the current token.
+   *
+   * @param slash - The index of the slash in the HED string.
+   * @param index - The index of the blank in the HED string.
+   * @param msg - Which side of the slash the blank is on.
+   */
+  private recordSlashBlank(slash: number, index: number, msg: string): void {
+    this.state.slashBlanks.push({ slash, index, string: this.hedString, msg })
   }
 
   /**
@@ -501,17 +557,33 @@ export class HedStringTokenizer {
       this.pushIssue('emptyTagFound', i, 'Empty tag found likely between commas, before ")" or after "(".') // The tag is empty
       return
     }
+    // A slash with only blanks after it ends the tag (Ex: "x/ ,"); the end of the string is checked by finalizeTokenizer.
+    if (
+      i < this.hedString.length &&
+      this.state.lastSlash >= 0 &&
+      this.hedString.slice(this.state.lastSlash + 1, i).trim().length === 0
+    ) {
+      this.pushIssue(
+        'extraSlash',
+        this.state.lastSlash,
+        'Usually the result of multiple consecutive slashes or a slash at the end.',
+      )
+      return
+    }
     const msg = this._checkForBadPlaceholderIssues()
     if (msg.length > 0) {
       this.pushInvalidTag('invalidPlaceholder', i, this.state.currentToken, msg)
       return
     }
+    const tagStart = this.state.startingIndex + bounds[0]
+    const slashBlanks = this.state.slashBlanks.map((blank) => ({ ...blank, slash: blank.slash - tagStart }))
     this.state.currentGroupStack[this.state.groupDepth].push(
       new TagSpec(
         this.state.currentToken.trim(),
-        this.state.startingIndex + bounds[0],
+        tagStart,
         this.state.startingIndex + bounds[1],
         this.state.librarySchema,
+        slashBlanks,
       ),
     )
     this.resetToken(i)
@@ -528,7 +600,8 @@ export class HedStringTokenizer {
       return ''
     } else if (tokenSplit.length > 2) {
       return `${tokenSplit.length - 1} placeholders found, but only one is allowed.`
-    } else if (!tokenSplit[0].endsWith(CHARACTERS.SLASH)) {
+    } else if (!tokenSplit[0].trimEnd().endsWith(CHARACTERS.SLASH)) {
+      // A blank between the slash and the placeholder (Ex: "x/ #") is reported by the tag converter.
       return 'A placeholder must be preceded by a slash in the tag.'
     } else if (tokenSplit[1].trim().length > 0 && !tokenSplit[1].startsWith(CHARACTERS.BLANK)) {
       return 'Units following a placeholder must be preceded by a blank space.'
